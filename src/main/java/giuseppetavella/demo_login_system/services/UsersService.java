@@ -39,6 +39,10 @@ public class UsersService {
             throw new InvalidUUIDStringException(userId);
         }
     }
+    
+    // public User findAllWhoSignedupOnDay() {
+    //    
+    // }
 
     /**
      * Find a user by email.

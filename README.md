@@ -412,6 +412,16 @@ Here I discuss the Forgot Password mechanism.
 ```
 
 
+# Cron Job System
+
+The Cron Job System, for now, only supports 1 replica.
+
+With more replicas, the cron jobs would be fired at the same time.
+
+Therefore, in this version, these are the assumptions:
+
+- 1 replica only (1 server)
+- 
 
 
 # Configuration
