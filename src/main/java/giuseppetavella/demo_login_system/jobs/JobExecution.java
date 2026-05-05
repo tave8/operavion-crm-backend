@@ -1,8 +1,10 @@
 package giuseppetavella.demo_login_system.jobs;
 
+import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
+import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.jspecify.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -40,7 +42,7 @@ public class JobExecution {
     private OffsetDateTime lastProcessedItemCreatedAt;
     
     // generated automatically at the DB level
-    @Column(name = "started_at", nullable = false, updatable = false, insertable = false)
+    @Column(name = "started_at", nullable = false)
     private OffsetDateTime startedAt;
     
     // you can only set this once and never change it 
@@ -87,6 +89,7 @@ public class JobExecution {
         this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
         this.lastProcessedItemCreatedAt = lastProcessedItemCreatedAt;
+        this.startedAt = OffsetDateTime.now();
         this.setState(JobExecutionState.PENDING);
         this.setMessage("");
     }
@@ -102,6 +105,7 @@ public class JobExecution {
      */
     public void finish() throws JobExecutionException
     {
+        
         boolean alreadySet = this.getFinishedAt() != null;
         
         if(alreadySet) {

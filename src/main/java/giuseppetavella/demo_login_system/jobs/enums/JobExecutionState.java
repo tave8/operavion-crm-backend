@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.jobs.enums;
 
 public enum JobExecutionState {
     PENDING,

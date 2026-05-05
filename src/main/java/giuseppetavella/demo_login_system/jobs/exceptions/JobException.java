@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.jobs.exceptions;
 
 public class JobException extends RuntimeException {
     public JobException(String message) {

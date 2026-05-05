@@ -1,5 +1,8 @@
 package giuseppetavella.demo_login_system.jobs;
 
+import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
