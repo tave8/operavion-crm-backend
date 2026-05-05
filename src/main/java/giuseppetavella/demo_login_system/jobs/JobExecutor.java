@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  * - etc.
  */
 @Service
-public class CronJobExecutor {
+public class JobExecutor {
 
     @Autowired
     private UsersService usersService;

@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
  * Each method should contain only one method call.
  */
 @Service
-public class CronJobStarter {
+public class JobScheduler {
     
     @Autowired
-    private CronJobManager cronJobManager;
+    private JobManager jobManager;
     
 
     // this cron means every minute
