@@ -5,5 +5,6 @@ package giuseppetavella.demo_login_system.jobs.enums;
  */
 public enum JobName {
     SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY,
-    SEND_ME_INVOICE_REPORT
+    SEND_ME_INVOICE_REPORT,
+    EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE
 }

@@ -182,7 +182,8 @@ public class JobExecution {
         if(!canSetNewState) {
             throw new JobExecutionException(
                     this.getJobName().name(),
-                    "Cannot transition from current state " + currState + " to desired state " + desiredState
+                    "Cannot set new state, because you cannot transition "
+                            +"from current state " + currState + " to desired state " + desiredState
             );
         }
         

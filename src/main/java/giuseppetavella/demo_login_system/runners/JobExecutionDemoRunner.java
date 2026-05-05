@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.runners;
 
 import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
+import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -21,17 +23,32 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // JobExecution jobExecution1 = new JobExecution(
-        //         JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY,
+        //         JobName.SEND_ME_INVOICE_REPORT,
         //         UUID.randomUUID(),
         //         OffsetDateTime.now().minusMonths(1)
         // );
-        //
+        // //
         // this.jobExecutionService.save(jobExecution1);
-        
+        //
         // ********** JOB EXECUTIONS FROM DB
-        JobExecution jobExecution1FromDB = this.jobExecutionService.findById(1L);
-
-        System.out.println(jobExecution1FromDB);
+        // JobExecution jobExecution1FromDB = this.jobExecutionService.findById(1L);
+        // JobExecution jobExecution2FromDB = this.jobExecutionService.findById(2L);
+        // find last executions of job name
+        // Optional<JobExecution> lastJobExecutionFromDB = this.jobExecutionService.findLastExecutionOfJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
+        //
+        // System.out.println(lastJobExecutionFromDB);
+        
+        // jobExecution2FromDB.finish();
+        // jobExecution2FromDB.setState(JobExecutionState.PENDING);
+        //
+        
+        // this.jobExecutionService.save(jobExecution1FromDB);
+        // this.jobExecutionService.save(jobExecution2FromDB);
+        
+        
+        // System.out.println(jobExecution1FromDB);
+        
+        
         
         
     }
