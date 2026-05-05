@@ -38,9 +38,6 @@ public class JobExecution {
     @Column(name = "last_processed_item_id", nullable = false)
     private UUID lastProcessedItemId;
     
-    @Column(name = "last_processed_item_created_at", nullable = false)
-    private OffsetDateTime lastProcessedItemCreatedAt;
-    
     // generated automatically at the DB level
     @Column(name = "started_at", nullable = false)
     private OffsetDateTime startedAt;
@@ -78,17 +75,14 @@ public class JobExecution {
      * 
      * @param jobName the job to which this job execution belongs
      * @param lastProcessedItemId the ID of the last processed item
-     * @param lastProcessedItemCreatedAt the timestamp of the last processed item
      */
     public JobExecution(@NotNull JobName jobName, 
-                        @NotNull UUID lastProcessedItemId,
-                        @NotNull OffsetDateTime lastProcessedItemCreatedAt) 
+                        @NotNull UUID lastProcessedItemId) 
     {
         // the job name saved in DB will actually be a string,
         // because i want flexibility for now
         this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
-        this.lastProcessedItemCreatedAt = lastProcessedItemCreatedAt;
         this.startedAt = OffsetDateTime.now();
         this.setState(JobExecutionState.PENDING);
         this.setMessage("");
@@ -221,13 +215,7 @@ public class JobExecution {
     public Long getId() {
         return id;
     }
-
-
-    public OffsetDateTime getLastProcessedItemCreatedAt() {
-        return lastProcessedItemCreatedAt;
-    }
-
-
+    
     public String getMessage() {
         return message;
     }
@@ -259,7 +247,6 @@ public class JobExecution {
                 ", state=" + state +
                 ", startedAt=" + startedAt +
                 ", finishedAt=" + finishedAt +
-                ", lastProcessedItemCreatedAt=" + lastProcessedItemCreatedAt +
                 ", lastProcessedItemId=" + lastProcessedItemId +
                 ", message='" + message + '\'' +
                 '}';

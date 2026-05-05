@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.runners;
 
 import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
+import giuseppetavella.demo_login_system.jobs.JobManager;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import jakarta.persistence.Column;
@@ -18,18 +19,20 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
     
     @Autowired
     private JobExecutionService jobExecutionService;
+    
+    @Autowired
+    private JobManager jobManager;
 
     @Override
     public void run(String... args) throws Exception {
 
         // JobExecution jobExecution1 = new JobExecution(
         //         JobName.SEND_ME_INVOICE_REPORT,
-        //         UUID.randomUUID(),
-        //         OffsetDateTime.now().minusMonths(1)
+        //         UUID.randomUUID()
         // );
-        // //
+        // // //
         // this.jobExecutionService.save(jobExecution1);
-        //
+        // //
         // ********** JOB EXECUTIONS FROM DB
         // JobExecution jobExecution1FromDB = this.jobExecutionService.findById(1L);
         // JobExecution jobExecution2FromDB = this.jobExecutionService.findById(2L);
@@ -49,7 +52,7 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
         // System.out.println(jobExecution1FromDB);
         
         
-        
+        // this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
         
     }
 }

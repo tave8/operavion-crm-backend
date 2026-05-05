@@ -28,4 +28,9 @@ public class JobExecutor {
 
     }
     
+    
+    public void emailEmployeesWithContractAboutToExpire() {
+        
+    }
+    
 }

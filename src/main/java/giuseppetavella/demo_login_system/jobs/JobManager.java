@@ -21,6 +21,7 @@ public class JobManager {
     // logger
     private static final Logger LOGGER = Logger.getLogger(JobManager.class.getName());
 
+    
     /**
      * Entry point for executing a job.
      * Provides centralized error handling. 
@@ -31,35 +32,82 @@ public class JobManager {
      *  the given cron job task
      * @throws JobException if a generic error occurred
      */
-    public void executeJob(JobName jobName) {
+    public void executeJob(JobName jobName) 
+    {
         
-        LOGGER.info("JOB '\"+jobName+\"': this jobName was called to be executed, executing jobName...");
+        // executor = this.getJobExecutorElseThrow(jobName);
         
-        try {
-            
-            if(jobName.equals(JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY)) {
-                
-                this.jobExecutor.sendEmailToUsersWhoSignedupToday();
-                
-                LOGGER.info("JOB '\"+jobName+\"': finished executing jobName with no errors.");
-                
-                return;
-            }
-            
-            // add here more jobNames...     
+        
+        LOGGER.info("JOB '"+jobName+"': this job was called to be executed, executing it...");
 
-            
-        } catch(RuntimeException ex) {
-            
-            throw new JobExecutionException(jobName.name(), ex.getMessage());
-            
-        }
 
-        LOGGER.severe("JOB '\"+jobName+\"': this jobName was not found / is not mapped / not recognized internally.");
+        // the executor keeps on executing items until there's no more
+        // the executor should continue processing items even if there's an error, 
+        // so the try/catch should be inside the while loop
+        // while() {
+        //
+        //     try {
+        //        
+        //
+        //
+        //   
+        //        
+        //         executor 
+        //        
+        //             LOGGER.info("JOB '"+jobName+"': finished executing job with no errors.");
+        //        
+        //     } catch(RuntimeException ex) {
+        //        
+        //         throw new JobExecutionException(jobName.name(), ex.getMessage());
+        //        
+        //     }
+        //
+        // }
+        //
         
-        throw new JobException("jobName '"+jobName +"' is not mapped / not recognized.");
-        
+
     }
+
+
+    /**
+     * Get the job executor for the given job.
+     * If a job executor for this job was not mapped,
+     * an exception will be thrown
+     * 
+     */
+    // private function getJobExecutorElseThrow(JobName jobName) throws JobException
+    // {
+    //     boolean jobIsMappedToExecutor = false;
+    //
+    //
+    //     if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
+    //         jobIsMappedToExecutor = true;
+    //
+    //
+    //         // what to after a job execution is successfull
+    //
+    //         executor = this.jobExecutor.emailEmployeesWithContractAboutToExpire;
+    //
+    //
+    //     }
+    //
+    //
+    //
+    //
+    //     // add more jobs here...     
+    //
+    //
+    //     // the given job was not mapped to an executor
+    //     if(!jobIsMappedToExecutor) {
+    //
+    //         LOGGER.severe("JOB '"+jobName+"': this job was not found, is not mapped or is not recognized internally.");
+    //
+    //         throw new JobException("Job '"+jobName +"' was not found, is not mapped or is not recognized internally.");
+    //
+    //     }
+    //
+    //
+    // }
     
 
     
