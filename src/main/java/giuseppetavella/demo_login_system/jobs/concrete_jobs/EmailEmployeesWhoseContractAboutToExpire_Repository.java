@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Business logic specific queries.
@@ -27,7 +28,7 @@ public interface EmailEmployeesWhoseContractAboutToExpire_Repository extends Jpa
     //     -- we only want one item to process
     @Query(nativeQuery = true, value = """
         
-        WITH Q_processed_items_of_job AS (
+        WITH Q_this_job_executions AS (
             SELECT
                 last_processed_item_id
                     AS item_id
@@ -42,16 +43,61 @@ public interface EmailEmployeesWhoseContractAboutToExpire_Repository extends Jpa
             users
         WHERE 
             true 
-            AND user_id NOT IN ( SELECT item_id FROM Q_processed_items_of_job )
-        
+            AND user_id NOT IN ( SELECT item_id FROM Q_this_job_executions )
         LIMIT 1
 
 """)
-    Optional<User> getNextEmployeeWhoseContractAboutToExpire(
+    Optional<User> getNextItem(
+            @Param("jobName") String jobName
+    );
+
+    
+    /**
+     * 
+     * 
+     */
+    @Query(nativeQuery = true, value = """
+
+        WITH Q_this_job_pending_executions AS (
+            SELECT
+                last_processed_item_id
+                    AS item_id
+            FROM 
+                job_executions
+            WHERE
+                job_name = :jobName
+                AND state = 'PENDING'
+        )
+    
+        SELECT *
+        FROM 
+            users
+        WHERE 
+            user_id IN ( SELECT item_id FROM Q_this_job_pending_executions )
+        LIMIT 1
+
+    """)
+    Optional<User> getItemOfNextPendingJobExecution(
             @Param("jobName") String jobName
     );
     
-    // reconstruct the pendi
-    // Optional<User> reconstructPendingExecution
     
+    /*
+    * 
+    * Get one item. 
+    * */
+    @Query(nativeQuery = true, value = """
+    
+        SELECT *
+        FROM 
+            users
+        WHERE 
+            user_id = :itemId
+
+    """)
+    Optional<User> getItemById(
+            @Param("itemId") UUID itemId
+    );
+
+
 }

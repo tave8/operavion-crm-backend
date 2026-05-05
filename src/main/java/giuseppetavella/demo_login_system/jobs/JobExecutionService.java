@@ -44,9 +44,9 @@ public class JobExecutionService {
      */
     public JobExecution updateJobExecutionStateAndFinish(JobExecution jobExecution, 
                                                          JobExecutionState desiredState,
-                                                         @Nullable String message) throws JobExecutionException
+                                                         @Nullable String messageToConcatenate) throws JobExecutionException
     {
-        jobExecution.setStateAndFinish(desiredState, message);
+        jobExecution.setStateAndFinish(desiredState, messageToConcatenate);
 
         return this.save(jobExecution);
     }
@@ -78,5 +78,6 @@ public class JobExecutionService {
     {
         return this.jobManagerRepository.findLastExecutionOfJob(jobName.name());
     }
+    
 
 }

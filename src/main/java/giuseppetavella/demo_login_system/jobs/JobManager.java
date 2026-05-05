@@ -7,9 +7,11 @@ import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextPendingExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -22,15 +24,21 @@ public class JobManager {
     @Autowired
     private JobExecutionService jobExecutionService;
     
+    @Autowired
+    private JobManagerRepository jobManagerRepository;
+    
     // ******************
-    // CONCRETE JOB EXECUTORS
+    // CONCRETE JOB EXECUTORS: START
     // ******************
     
     @Autowired
     private EmailEmployeesWhoseContractAboutToExpire_JobExecutor emailEmployeesWhoseContractAboutToExpire_JobExecutor;
     
     // add more job executors here...
-    
+
+    // ******************
+    // CONCRETE JOB EXECUTORS: END
+    // ******************
     
     // logger
     private static final Logger LOGGER = Logger.getLogger(JobManager.class.getName());
@@ -47,114 +55,218 @@ public class JobManager {
      * @throws JobException if a generic error occurred
      */
     public void executeJob(JobName jobName) {
-
-        // give me the job executor for this job
-        JobExecutor<?> executor = this.getJobExecutorElseThrow(jobName);
-
-
+        
+        // ********************
+        // GET JOB-SPECIFIC JOB EXECUTOR
+        // ********************
+        
+        JobExecutor<?> executor = this.getJobExecutor(jobName);
+        
         LOGGER.info("JOB '" + jobName + "': this job was called to be executed, executing it...");
 
-        // execute any pending executions (so existing job executions), 
-        // before moving on to execute next items
+        LOGGER.info("JOB '" + jobName + "': started processing existing pending job executions, if any...");
+        
+        // ********************
+        // PROCESS PENDING JOB EXECUTIONS
+        // ********************
+        
+        this.processPendingJobExecutions(jobName, executor);
+
+        LOGGER.info("JOB '" + jobName + "': finished processing pending job executions.");
+
+        LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
 
         // ********************
-        // PROCESS PENDING JOB EXECUTION (if any) 
+        // PROCESS NEXT ITEMS
         // ********************
-        // assumption: at any point in time, there can 
-        // only be at most 1 pending job execution,
-        // and that can only be the most recent job execution
-        
-        
 
+        // this.processNextItems(jobName, executor);
+        
+        LOGGER.info("JOB '" + jobName + "': finished processing next items.");
+
+        LOGGER.info("JOB '" + jobName + "': finished executing job.");
+
+    }
+
+    /**
+     * Process the next items.
+     * 
+     * @param jobName
+     * @param executor
+     */
+    private void processNextItems(JobName jobName, JobExecutor<?> executor) {
+        
         JobExecutionItem<?> nextItem = executor.getNextItem();
-        
+
         // if there's no next item to process, we stop the entire job
         while(nextItem != null) {
 
             // ********************
             // ADD NEW JOB EXECUTION WITH PENDING STATE
             // ********************
-            
+
             // add a job execution to the DB, before 
             // processing this item
             JobExecution currJobExecution = this.jobExecutionService.addNewJobExecution(
-                    jobName, 
+                    jobName,
                     nextItem.getItemId()
             );
-            
+
             boolean processingWasSuccess = true;
-            
+
             String messageIfProcessingFailed = null;
-            
+
             // ********************
             // PROCESS ITEM
             // ********************
-            
+
             try {
-                
+
                 executor.processItem(nextItem);
-                
+
             } catch (RuntimeException ex) {
 
                 processingWasSuccess = false;
                 messageIfProcessingFailed = ex.getMessage();
-            
+
             }
 
             // ********************
             // UPDATE JOB EXECUTION STATE (SUCCESS, FAILED)
             // ********************
-            
+
             if(processingWasSuccess) {
-    
+
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         currJobExecution,
                         JobExecutionState.SUCCESS
                 );
-                
+
             } else {
-                
+
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         currJobExecution,
                         JobExecutionState.FAILED,
                         messageIfProcessingFailed
                 );
-                
+
             }
-            
+
 
             // ********************
             // GET NEXT ITEM
             // ********************
-            
-            // get next item to process
-            // if this item will be null,
-            // we'll stop the job immediately at the next
-            // loop iteration
-            
+
+
             try {
-            
+
+                // get next item to process
+                // if this item will be null,
+                // we'll stop the job immediately at the next
+                // loop iteration
                 nextItem = executor.getNextItem();
-            
+
             } catch (RuntimeException ex) {
-                
+
                 // we exit immediately because 
                 // an error while getting the next item
                 // could signal a logical error in the query,
                 // which could be an internal error and
                 // not a business-related error
                 throw new JobExecutionGetNextItemException(jobName, ex.getMessage());
-                
+
             }
-                
+
 
         }
-        
-
-        LOGGER.info("JOB '" + jobName + "': finished executing job.");
-
     }
 
+    
+    /**
+     * Process pending job executions.
+     */
+    private void processPendingJobExecutions(JobName jobName, JobExecutor<?> executor) 
+    {
+
+        Optional<JobExecution> maybeNextPendingJobExecution = this.jobManagerRepository.getNextPendingJobExecution(jobName.name());
+        
+        // System.out.println("next item of pending job execution: " + itemOfNextPendingExecution);
+
+        // as long as there are pending job executions
+        while(maybeNextPendingJobExecution.isPresent()) {
+            
+            // this is the pending job execution,
+            // which therefore also contains the item that 
+            // is in a pending state
+            JobExecution pendingJobExecution = maybeNextPendingJobExecution.get();
+            
+            // this item was probably not processed or 
+            // its processin was interrupted
+            JobExecutionItem<?> nextItem = executor.getItemById(
+                    // the last processed item ID is searched, to get the  
+                    // business-logic specific item
+                    pendingJobExecution.getLastProcessedItemId()
+            );
+            
+            boolean processingWasSuccess = true;
+
+            String messageIfProcessingFailed = null;
+
+            // ********************
+            // PROCESS ITEM
+            // ********************
+
+            try {
+                
+                executor.processItem(nextItem);
+
+            } catch (RuntimeException ex) {
+
+                processingWasSuccess = false;
+                messageIfProcessingFailed = ex.getMessage();
+
+            }
+
+            // ********************
+            // UPDATE JOB EXECUTION STATE (SUCCESS, FAILED)
+            // ********************
+
+            if(processingWasSuccess) {
+
+                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                        pendingJobExecution,
+                        JobExecutionState.SUCCESS
+                );
+
+            } else {
+
+                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                        pendingJobExecution,
+                        JobExecutionState.FAILED,
+                        messageIfProcessingFailed
+                );
+
+            }
+            
+            // ********************
+            // GET NEXT PENDING JOB EXECUTION
+            // ********************
+
+            try {
+
+                maybeNextPendingJobExecution = this.jobManagerRepository.getNextPendingJobExecution(jobName.name());
+
+            } catch (RuntimeException ex) {
+                
+                throw new JobExecutionGetNextPendingExecutionException(jobName, ex.getMessage());
+
+            }
+
+
+        }
+
+    }
+    
 
     /**
      * Get the job executor for the given job.
@@ -167,7 +279,7 @@ public class JobManager {
      * 
      */
     
-    private JobExecutor<?> getJobExecutorElseThrow(JobName jobName) throws JobException
+    private JobExecutor<?> getJobExecutor(JobName jobName) throws JobException
     {
 
         if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
@@ -177,7 +289,7 @@ public class JobManager {
         }
         
         
-        // add more jobs here...     
+        // add more job executors here...     
 
 
         // the given job was not mapped to an executor

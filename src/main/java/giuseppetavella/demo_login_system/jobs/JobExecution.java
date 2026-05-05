@@ -100,26 +100,7 @@ public class JobExecution {
         
         this.setState(desiredState);
         this.finish();
-        
-        // if a message is provided, it gets added to the current message
-        if(message != null) {
-            String currMessage = this.getMessage();
-            
-            // if the current message is empty
-            if(currMessage.isBlank()) {
-                // just set the new message as is
-                this.setMessage(message);
-                
-            } else {
-                
-                // concatenate the existing message with the new message
-                String newMessage = currMessage + " | " + message;
-                this.setMessage(newMessage);
-                
-            }
-            
-        }
-        
+        this.concatenateMessage(message);
     }
 
     
@@ -248,6 +229,29 @@ public class JobExecution {
         }
     }
 
+    /**
+     * Concatenate the message with the current message
+     */
+    public void concatenateMessage(@Nullable String message) {
+        // if a message is provided, it gets added to the current message
+        if(message != null) {
+            String currMessage = this.getMessage();
+
+            // if the current message is empty
+            if(currMessage.isBlank()) {
+                // just set the new message as is
+                this.setMessage(message);
+
+            } else {
+
+                // concatenate the existing message with the new message
+                String newMessage = currMessage + " | " + message;
+                this.setMessage(newMessage);
+
+            }
+        }
+    }
+
     public OffsetDateTime getFinishedAt() {
         return finishedAt;
     }
@@ -260,7 +264,7 @@ public class JobExecution {
     public String getMessage() {
         return message;
     }
-
+    
     public void setMessage(String message) {
         this.message = message;
     }

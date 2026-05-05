@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExecutor<User> {
@@ -29,14 +30,14 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
             return;
         }
         
-        // try {
-        //     Thread.sleep(5000);
-        //    
-        // } catch (InterruptedException e) {
-        //     // throw new RuntimeException(e);
-        // }
+        try {
+            Thread.sleep(2000);
+
+        } catch (InterruptedException e) {
+            // throw new RuntimeException(e);
+        }
         
-        throw new RuntimeException("error during processing");
+        // throw new RuntimeException("error during processing");
         
         // User user = (User) itemToProcess.getItem();
         //
@@ -48,10 +49,10 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
     @Override
     public JobExecutionItem<User> getNextItem() {
         
-        Optional<User> maybeNextUser = this.thisRepository.getNextEmployeeWhoseContractAboutToExpire(this.getJobName().name());
+        Optional<User> maybeNextUser = this.thisRepository.getNextItem(this.getJobName().name());
         
         if(maybeNextUser.isEmpty()) {
-            return null;
+            return null; 
         }
         
         User user = maybeNextUser.get();
@@ -59,7 +60,21 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
         return new JobExecutionItem<>(user, user.getUserId());
         
     }
-    
-    
-    
+
+    @Override
+    public @Nullable JobExecutionItem<User> getItemById(UUID itemId) {
+        
+        Optional<User> maybeNextUser = this.thisRepository.getItemById(itemId);
+
+        if(maybeNextUser.isEmpty()) {
+            return null;
+        }
+
+        User user = maybeNextUser.get();
+
+        return new JobExecutionItem<>(user, user.getUserId());
+        
+    }
+
+
 }
