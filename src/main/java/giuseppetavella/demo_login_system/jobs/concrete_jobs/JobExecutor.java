@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.jobs.concrete_jobs;
 
+import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import jakarta.annotation.Nullable;
@@ -29,17 +30,17 @@ public abstract class JobExecutor<T> {
     /**
      * Process the given item with business-specific logic.
      */
-    public abstract void processItem(@Nullable JobExecutionItem<?> itemToProcess);
+    public abstract void processItem(JobExecutionItem<?> itemToProcess, JobExecution currentJobExecution);
 
     /**
      * Get the next item with business-specific logic.
      */
-    public abstract @Nullable JobExecutionItem<T> getNextItem();
+    public abstract JobExecutionItem<T> getNextItem();
 
     /**
      * Get the item, with business-specific logic.
      */
-    public abstract @Nullable JobExecutionItem<T> getItemById(UUID itemId);
+    public abstract JobExecutionItem<T> getItemById(UUID itemId);
 
     public JobName getJobName() {
         return jobName;

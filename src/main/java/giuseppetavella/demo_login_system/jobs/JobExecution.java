@@ -6,6 +6,8 @@ import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -46,6 +48,10 @@ public class JobExecution {
     // you can only set this once and never change it 
     @Column(name = "finished_at")
     private OffsetDateTime finishedAt;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private JobExecutionMetadata metadata;
     
     @Column(nullable = false)
     private String message;
@@ -85,6 +91,7 @@ public class JobExecution {
         this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
         this.startedAt = OffsetDateTime.now();
+        this.metadata = new JobExecutionMetadata();
         this.setState(JobExecutionState.PENDING);
         this.setMessage("");
     }

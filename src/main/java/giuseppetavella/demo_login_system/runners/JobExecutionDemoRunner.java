@@ -53,11 +53,7 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
         
         
          this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
-        
-        // this.jobExecutionService.addNewJobExecution(
-        //         JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE,
-        //         UUID.randomUUID()
-        // );
+         
         
     }
 }

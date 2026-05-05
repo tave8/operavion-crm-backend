@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.jobs;
 
+import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,25 +19,16 @@ public class JobScheduler {
     // this cron means every minute
     @Scheduled(cron = "0 * * * * *")
     public void sendMeInvoiceReport() {
-
         
         // this.appEmailService.sendMeInvoiceReport();
-        // // //
-        // LOGGER.info("CRON JOB: send email: email sent");
 
     }
 
     // this cron means every minute
     @Scheduled(cron = "0 * * * * *")
-    public void sendEmailToUsersWhoSignedupToday() {
-
-        // job name
+    public void emailEmployeesWithContractAboutToExpire() {
         
-        // this.cronJobManager.executeJob(CronJobTask.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY);
-        
-        // this.appEmailService.sendMeInvoiceReport();
-        // // //
-        // LOGGER.info("CRON JOB: send email: email sent");
+        // this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
 
     }
 

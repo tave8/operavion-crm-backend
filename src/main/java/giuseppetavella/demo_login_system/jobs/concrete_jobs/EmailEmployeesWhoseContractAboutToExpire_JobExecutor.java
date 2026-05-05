@@ -1,8 +1,10 @@
 package giuseppetavella.demo_login_system.jobs.concrete_jobs;
 
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.services.AppEmailService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +18,16 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
     @Autowired
     private EmailEmployeesWhoseContractAboutToExpire_Repository thisRepository;
     
+    @Autowired
+    private AppEmailService appEmailService;
+    
     
     public EmailEmployeesWhoseContractAboutToExpire_JobExecutor() {
         super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
     }
 
     @Override
-    public void processItem(@Nullable JobExecutionItem<?> itemToProcess) {
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution currentJobExecution) {
         
         // send email, do business-specific logic
 
@@ -36,6 +41,8 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
         } catch (InterruptedException e) {
             // throw new RuntimeException(e);
         }
+        
+        // this.appEmailService.sendMeInvoiceReport();
         
         // throw new RuntimeException("error during processing");
         
@@ -62,7 +69,7 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
     }
 
     @Override
-    public @Nullable JobExecutionItem<User> getItemById(UUID itemId) {
+    public JobExecutionItem<User> getItemById(UUID itemId) {
         
         Optional<User> maybeNextUser = this.thisRepository.getItemById(itemId);
 

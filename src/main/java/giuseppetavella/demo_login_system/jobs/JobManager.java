@@ -109,7 +109,7 @@ public class JobManager {
 
             // add a job execution to the DB, before 
             // processing this item
-            JobExecution currJobExecution = this.jobExecutionService.addNewJobExecution(
+            JobExecution currentJobExecution = this.jobExecutionService.addNewJobExecution(
                     jobName,
                     nextItem.getItemId()
             );
@@ -124,7 +124,7 @@ public class JobManager {
 
             try {
 
-                executor.processItem(nextItem);
+                executor.processItem(nextItem, currentJobExecution);
 
             } catch (RuntimeException ex) {
 
@@ -140,14 +140,14 @@ public class JobManager {
             if(processingWasSuccess) {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
-                        currJobExecution,
+                        currentJobExecution,
                         JobExecutionState.SUCCESS
                 );
 
             } else {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
-                        currJobExecution,
+                        currentJobExecution,
                         JobExecutionState.FAILED,
                         messageIfProcessingFailed
                 );
@@ -235,7 +235,7 @@ public class JobManager {
 
             try {
                 
-                executor.processItem(nextItem);
+                executor.processItem(nextItem, pendingJobExecution);
 
             } catch (RuntimeException ex) {
 
