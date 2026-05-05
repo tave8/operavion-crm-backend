@@ -70,9 +70,9 @@ public class JobManager {
         // PROCESS PENDING JOB EXECUTIONS
         // ********************
         
-        this.processPendingJobExecutions(jobName, executor);
+        int countProcessedPendingJobExecutions = this.processPendingJobExecutions(jobName, executor);
 
-        LOGGER.info("JOB '" + jobName + "': finished processing pending job executions.");
+        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedPendingJobExecutions+" pending job executions.");
 
         LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
 
@@ -80,9 +80,9 @@ public class JobManager {
         // PROCESS NEXT ITEMS
         // ********************
 
-        // this.processNextItems(jobName, executor);
+        int countProcessedNextItems = this.processNextItems(jobName, executor);
         
-        LOGGER.info("JOB '" + jobName + "': finished processing next items.");
+        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedNextItems+" next items.");
 
         LOGGER.info("JOB '" + jobName + "': finished executing job.");
 
@@ -94,7 +94,9 @@ public class JobManager {
      * @param jobName
      * @param executor
      */
-    private void processNextItems(JobName jobName, JobExecutor<?> executor) {
+    private int processNextItems(JobName jobName, JobExecutor<?> executor) {
+        
+        int countNextItems = 0;
         
         JobExecutionItem<?> nextItem = executor.getNextItem();
 
@@ -152,7 +154,10 @@ public class JobManager {
 
             }
 
-
+            // at this point, we know we've successfully processed
+            // this many items
+            countNextItems += 1;
+            
             // ********************
             // GET NEXT ITEM
             // ********************
@@ -179,14 +184,19 @@ public class JobManager {
 
 
         }
+        
+        return countNextItems;
+        
     }
 
     
     /**
      * Process pending job executions.
      */
-    private void processPendingJobExecutions(JobName jobName, JobExecutor<?> executor) 
+    private int processPendingJobExecutions(JobName jobName, JobExecutor<?> executor) 
     {
+        
+        int countPendingJobExecutions = 0;
 
         Optional<JobExecution> maybeNextPendingJobExecution = this.jobManagerRepository.getNextPendingJobExecution(jobName.name());
         
@@ -207,6 +217,13 @@ public class JobManager {
                     // business-logic specific item
                     pendingJobExecution.getLastProcessedItemId()
             );
+            
+            // it's possible that the item that was stored 
+            // in a pending job execution could not be there,
+            // so this case could be handled, if you want to
+            // if(nextItem == null) {
+            //    
+            // }
             
             boolean processingWasSuccess = true;
 
@@ -248,6 +265,11 @@ public class JobManager {
 
             }
             
+            // at this point, we know for sure that 
+            // what was a pending job execution, has now been processed 
+            // to either success or failed
+            countPendingJobExecutions += 1;
+            
             // ********************
             // GET NEXT PENDING JOB EXECUTION
             // ********************
@@ -264,6 +286,8 @@ public class JobManager {
 
 
         }
+        
+        return countPendingJobExecutions;
 
     }
     

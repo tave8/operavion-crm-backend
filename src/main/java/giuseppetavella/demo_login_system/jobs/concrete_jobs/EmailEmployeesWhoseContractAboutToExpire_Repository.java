@@ -52,35 +52,6 @@ public interface EmailEmployeesWhoseContractAboutToExpire_Repository extends Jpa
     );
 
     
-    /**
-     * 
-     * 
-     */
-    @Query(nativeQuery = true, value = """
-
-        WITH Q_this_job_pending_executions AS (
-            SELECT
-                last_processed_item_id
-                    AS item_id
-            FROM 
-                job_executions
-            WHERE
-                job_name = :jobName
-                AND state = 'PENDING'
-        )
-    
-        SELECT *
-        FROM 
-            users
-        WHERE 
-            user_id IN ( SELECT item_id FROM Q_this_job_pending_executions )
-        LIMIT 1
-
-    """)
-    Optional<User> getItemOfNextPendingJobExecution(
-            @Param("jobName") String jobName
-    );
-    
     
     /*
     * 

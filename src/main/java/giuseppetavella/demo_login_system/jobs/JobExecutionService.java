@@ -68,16 +68,7 @@ public class JobExecutionService {
                 .findById(jobExecutionId)
                 .orElseThrow(() -> new NotFoundException(jobExecutionId, "JOB EXECUTION"));
     }
-
-    /**
-     * Find the last job execution of the given job.
-     * The given job might have never been executed, 
-     * so it's possible to not have any execution returned.
-     */
-    public Optional<JobExecution> findLastExecutionOfJob(JobName jobName) 
-    {
-        return this.jobManagerRepository.findLastExecutionOfJob(jobName.name());
-    }
+    
     
 
 }
