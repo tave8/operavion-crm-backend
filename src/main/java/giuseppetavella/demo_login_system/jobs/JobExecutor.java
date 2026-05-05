@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.jobs;
 
+import giuseppetavella.demo_login_system.jobs.functional_interfaces.JobRunner;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,15 @@ public class JobExecutor {
     }
     
     
-    public void emailEmployeesWithContractAboutToExpire() {
+    public JobRunner emailEmployeesWithContractAboutToExpire() {
+        
+        return (item) -> {
+
+            System.out.println("processing item... " + item);
+          
+            return new JobExecutionResult(); 
+                  
+        };
         
     }
     
