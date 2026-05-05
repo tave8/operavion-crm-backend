@@ -28,16 +28,18 @@ public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> 
             return;
         }
         
-        User user = (User) itemToProcess.getItem();
-
-        System.out.println("processing item " + itemToProcess);
+        throw new RuntimeException("error during processing");
+        
+        // User user = (User) itemToProcess.getItem();
         //
+        // System.out.println("processing item " + itemToProcess);
+        // //
         // return new JobExecutionResult<User>(itemToProcess);
     }
 
     @Override
     public JobExecutionItem<User> getNextItem() {
-
+        
         Optional<User> maybeNextUser = this.jobExecutorRepository.getNextEmployeeWhoseContractAboutToExpire(this.getJobName().name());
         
         if(maybeNextUser.isEmpty()) {

@@ -1,7 +1,11 @@
 package giuseppetavella.demo_login_system.jobs;
 
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
+import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,27 @@ public class JobExecutionService {
         // add job execution to DB, so when it's returned, it's managed by ORM
         return this.jobManagerRepository.save(jobExecution);
     }
+
+    /**
+     * Set the desired state for the given job execution, and finish it.
+     * 
+     */
+    public JobExecution updateJobExecutionStateAndFinish(JobExecution jobExecution, 
+                                                         JobExecutionState desiredState,
+                                                         @Nullable String message) throws JobExecutionException
+    {
+        jobExecution.setStateAndFinish(desiredState, message);
+
+        return this.save(jobExecution);
+    }
+    
+
+    public JobExecution updateJobExecutionStateAndFinish(JobExecution jobExecution,
+                                                         JobExecutionState desiredState) throws JobExecutionException
+    {
+        return this.updateJobExecutionStateAndFinish(jobExecution, desiredState, null);
+    }
+    
 
     /**
      * Get a job execution by ID.

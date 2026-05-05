@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.jobs;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -88,6 +89,46 @@ public class JobExecution {
         this.setMessage("");
     }
 
+
+    /**
+     * Set the state of this job execution, and finish it (sets the 
+     * finishedAt attribute to this time).
+     */
+    public void setStateAndFinish(JobExecutionState desiredState, 
+                                  @Nullable String message) throws JobExecutionException
+    {
+        
+        this.setState(desiredState);
+        this.finish();
+        
+        // if a message is provided, it gets added to the current message
+        if(message != null) {
+            String currMessage = this.getMessage();
+            
+            // if the current message is empty
+            if(currMessage.isBlank()) {
+                // just set the new message as is
+                this.setMessage(message);
+                
+            } else {
+                
+                // concatenate the existing message with the new message
+                String newMessage = currMessage + " | " + message;
+                this.setMessage(newMessage);
+                
+            }
+            
+        }
+        
+    }
+
+    
+    public void setStateAndFinish(JobExecutionState desiredState) throws JobExecutionException
+    {
+        
+        this.setStateAndFinish(desiredState, null);
+        
+    }
 
 
     /**

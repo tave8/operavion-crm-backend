@@ -3,9 +3,11 @@ package giuseppetavella.demo_login_system.jobs;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.jobs.concrete_jobs.EmailEmployeesWhoseContractAboutToExpire;
 import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
+import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,49 +60,88 @@ public class JobManager {
         // the executor keeps on executing items until there's no more
         // the executor should continue processing items even if there's an error
 
+        
         JobExecutionItem<?> nextItem = executor.getNextItem();
         
-        // keep processing items until there's none left
-        while(true) {
+        // if there's no next item to process, we stop the entire job
+        while(nextItem != null) {
+
+            // ********************
+            // ADD NEW JOB EXECUTION WITH PENDING STATE
+            // ********************
+            
+            // add a job execution to the DB, before 
+            // processing this item
+            JobExecution currJobExecution = this.jobExecutionService.addNewJobExecution(
+                    jobName, 
+                    nextItem.getItemId()
+            );
+            
+            boolean processingWasSuccess = true;
+            
+            String messageIfProcessingFailed = null;
+            
+            // ********************
+            // PROCESS ITEM
+            // ********************
             
             try {
                 
-                // if there's no next item to process, we stop the entire job
-                if(nextItem == null) {
-                    break;
-                }
-
-                // add a job execution to the DB, before 
-                // processing this item
-                this.jobExecutionService.addNewJobExecution(
-                        jobName, 
-                        nextItem.getItemId()
-                );
-
                 executor.processItem(nextItem);
                 
-                // update the job execution, because
-                // it means that the job execution was successful
-      
-                // get next item to process
-                // if this item will be null,
-                // we'll stop the job immediately at the next
-                // loop iteration
-                nextItem = executor.getNextItem();
-
-
             } catch (RuntimeException ex) {
 
-                // mark this job execution as failed
+                processingWasSuccess = false;
+                messageIfProcessingFailed = ex.getMessage();
+            
+            }
 
-                throw new JobExecutionException(jobName.name(), ex.getMessage());
-
+            // ********************
+            // UPDATE JOB EXECUTION STATE (SUCCESS, FAILED)
+            // ********************
+            
+            if(processingWasSuccess) {
+    
+                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                        currJobExecution,
+                        JobExecutionState.SUCCESS
+                );
+                
+            } else {
+                
+                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                        currJobExecution,
+                        JobExecutionState.FAILED,
+                        messageIfProcessingFailed
+                );
+                
             }
             
+
+            // ********************
+            // GET NEXT ITEM
+            // ********************
+            
+            // get next item to process
+            // if this item will be null,
+            // we'll stop the job immediately at the next
+            // loop iteration
+            
+            try {
+            
+                nextItem = executor.getNextItem();
+            
+            } catch (RuntimeException ex) {
+            
+                throw new JobExecutionGetNextItemException(jobName, ex.getMessage());
+                
+            }
+                
+
         }
         
 
-        LOGGER.info("JOB '" + jobName + "': finished executing job with no errors.");
+        LOGGER.info("JOB '" + jobName + "': finished executing job.");
 
     }
 
