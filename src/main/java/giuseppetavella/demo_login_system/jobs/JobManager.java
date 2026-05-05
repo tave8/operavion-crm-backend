@@ -22,39 +22,39 @@ public class JobManager {
      * Entry point for executing a job.
      * Provides centralized error handling. 
      * 
-     * @param task which job to execute.
+     * @param jobName which job to execute.
      *             
      * @throws JobExecutionException if any error during the execution of 
      *  the given cron job task
      * @throws JobException if a generic error occurred
      */
-    public void executeJob(JobName task) {
+    public void executeJob(JobName jobName) {
         
-        LOGGER.info("CRON JOB: TASK '"+task+"': this task was called to be executed, executing task...");
+        LOGGER.info("JOB '\"+jobName+\"': this jobName was called to be executed, executing jobName...");
         
         try {
             
-            if(task.equals(JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY)) {
+            if(jobName.equals(JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY)) {
                 
                 this.jobExecutor.sendEmailToUsersWhoSignedupToday();
                 
-                LOGGER.info("CRON JOB: TASK '"+task+"': finished executing task with no errors.");
+                LOGGER.info("JOB '\"+jobName+\"': finished executing jobName with no errors.");
                 
                 return;
             }
             
-            // add here more tasks...     
+            // add here more jobNames...     
 
             
         } catch(RuntimeException ex) {
             
-            throw new JobExecutionException(task, ex.getMessage());
+            throw new JobExecutionException(jobName.name(), ex.getMessage());
             
         }
 
-        LOGGER.severe("CRON JOB: TASK '"+task+"': this task was not found / is not mapped / not recognized internally.");
+        LOGGER.severe("JOB '\"+jobName+\"': this jobName was not found / is not mapped / not recognized internally.");
         
-        throw new JobException("Cron job task '"+task +"' is not mapped / not recognized.");
+        throw new JobException("jobName '"+jobName +"' is not mapped / not recognized.");
         
     }
     

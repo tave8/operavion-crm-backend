@@ -1,6 +1,8 @@
 package giuseppetavella.demo_login_system.jobs;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -18,9 +20,14 @@ public class JobExecution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    // job name is a string and not an enum
+    // because i want flexibility and not having
+    // to touch the DB every time i add a new job name
+    // however, i get safety at compile-time,
+    // by passing it as an enum, and only in the method
+    // i get the string of the enum
     @Column(name = "job_name", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private JobName jobName;
+    private String jobName;
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -71,11 +78,13 @@ public class JobExecution {
      * @param lastProcessedItemId the ID of the last processed item
      * @param lastProcessedItemCreatedAt the timestamp of the last processed item
      */
-    public JobExecution(JobName jobName, 
-                        UUID lastProcessedItemId, 
-                        OffsetDateTime lastProcessedItemCreatedAt) 
+    public JobExecution(@NotNull JobName jobName, 
+                        @NotNull UUID lastProcessedItemId,
+                        @NotNull OffsetDateTime lastProcessedItemCreatedAt) 
     {
-        this.jobName = jobName;
+        // the job name saved in DB will actually be a string,
+        // because i want flexibility for now
+        this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
         this.lastProcessedItemCreatedAt = lastProcessedItemCreatedAt;
         this.setState(JobExecutionState.PENDING);
@@ -97,7 +106,7 @@ public class JobExecution {
         
         if(alreadySet) {
             throw new JobExecutionException( 
-                    this.getJobName(),
+                    this.getJobName().toString(),
                     "You cannot set the finish time of a job execution again. " 
                             +"The 'finishedAt' attribute for this job execution "
                             +"was already set with value '"+this.getFinishedAt()+"' ."
@@ -107,7 +116,22 @@ public class JobExecution {
         this.finishedAt = OffsetDateTime.now();
     }
     
+    
     /**
+     * In this setter we apply restrictions on the new state
+     * that you're trying to set.
+     * 
+     * 
+     * <pre>
+     * CURR STATE   |  NEXT POSSIBLE STATES
+     * ------------------------------------
+     *   none            PENDING
+     *   PENDING         SUCCESS, FAILED
+     *   SUCCESS          
+     *   FAILED
+     * 
+     * </pre>
+     * 
      * 
      * @param desiredState the state that is desired to be the new state
      * @throws JobExecutionException if the desired state cannot be set 
@@ -115,8 +139,29 @@ public class JobExecution {
      */
     public void setState(JobExecutionState desiredState) throws JobExecutionException 
     {
-        // restrictions on the state you're trying to set
+        
         JobExecutionState currState = this.getState();
+        
+        boolean isFirstState = currState == null;
+        
+        // if this is the first state assigned, it can only be pending
+        if(isFirstState) {
+            
+            boolean isNewStatePending = desiredState.equals(JobExecutionState.PENDING);
+            
+            if(isNewStatePending) {
+                this.state = desiredState;
+                return;  
+            } 
+            
+            throw new JobExecutionException(
+                    this.getJobName().name(),
+                    "The first state of a job execution "
+                            +"can only be PENDING, got '" + desiredState + "' instead."
+            );
+            
+        }
+        
         
         // map: current state -> next possible states
         Map<JobExecutionState, List<JobExecutionState>> states = Map.of(
@@ -132,7 +177,7 @@ public class JobExecution {
         
         if(!canSetNewState) {
             throw new JobExecutionException(
-                    this.getJobName(),
+                    this.getJobName().name(),
                     "Cannot transition from current state " + currState + " to desired state " + desiredState
             );
         }
@@ -140,15 +185,33 @@ public class JobExecution {
         this.state = desiredState;
     }
 
+    
+    /**
+     * 
+     * 
+     */
+    public JobName getJobName() {
+        try {
+            
+            return JobName.valueOf(jobName);
+            
+        } catch(IllegalArgumentException ex) {
+            
+            throw new JobExecutionException(
+                    this.jobName,
+                    "While parsing the job name '" + this.jobName + "' into an enum constant, "
+                            +"no matching enum constant was found. This means that "
+                            +"this job name was deleted or modified. "
+                            +"This error should be handled better." 
+            );
+            
+        }
+    }
+
     public OffsetDateTime getFinishedAt() {
         return finishedAt;
     }
     
-    public JobName getJobName() {
-        return jobName;
-    }
-
-
 
     public Long getId() {
         return id;
