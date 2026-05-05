@@ -294,6 +294,9 @@ public class JobExecution {
         return state;
     }
 
+    public JobExecutionMetadata getMetadata() {
+        return metadata;
+    }
 
     @Override
     public String toString() {

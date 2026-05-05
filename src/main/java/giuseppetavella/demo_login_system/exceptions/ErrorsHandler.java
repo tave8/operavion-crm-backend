@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.exceptions;
 
 import giuseppetavella.demo_login_system.payloads.in_response.ErrorsToSendDTO;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -215,6 +216,14 @@ public class ErrorsHandler {
         String msg = "Error while fetching or downloading remote file. DETAILS: " + ex.getMessage();
         return new ErrorsToSendDTO(msg);
     }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleDataAccessApiUsage(InvalidDataAccessApiUsageException ex) {
+        String msg = "Error while using an API. DETAILS: " + ex.getMessage();
+        return new ErrorsToSendDTO(msg);
+    }
+    
 
 
     @ExceptionHandler(Exception.class)
