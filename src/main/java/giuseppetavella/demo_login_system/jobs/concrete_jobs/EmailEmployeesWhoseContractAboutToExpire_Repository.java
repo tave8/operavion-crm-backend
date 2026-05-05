@@ -1,6 +1,7 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.jobs.concrete_jobs;
 
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.jobs.JobExecution;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.Optional;
  * Business logic specific queries.
  */
 @Repository
-public interface JobExecutorRepository extends JpaRepository<JobExecution, Long> {
+public interface EmailEmployeesWhoseContractAboutToExpire_Repository extends JpaRepository<JobExecution, Long> {
     
     // -- Get the first next item to execute, based on the business logic
     // -- specific filters. I don't care which item it is,
@@ -49,5 +50,8 @@ public interface JobExecutorRepository extends JpaRepository<JobExecution, Long>
     Optional<User> getNextEmployeeWhoseContractAboutToExpire(
             @Param("jobName") String jobName
     );
+    
+    // reconstruct the pendi
+    // Optional<User> reconstructPendingExecution
     
 }

@@ -2,8 +2,6 @@ package giuseppetavella.demo_login_system.jobs.concrete_jobs;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
-import giuseppetavella.demo_login_system.jobs.JobExecutionResult;
-import giuseppetavella.demo_login_system.jobs.JobExecutorRepository;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +10,14 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> {
+public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExecutor<User> {
+    
+    @Autowired
+    private EmailEmployeesWhoseContractAboutToExpire_Repository thisRepository;
     
     
-    public EmailEmployeesWhoseContractAboutToExpire(JobExecutorRepository jobExecutorRepository) {
-        super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, jobExecutorRepository);
+    public EmailEmployeesWhoseContractAboutToExpire_JobExecutor() {
+        super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
     }
 
     @Override
@@ -27,6 +28,13 @@ public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> 
         if (itemToProcess == null) {
             return;
         }
+        
+        // try {
+        //     Thread.sleep(5000);
+        //    
+        // } catch (InterruptedException e) {
+        //     // throw new RuntimeException(e);
+        // }
         
         throw new RuntimeException("error during processing");
         
@@ -40,7 +48,7 @@ public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> 
     @Override
     public JobExecutionItem<User> getNextItem() {
         
-        Optional<User> maybeNextUser = this.jobExecutorRepository.getNextEmployeeWhoseContractAboutToExpire(this.getJobName().name());
+        Optional<User> maybeNextUser = this.thisRepository.getNextEmployeeWhoseContractAboutToExpire(this.getJobName().name());
         
         if(maybeNextUser.isEmpty()) {
             return null;

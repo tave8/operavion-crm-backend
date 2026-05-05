@@ -1,7 +1,6 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.EmailEmployeesWhoseContractAboutToExpire;
+import giuseppetavella.demo_login_system.jobs.concrete_jobs.EmailEmployeesWhoseContractAboutToExpire_JobExecutor;
 import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
@@ -11,7 +10,6 @@ import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItem
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +27,9 @@ public class JobManager {
     // ******************
     
     @Autowired
-    private EmailEmployeesWhoseContractAboutToExpire emailEmployeesWhoseContractAboutToExpire;
+    private EmailEmployeesWhoseContractAboutToExpire_JobExecutor emailEmployeesWhoseContractAboutToExpire_JobExecutor;
+    
+    // add more job executors here...
     
     
     // logger
@@ -56,11 +56,16 @@ public class JobManager {
 
         // execute any pending executions (so existing job executions), 
         // before moving on to execute next items
-        
-        // the executor keeps on executing items until there's no more
-        // the executor should continue processing items even if there's an error
 
+        // ********************
+        // PROCESS PENDING JOB EXECUTION (if any) 
+        // ********************
+        // assumption: at any point in time, there can 
+        // only be at most 1 pending job execution,
+        // and that can only be the most recent job execution
         
+        
+
         JobExecutionItem<?> nextItem = executor.getNextItem();
         
         // if there's no next item to process, we stop the entire job
@@ -132,7 +137,12 @@ public class JobManager {
                 nextItem = executor.getNextItem();
             
             } catch (RuntimeException ex) {
-            
+                
+                // we exit immediately because 
+                // an error while getting the next item
+                // could signal a logical error in the query,
+                // which could be an internal error and
+                // not a business-related error
                 throw new JobExecutionGetNextItemException(jobName, ex.getMessage());
                 
             }
@@ -162,7 +172,7 @@ public class JobManager {
 
         if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
             
-            return this.emailEmployeesWhoseContractAboutToExpire;
+            return this.emailEmployeesWhoseContractAboutToExpire_JobExecutor;
 
         }
         
