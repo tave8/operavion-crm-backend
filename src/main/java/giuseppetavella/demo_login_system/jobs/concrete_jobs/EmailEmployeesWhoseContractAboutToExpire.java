@@ -20,11 +20,19 @@ public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> 
     }
 
     @Override
-    public JobExecutionResult<User> processItem(@Nullable JobExecutionItem<?> itemToProcess) {
+    public void processItem(@Nullable JobExecutionItem<?> itemToProcess) {
+        
+        // send email, do business-specific logic
+
+        if (itemToProcess == null) {
+            return;
+        }
+        
+        User user = (User) itemToProcess.getItem();
 
         System.out.println("processing item " + itemToProcess);
-        
-        return null;
+        //
+        // return new JobExecutionResult<User>(itemToProcess);
     }
 
     @Override
@@ -36,7 +44,9 @@ public class EmailEmployeesWhoseContractAboutToExpire extends JobExecutor<User> 
             return null;
         }
         
-        return new JobExecutionItem<>(maybeNextUser.get());
+        User user = maybeNextUser.get();
+        
+        return new JobExecutionItem<>(user, user.getUserId());
         
     }
     

@@ -19,6 +19,9 @@ import java.util.logging.Logger;
 @Service
 public class JobManager {
     
+    @Autowired
+    private JobExecutionService jobExecutionService;
+    
     // ******************
     // CONCRETE JOB EXECUTORS
     // ******************
@@ -41,51 +44,63 @@ public class JobManager {
      *  the given cron job task
      * @throws JobException if a generic error occurred
      */
-    public void executeJob(JobName jobName) 
-    {
-        
+    public void executeJob(JobName jobName) {
+
         // give me the job executor for this job
         JobExecutor<?> executor = this.getJobExecutorElseThrow(jobName);
-        
-        
-        LOGGER.info("JOB '"+jobName+"': this job was called to be executed, executing it...");
-        
-        
-        
-        executor.processItem(
-          executor.getNextItem()      
-        );
 
-        // System.out.println(executor.getNextItem());
 
-        // System.out.println(executor.processItem());
+        LOGGER.info("JOB '" + jobName + "': this job was called to be executed, executing it...");
+
+        // execute any pending executions (so existing job executions), 
+        // before moving on to execute next items
         
-        // System.out.println(executor.processItem(new JobExecutionItem(UUID.randomUUID())));
-
         // the executor keeps on executing items until there's no more
-        // the executor should continue processing items even if there's an error, 
-        // so the try/catch should be inside the while loop
-        // while() {
+        // the executor should continue processing items even if there's an error
 
-            // try {
-            //
-            //
-            //
-            //
-            //
-            //     // executor 
-            //
-            //         LOGGER.info("JOB '"+jobName+"': finished executing job with no errors.");
-            //
-            // } catch(RuntimeException ex) {
-            //
-            //     throw new JobExecutionException(jobName.name(), ex.getMessage());
-            //
-            // }
-
-        // }
-        //
+        JobExecutionItem<?> nextItem = executor.getNextItem();
         
+        // keep processing items until there's none left
+        while(true) {
+            
+            try {
+                
+                // if there's no next item to process, we stop the entire job
+                if(nextItem == null) {
+                    break;
+                }
+
+                // add a job execution to the DB, before 
+                // processing this item
+                this.jobExecutionService.addNewJobExecution(
+                        jobName, 
+                        nextItem.getItemId()
+                );
+
+                executor.processItem(nextItem);
+                
+                // update the job execution, because
+                // it means that the job execution was successful
+      
+                // get next item to process
+                // if this item will be null,
+                // we'll stop the job immediately at the next
+                // loop iteration
+                nextItem = executor.getNextItem();
+
+
+            } catch (RuntimeException ex) {
+
+                // mark this job execution as failed
+
+                throw new JobExecutionException(jobName.name(), ex.getMessage());
+
+            }
+            
+        }
+        
+
+        LOGGER.info("JOB '" + jobName + "': finished executing job with no errors.");
 
     }
 

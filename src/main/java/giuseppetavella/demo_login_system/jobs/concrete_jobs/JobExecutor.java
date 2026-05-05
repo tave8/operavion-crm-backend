@@ -22,7 +22,7 @@ public abstract class JobExecutor<T> {
         this.jobExecutorRepository = jobExecutorRepository;
     }
     
-    public abstract @Nullable JobExecutionResult<T> processItem(@Nullable JobExecutionItem<?> itemToProcess);
+    public abstract void processItem(@Nullable JobExecutionItem<?> itemToProcess);
     
     public abstract @Nullable JobExecutionItem<T> getNextItem();
 

@@ -26,7 +26,6 @@ public interface JobExecutorRepository extends JpaRepository<JobExecution, Long>
     //     -- we only want one item to process
     @Query(nativeQuery = true, value = """
         
-        
         WITH Q_processed_items_of_job AS (
             SELECT
                 last_processed_item_id

@@ -2,10 +2,12 @@ package giuseppetavella.demo_login_system.jobs;
 
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class JobExecutionService {
@@ -17,6 +19,18 @@ public class JobExecutionService {
      * Save a job execution.
      */
     public JobExecution save(JobExecution jobExecution) {
+        return this.jobManagerRepository.save(jobExecution);
+    }
+
+    /**
+     * Add a new job execution.
+     */
+    public JobExecution addNewJobExecution(@NotNull JobName jobName,
+                                           @NotNull UUID lastProcessedItemId) 
+    {
+        // instantiate a new job execution (not managed by ORM)
+        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId);
+        // add job execution to DB, so when it's returned, it's managed by ORM
         return this.jobManagerRepository.save(jobExecution);
     }
 
