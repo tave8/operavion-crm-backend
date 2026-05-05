@@ -16,7 +16,7 @@ public interface JobManagerRepository extends JpaRepository<JobExecution, Long> 
     
     
     /**
-     * Get next pending job execution for the given job.
+     * Get next incomplete job execution for the given job.
      *
      */
     @Query(nativeQuery = true, value = """
@@ -26,13 +26,13 @@ public interface JobManagerRepository extends JpaRepository<JobExecution, Long> 
             job_executions
         WHERE
             job_name = :jobName
-            AND state = 'PENDING'
+            AND state = 'INCOMPLETE'
         ORDER BY
             started_at
         LIMIT 1
             
     """)
-    Optional<JobExecution> getNextPendingJobExecution(
+    Optional<JobExecution> getNextIncompleteJobExecution(
             @Param("jobName") String jobName
     );
     

@@ -42,7 +42,7 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
         // System.out.println(lastJobExecutionFromDB);
         
         // jobExecution2FromDB.finish();
-        // jobExecution2FromDB.setState(JobExecutionState.PENDING);
+        // jobExecution2FromDB.setState(JobExecutionState.INCOMPLETE);
         //
         
         // this.jobExecutionService.save(jobExecution1FromDB);

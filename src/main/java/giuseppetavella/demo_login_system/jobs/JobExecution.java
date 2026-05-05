@@ -61,7 +61,7 @@ public class JobExecution {
     /**
      * <h1>Create a new job execution instance</h1>
      * 
-     * The initial state is PENDING.
+     * The initial state is INCOMPLETE.
      * 
      * <h1>About the meaning of "last processed item"</h1>
      * 
@@ -92,7 +92,7 @@ public class JobExecution {
         this.lastProcessedItemId = lastProcessedItemId;
         this.startedAt = OffsetDateTime.now();
         this.metadata = new JobExecutionMetadata();
-        this.setState(JobExecutionState.PENDING);
+        this.setState(JobExecutionState.INCOMPLETE);
         this.setMessage("");
     }
 
@@ -153,8 +153,8 @@ public class JobExecution {
      * <pre>
      * CURR STATE   |  NEXT POSSIBLE STATES
      * ------------------------------------
-     *   none            PENDING
-     *   PENDING         SUCCESS, FAILED
+     *   none            INCOMPLETE
+     *   INCOMPLETE         SUCCESS, FAILED
      *   SUCCESS          
      *   FAILED
      * 
@@ -172,12 +172,12 @@ public class JobExecution {
         
         boolean isFirstState = currState == null;
         
-        // if this is the first state assigned, it can only be pending
+        // if this is the first state assigned, it can only be incomplete
         if(isFirstState) {
             
-            boolean isNewStatePending = desiredState.equals(JobExecutionState.PENDING);
+            boolean isNewStateIncomplete = desiredState.equals(JobExecutionState.INCOMPLETE);
             
-            if(isNewStatePending) {
+            if(isNewStateIncomplete) {
                 this.state = desiredState;
                 return;  
             } 
@@ -185,7 +185,7 @@ public class JobExecution {
             throw new JobExecutionException(
                     this.getJobName().name(),
                     "The first state of a job execution "
-                            +"can only be PENDING, got '" + desiredState + "' instead. "
+                            +"can only be INCOMPLETE, got '" + desiredState + "' instead. "
                             +"Job execution had ID " + this.getId()
             );
             
@@ -194,7 +194,7 @@ public class JobExecution {
         
         // map: current state -> next possible states
         Map<JobExecutionState, List<JobExecutionState>> states = Map.of(
-                JobExecutionState.PENDING, List.of(JobExecutionState.SUCCESS, JobExecutionState.FAILED),
+                JobExecutionState.INCOMPLETE, List.of(JobExecutionState.SUCCESS, JobExecutionState.FAILED),
                 JobExecutionState.SUCCESS, List.of(),
                 JobExecutionState.FAILED, List.of()
         );

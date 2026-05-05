@@ -7,7 +7,7 @@ import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextPendingExecutionException;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextIncompleteExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,15 +64,15 @@ public class JobManager {
         
         LOGGER.info("JOB '" + jobName + "': this job was called to be executed, executing it...");
 
-        LOGGER.info("JOB '" + jobName + "': started processing existing pending job executions, if any...");
+        LOGGER.info("JOB '" + jobName + "': started processing existing incomplete job executions, if any...");
         
         // ********************
-        // PROCESS PENDING JOB EXECUTIONS
+        // PROCESS INCOMPLETE JOB EXECUTIONS
         // ********************
         
-        int countProcessedPendingJobExecutions = this.processPendingJobExecutions(jobName, executor);
+        int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
 
-        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedPendingJobExecutions+" pending job executions.");
+        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedIncompleteJobExecutions+" incomplete job executions.");
 
         LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
 
@@ -104,7 +104,7 @@ public class JobManager {
         while(nextItem != null) {
 
             // ********************
-            // ADD NEW JOB EXECUTION WITH PENDING STATE
+            // ADD NEW JOB EXECUTION WITH INCOMPLETE STATE
             // ********************
 
             // add a job execution to the DB, before 
@@ -191,35 +191,35 @@ public class JobManager {
 
     
     /**
-     * Process pending job executions.
+     * Process incomplete job executions.
      */
-    private int processPendingJobExecutions(JobName jobName, JobExecutor<?> executor) 
+    private int processIncompleteJobExecutions(JobName jobName, JobExecutor<?> executor) 
     {
         
-        int countPendingJobExecutions = 0;
+        int countIncompleteJobExecutions = 0;
 
-        Optional<JobExecution> maybeNextPendingJobExecution = this.jobManagerRepository.getNextPendingJobExecution(jobName.name());
+        Optional<JobExecution> maybeNextIncompleteJobExecution = this.jobManagerRepository.getNextIncompleteJobExecution(jobName.name());
         
-        // System.out.println("next item of pending job execution: " + itemOfNextPendingExecution);
+        // System.out.println("next item of incomplete job execution: " + itemOfNextIncompleteExecution);
 
-        // as long as there are pending job executions
-        while(maybeNextPendingJobExecution.isPresent()) {
+        // as long as there are incomplete job executions
+        while(maybeNextIncompleteJobExecution.isPresent()) {
             
-            // this is the pending job execution,
+            // this is the incomplete job execution,
             // which therefore also contains the item that 
-            // is in a pending state
-            JobExecution pendingJobExecution = maybeNextPendingJobExecution.get();
+            // is in a incomplete state
+            JobExecution incompleteJobExecution = maybeNextIncompleteJobExecution.get();
             
             // this item was probably not processed or 
             // its processin was interrupted
             JobExecutionItem<?> nextItem = executor.getItemById(
                     // the last processed item ID is searched, to get the  
                     // business-logic specific item
-                    pendingJobExecution.getLastProcessedItemId()
+                    incompleteJobExecution.getLastProcessedItemId()
             );
             
             // it's possible that the item that was stored 
-            // in a pending job execution could not be there,
+            // in a incomplete job execution could not be there,
             // so this case could be handled, if you want to
             // if(nextItem == null) {
             //    
@@ -235,7 +235,7 @@ public class JobManager {
 
             try {
                 
-                executor.processItem(nextItem, pendingJobExecution);
+                executor.processItem(nextItem, incompleteJobExecution);
 
             } catch (RuntimeException ex) {
 
@@ -251,14 +251,14 @@ public class JobManager {
             if(processingWasSuccess) {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
-                        pendingJobExecution,
+                        incompleteJobExecution,
                         JobExecutionState.SUCCESS
                 );
 
             } else {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
-                        pendingJobExecution,
+                        incompleteJobExecution,
                         JobExecutionState.FAILED,
                         messageIfProcessingFailed
                 );
@@ -266,28 +266,28 @@ public class JobManager {
             }
             
             // at this point, we know for sure that 
-            // what was a pending job execution, has now been processed 
+            // what was a incomplete job execution, has now been processed 
             // to either success or failed
-            countPendingJobExecutions += 1;
+            countIncompleteJobExecutions += 1;
             
             // ********************
-            // GET NEXT PENDING JOB EXECUTION
+            // GET NEXT INCOMPLETE JOB EXECUTION
             // ********************
 
             try {
 
-                maybeNextPendingJobExecution = this.jobManagerRepository.getNextPendingJobExecution(jobName.name());
+                maybeNextIncompleteJobExecution = this.jobManagerRepository.getNextIncompleteJobExecution(jobName.name());
 
             } catch (RuntimeException ex) {
                 
-                throw new JobExecutionGetNextPendingExecutionException(jobName, ex.getMessage());
+                throw new JobExecutionGetNextIncompleteExecutionException(jobName, ex.getMessage());
 
             }
 
 
         }
         
-        return countPendingJobExecutions;
+        return countIncompleteJobExecutions;
 
     }
     
