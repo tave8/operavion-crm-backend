@@ -1,9 +1,11 @@
 package giuseppetavella.demo_login_system.jobs;
 
+import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.jobs.concrete_jobs.EmailEmployeesWhoseContractAboutToExpire;
+import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
-import giuseppetavella.demo_login_system.jobs.functional_interfaces.JobRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +18,14 @@ import java.util.logging.Logger;
  */
 @Service
 public class JobManager {
-
+    
+    // ******************
+    // CONCRETE JOB EXECUTORS
+    // ******************
+    
     @Autowired
-    private JobExecutor jobExecutor;
+    private EmailEmployeesWhoseContractAboutToExpire emailEmployeesWhoseContractAboutToExpire;
+    
     
     // logger
     private static final Logger LOGGER = Logger.getLogger(JobManager.class.getName());
@@ -38,13 +45,22 @@ public class JobManager {
     {
         
         // give me the job executor for this job
-        JobRunner executor = this.getJobExecutorElseThrow(jobName);
+        JobExecutor<?> executor = this.getJobExecutorElseThrow(jobName);
+        
         
         LOGGER.info("JOB '"+jobName+"': this job was called to be executed, executing it...");
         
-        System.out.println(executor.processItem(new JobExecutionItem(UUID.randomUUID())));
         
         
+        executor.processItem(
+          executor.getNextItem()      
+        );
+
+        // System.out.println(executor.getNextItem());
+
+        // System.out.println(executor.processItem());
+        
+        // System.out.println(executor.processItem(new JobExecutionItem(UUID.randomUUID())));
 
         // the executor keeps on executing items until there's no more
         // the executor should continue processing items even if there's an error, 
@@ -85,12 +101,12 @@ public class JobManager {
      * 
      */
     
-    private JobRunner getJobExecutorElseThrow(JobName jobName) throws JobException
+    private JobExecutor<?> getJobExecutorElseThrow(JobName jobName) throws JobException
     {
 
         if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
             
-            return this.jobExecutor.emailEmployeesWithContractAboutToExpire();
+            return this.emailEmployeesWhoseContractAboutToExpire;
 
         }
         

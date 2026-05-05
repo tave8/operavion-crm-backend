@@ -1,23 +1,21 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import java.util.UUID;
-
-public class JobExecutionItem {
+public class JobExecutionItem<T> {
     
-    private final UUID itemId;
+    private final T item;
     
-    public JobExecutionItem(UUID itemId) {
-        this.itemId = itemId;    
+    public JobExecutionItem(T item) {
+        this.item = item;    
     }
 
-    public UUID getItemId() {
-        return itemId;
+    public T getItem() {
+        return item;
     }
 
     @Override
     public String toString() {
         return "JobExecutionItem{" +
-                "itemId=" + itemId +
+                "item=" + item +
                 '}';
     }
 }

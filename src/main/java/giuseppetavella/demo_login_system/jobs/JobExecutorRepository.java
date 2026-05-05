@@ -14,14 +14,18 @@ import java.util.Optional;
 @Repository
 public interface JobExecutorRepository extends JpaRepository<JobExecution, Long> {
     
+    // -- Get the first next item to execute, based on the business logic
+    // -- specific filters. I don't care which item it is,
+    // -- as long as it's the right time (established by the job-specific filter)
+    // -- and has not been already processed by this job.
+    //
+    // -- All id's of items already processed by this job
+    //         -- here go job-specific filters. for now i've written true,
+    //         -- just as a reminder that job-specific filters can go at its place
+    
+    //     -- we only want one item to process
     @Query(nativeQuery = true, value = """
         
-        -- Get the first next item to execute, based on the business logic
-        -- specific filters. I don't care which item it is,
-        -- as long as it's the right time (established by the job-specific filter)
-        -- and has not been already processed by this job.
-
-        -- All id's of items already processed by this job
         
         WITH Q_processed_items_of_job AS (
             SELECT
@@ -37,12 +41,9 @@ public interface JobExecutorRepository extends JpaRepository<JobExecution, Long>
         FROM 
             users
         WHERE 
-            -- here go job-specific filters. for now i've written true,
-            -- just as a reminder that job-specific filters can go at its place
             true 
             AND user_id NOT IN ( SELECT item_id FROM Q_processed_items_of_job )
         
-        -- we only want one item to process
         LIMIT 1
 
 """)
