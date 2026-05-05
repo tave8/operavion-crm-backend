@@ -11,13 +11,13 @@ import java.util.Optional;
 public class JobExecutionService {
     
     @Autowired
-    private JobExecutionRepository jobExecutionRepository;
+    private JobManagerRepository jobManagerRepository;
 
     /**
      * Save a job execution.
      */
     public JobExecution save(JobExecution jobExecution) {
-        return this.jobExecutionRepository.save(jobExecution);
+        return this.jobManagerRepository.save(jobExecution);
     }
 
     /**
@@ -25,7 +25,7 @@ public class JobExecutionService {
      */
     public JobExecution findById(Long jobExecutionId) throws NotFoundException
     {
-        return this.jobExecutionRepository
+        return this.jobManagerRepository
                 .findById(jobExecutionId)
                 .orElseThrow(() -> new NotFoundException(jobExecutionId, "JOB EXECUTION"));
     }
@@ -37,7 +37,7 @@ public class JobExecutionService {
      */
     public Optional<JobExecution> findLastExecutionOfJob(JobName jobName) 
     {
-        return this.jobExecutionRepository.findLastExecutionOfJob(jobName.name());
+        return this.jobManagerRepository.findLastExecutionOfJob(jobName.name());
     }
 
 }

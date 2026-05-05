@@ -7,8 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Internal logic.
+ */
 @Repository
-public interface JobExecutionRepository extends JpaRepository<JobExecution, Long> {
+public interface JobManagerRepository extends JpaRepository<JobExecution, Long> {
 
     /**
      * Find last execution of the given job, if it exists.

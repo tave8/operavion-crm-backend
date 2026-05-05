@@ -43,6 +43,8 @@ public class JobManager {
         LOGGER.info("JOB '"+jobName+"': this job was called to be executed, executing it...");
         
         System.out.println(executor.processItem(new JobExecutionItem(UUID.randomUUID())));
+        
+        
 
         // the executor keeps on executing items until there's no more
         // the executor should continue processing items even if there's an error, 
@@ -76,6 +78,10 @@ public class JobManager {
      * Get the job executor for the given job.
      * If a job executor for this job was not mapped,
      * an exception will be thrown.
+     * 
+     * When a new job is added, you must only update the
+     * mapping between the job name (in this method)
+     * and the actual job executor.
      * 
      */
     
