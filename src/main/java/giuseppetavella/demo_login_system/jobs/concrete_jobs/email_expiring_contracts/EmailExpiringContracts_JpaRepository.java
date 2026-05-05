@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs;
+package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.jobs.JobExecution;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface EmailEmployeesWhoseContractAboutToExpire_JpaRepository extends JpaRepository<JobExecution, Long> {
+public interface EmailExpiringContracts_JpaRepository extends JpaRepository<JobExecution, Long> {
     
     // -- Get the first next item to execute, based on the business logic
     // -- specific filters. I don't care which item it is,

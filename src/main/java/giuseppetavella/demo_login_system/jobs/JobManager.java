@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.EmailEmployeesWhoseContractAboutToExpire_JobExecutor;
+import giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
 import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
@@ -32,7 +32,7 @@ public class JobManager {
     // ******************
     
     @Autowired
-    private EmailEmployeesWhoseContractAboutToExpire_JobExecutor emailEmployeesWhoseContractAboutToExpire_JobExecutor;
+    private EmailExpiringContracts_JobExecutor emailExpiringContracts_JobExecutor;
     
     // add more job executors here...
 
@@ -334,7 +334,7 @@ public class JobManager {
 
         if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
             
-            return this.emailEmployeesWhoseContractAboutToExpire_JobExecutor;
+            return this.emailExpiringContracts_JobExecutor;
 
         }
         

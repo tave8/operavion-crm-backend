@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs;
+package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItemRepository;
@@ -9,10 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class EmailEmployeesWhoseContractAboutToExpire_Execution_ItemRepository implements JobExecutionItemRepository<User, UUID> {
+public class EmailExpiringContracts_ItemRepository implements JobExecutionItemRepository<User, UUID> {
 
     @Autowired
-    private EmailEmployeesWhoseContractAboutToExpire_JpaRepository jpaRepository;
+    private EmailExpiringContracts_JpaRepository jpaRepository;
 
     @Override
     public Optional<User> getNextItem(String jobName) {

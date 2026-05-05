@@ -1,10 +1,11 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs;
+package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
+import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExecutor<User> {
+public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
     
     @Autowired
-    private EmailEmployeesWhoseContractAboutToExpire_Execution_ItemRepository thisRepository;
+    private EmailExpiringContracts_ItemRepository thisRepository;
     
     @Autowired
     private AppEmailService appEmailService;
@@ -26,7 +27,7 @@ public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExe
     private JobExecutionService jobExecutionService;
     
     
-    public EmailEmployeesWhoseContractAboutToExpire_JobExecutor() {
+    public EmailExpiringContracts_JobExecutor() {
         super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
     }
 
