@@ -14,7 +14,7 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface EmailEmployeesWhoseContractAboutToExpire_Repository extends JpaRepository<JobExecution, Long> {
+public interface EmailEmployeesWhoseContractAboutToExpire_JpaRepository extends JpaRepository<JobExecution, Long> {
     
     // -- Get the first next item to execute, based on the business logic
     // -- specific filters. I don't care which item it is,

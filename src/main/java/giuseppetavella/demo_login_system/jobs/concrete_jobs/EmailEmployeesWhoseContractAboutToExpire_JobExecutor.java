@@ -5,10 +5,8 @@ import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
-import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.services.AppEmailService;
-import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,7 @@ import java.util.UUID;
 public class EmailEmployeesWhoseContractAboutToExpire_JobExecutor extends JobExecutor<User> {
     
     @Autowired
-    private EmailEmployeesWhoseContractAboutToExpire_Repository thisRepository;
+    private EmailEmployeesWhoseContractAboutToExpire_Execution_ItemRepository thisRepository;
     
     @Autowired
     private AppEmailService appEmailService;

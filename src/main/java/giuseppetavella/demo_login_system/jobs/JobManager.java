@@ -54,38 +54,64 @@ public class JobManager {
      *  the given cron job task
      * @throws JobException if a generic error occurred
      */
-    public void executeJob(JobName jobName) {
+    public void executeJob(JobName jobName, 
+                           boolean processIncompleteExecutions, 
+                           boolean processNextItems) 
+    {
         
         // ********************
         // GET JOB-SPECIFIC JOB EXECUTOR
         // ********************
         
         JobExecutor<?> executor = this.getJobExecutor(jobName);
+
+        // ********************
+        // START JOB 
+        // ********************
         
         LOGGER.info("JOB '" + jobName + "': this job was called to be executed, executing it...");
-
-        LOGGER.info("JOB '" + jobName + "': started processing existing incomplete job executions, if any...");
         
-        // ********************
-        // PROCESS INCOMPLETE JOB EXECUTIONS
-        // ********************
+        if(processIncompleteExecutions) {
+            
+            LOGGER.info("JOB '" + jobName + "': started processing existing incomplete job executions, if any...");
+            
+            // ********************
+            // PROCESS INCOMPLETE JOB EXECUTIONS
+            // ********************
+            
+            int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
+    
+            LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedIncompleteJobExecutions+" incomplete job executions.");
         
-        int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
+        }
 
-        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedIncompleteJobExecutions+" incomplete job executions.");
-
-        LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
-
-        // ********************
-        // PROCESS NEXT ITEMS
-        // ********************
-
-        int countProcessedNextItems = this.processNextItems(jobName, executor);
-        
-        LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedNextItems+" next items.");
+        if(processNextItems) {
+            
+            LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
+    
+            // ********************
+            // PROCESS NEXT ITEMS
+            // ********************
+    
+            int countProcessedNextItems = this.processNextItems(jobName, executor);
+            
+            LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedNextItems+" next items.");
+            
+        }
 
         LOGGER.info("JOB '" + jobName + "': finished executing job.");
 
+    }
+    
+    public void executeJob(JobName jobName,
+                           boolean processIncompleteExecutions) 
+    {
+        this.executeJob(jobName, processIncompleteExecutions, false);
+    }
+
+    public void executeJob(JobName jobName)
+    {
+        this.executeJob(jobName, false, false);
     }
 
     /**
