@@ -20,13 +20,19 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        JobExecution jobExecution1 = new JobExecution(
-                JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY,
-                UUID.randomUUID(),
-                OffsetDateTime.now().minusMonths(1)
-        );
+        // JobExecution jobExecution1 = new JobExecution(
+        //         JobName.SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY,
+        //         UUID.randomUUID(),
+        //         OffsetDateTime.now().minusMonths(1)
+        // );
+        //
+        // this.jobExecutionService.save(jobExecution1);
         
-        this.jobExecutionService.save(jobExecution1);
+        // ********** JOB EXECUTIONS FROM DB
+        JobExecution jobExecution1FromDB = this.jobExecutionService.findById(1L);
+
+        System.out.println(jobExecution1FromDB);
+        
         
     }
 }
