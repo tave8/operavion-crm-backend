@@ -129,7 +129,8 @@ public class JobExecution {
                     this.getJobName().toString(),
                     "You cannot set the finish time of a job execution again. " 
                             +"The 'finishedAt' attribute for this job execution "
-                            +"was already set with value '"+this.getFinishedAt()+"' ."
+                            +"was already set with value '"+this.getFinishedAt()+"'. "
+                            +"Job execution had ID " + this.getId()
             );    
         }
         
@@ -177,7 +178,8 @@ public class JobExecution {
             throw new JobExecutionException(
                     this.getJobName().name(),
                     "The first state of a job execution "
-                            +"can only be PENDING, got '" + desiredState + "' instead."
+                            +"can only be PENDING, got '" + desiredState + "' instead. "
+                            +"Job execution had ID " + this.getId()
             );
             
         }
@@ -198,8 +200,9 @@ public class JobExecution {
         if(!canSetNewState) {
             throw new JobExecutionException(
                     this.getJobName().name(),
-                    "Cannot set new state, because you cannot transition "
-                            +"from current state " + currState + " to desired state " + desiredState
+                    "Cannot set new state, because you cannot transition " 
+                            +"from current state " + currState + " to desired state " + desiredState + ". "
+                            + "Job execution had ID " + this.getId()
             );
         }
         
@@ -223,7 +226,8 @@ public class JobExecution {
                     "While parsing the job name '" + this.jobName + "' into an enum constant, "
                             +"no matching enum constant was found. This means that "
                             +"this job name was deleted or modified. "
-                            +"This error should be handled better." 
+                            +"This error should be handled better. " 
+                            + "Job execution had ID " + this.getId() 
             );
             
         }
