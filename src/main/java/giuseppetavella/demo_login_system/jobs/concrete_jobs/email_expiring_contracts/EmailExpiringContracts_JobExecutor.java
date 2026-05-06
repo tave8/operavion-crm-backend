@@ -31,6 +31,10 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, 2);
     }
 
+    // TODO: the second paramater of this method should not be 
+    //  the current job execution, because that means that
+    //  i could corrupt the current job execution
+    //  i should only pass something like the metadata?
     @Override
     public void processItem(JobExecutionItem<?> itemToProcess, JobExecution currentJobExecution) {
         
@@ -64,7 +68,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         
         // this.appEmailService.sendMeInvoiceReport();
         
-        // throw new RuntimeException("error during processing");
+        throw new RuntimeException("error during processing");
         
         // User user = (User) itemToProcess.getItem();
         //

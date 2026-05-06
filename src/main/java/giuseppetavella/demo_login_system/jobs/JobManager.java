@@ -113,7 +113,7 @@ public class JobManager {
         } catch (Exception ex) {
             
             // i get an email with details about problem
-            this.appEmailService.sendEmailToDevForBackgroundJobProblem(
+            this.appEmailService.sendEmailToDevForSystemProblemDuringBackgroundJob(
                     jobName.name(), ex
             );
             
@@ -158,10 +158,10 @@ public class JobManager {
                     jobName,
                     nextItem.getItemId()
             );
-
-            boolean processingWasSuccess = true;
-
-            String messageIfProcessingFailed = null;
+            
+            // holds the exception itself, 
+            // if any was raised during processing
+            RuntimeException errorDuringProcessing = null;
 
             // ********************
             // PROCESS ITEM
@@ -172,9 +172,8 @@ public class JobManager {
                 executor.processItem(nextItem, currentJobExecution);
 
             } catch (RuntimeException ex) {
-
-                processingWasSuccess = false;
-                messageIfProcessingFailed = ex.getMessage();
+                
+                errorDuringProcessing = ex;
 
             }
 
@@ -182,19 +181,33 @@ public class JobManager {
             // UPDATE JOB EXECUTION STATE (SUCCESS, FAILED)
             // ********************
 
-            if(processingWasSuccess) {
+            // no error during processing -> job execution
+            // was successful
+            if(errorDuringProcessing == null) {
 
+                // update the job execution state
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         currentJobExecution,
                         JobExecutionState.SUCCESS
                 );
 
-            } else {
-
+            } 
+            // error during processing
+            else {
+                
+                // update the job execution state
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         currentJobExecution,
                         JobExecutionState.FAILED,
-                        messageIfProcessingFailed
+                        "Error during processing of next item. "
+                                            +"DETAILS: " + errorDuringProcessing.getMessage()
+                );
+
+                // i get an email when job execution is unsuccessful
+                this.appEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
+                        currentJobExecution,
+                        executor.getMaxRetries(),
+                        errorDuringProcessing
                 );
 
             }
@@ -336,7 +349,8 @@ public class JobManager {
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.FAILED,
-                        executionMessage
+                        "Error during processing of incomplete job execution. "
+                                            +"DETAILS: " + executionMessage
                 );
 
             }

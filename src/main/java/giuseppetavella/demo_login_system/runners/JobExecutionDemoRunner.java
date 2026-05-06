@@ -52,7 +52,7 @@ public class JobExecutionDemoRunner implements CommandLineRunner {
         // System.out.println(jobExecution1FromDB);
         
         
-         // this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
+         this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
          
         
     }

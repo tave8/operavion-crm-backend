@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
+import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
 import giuseppetavella.demo_login_system.services.base.EmailService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -188,17 +190,57 @@ public class AppEmailService extends EmailService {
 
     
     /**
-     * Send email to dev for background job problem.
+     * This email should be sent when a system problem
+     * occurs during a background job.
      */
-    public void sendEmailToDevForBackgroundJobProblem(String jobName,
+    public void sendEmailToDevForSystemProblemDuringBackgroundJob(String jobName,
                                                       Exception exception) 
     {
         
-        String subject = "Error in background job. Job name: " + jobName;
+        String subject = "System error during background job. Job name: " + jobName;
         
         String details = "Job name: " + jobName;
 
         this.sendEmailToDevForProblem(subject, details, exception);
     }
+
+    
+    /*
+    * This email should be sent when an unsuccessful
+    * job execution occurs (not a system problem during background job).
+    * */
+    public void sendEmailToDevForUnsuccessfulBackgroundJobExecution(JobExecution jobExecution,
+                                                                    Integer maxRetries,
+                                                                    Exception exception)
+    {
+        String state = jobExecution.getState().name();
+        String jobName = jobExecution.getJobName().name();
+        Long executionId = jobExecution.getId();
+        String reason = exception != null ? exception.getMessage() : jobExecution.getMessage();
+        String stackTrace = exception != null ? ExceptionUtils.getStackTrace(exception) : null;
+
+        String subject = "[" + state + "] Background Job: " + jobName + " | Execution ID: " + executionId;
+
+        Map<String, Object> vars = new HashMap<>();
+        
+        vars.put("jobName",     jobName);
+        vars.put("executionId", executionId);
+        vars.put("state",       state);
+        vars.put("startedAt",   jobExecution.getStartedAt());
+        vars.put("finishedAt",  jobExecution.getFinishedAt());
+        vars.put("retryCount",  jobExecution.getRetryCount());
+        vars.put("maxRetries",  maxRetries);
+        vars.put("itemId",      jobExecution.getLastProcessedItemId());
+        vars.put("reason",      reason);
+        vars.put("stackTrace",  stackTrace);
+
+        this.sendEmailFromTemplate(
+                "dev_emails/unsuccessful_background_job",
+                vars,
+                "giuseppetavella8@gmail.com",
+                subject
+        );
+    }
+    
 
 }
