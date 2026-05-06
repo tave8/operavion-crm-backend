@@ -24,7 +24,9 @@ public abstract class JobExecutor<T> {
     /**
      * How many times should the job execution be retried,
      * when the job execution is incomplete.
-     * Default to 3.
+     * Default to 1, it means that a job execution that was
+     * left with an incomplete state, will be re-processed
+     * only one time and then its state will be marked as abandoned.
      */
     protected Integer maxRetries;
 
@@ -42,8 +44,17 @@ public abstract class JobExecutor<T> {
         if (maxRetries == null || maxRetries < 1) {
             throw new JobExecutionException(
                     jobName,
-                    "While instantiating JobExecutor, maxRetries value is invalid. "
+                    "While instantiating JobExecutor, maxRetries value is too small or null. "
                             +"Must be >= 1. Got " + maxRetries + " instead."
+            );
+        }
+        
+        // max retries is too big
+        if(maxRetries > 10) {
+            throw new JobExecutionException(
+                    jobName,
+                    "While instantiating JobExecutor, maxRetries value is too big. "
+                            +"Must be <= 10. Got " + maxRetries + " instead."
             );
         }
         
@@ -52,7 +63,7 @@ public abstract class JobExecutor<T> {
     }
     
     public JobExecutor(JobName jobName) {
-        this(jobName, 3); 
+        this(jobName, 1); 
     }
 
     /**
