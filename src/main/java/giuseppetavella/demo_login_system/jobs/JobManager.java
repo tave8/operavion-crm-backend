@@ -68,7 +68,7 @@ public class JobManager {
             // START JOB 
             // ********************
     
-            LOGGER.info("JOB '{}': this job was called to be executed, executing it...", jobName);
+            LOGGER.info("JOB '{}': started executing job.", jobName);
     
             // LOGGER.info("JOB '{}': execution mode [processIncompleteExecutions={}, processNextItems={}]",
             //         jobName, processIncompleteExecutions, processNextItems);

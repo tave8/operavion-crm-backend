@@ -27,23 +27,24 @@ public interface EmailExpiringContracts_JpaRepository extends JpaRepository<JobE
     
     //     -- we only want one item to process
     @Query(nativeQuery = true, value = """
-        
-        WITH Q_this_job_executions AS (
-            SELECT
-                last_processed_item_id
-                    AS item_id
-            FROM 
-                job_executions
-            WHERE
-                job_name = :jobName
-        )
-    
+            
         SELECT *
         FROM 
-            users
+            users A
         WHERE 
             true 
-            AND user_id NOT IN ( SELECT item_id FROM Q_this_job_executions )
+            
+            AND NOT EXISTS (
+            
+                SELECT 1
+                FROM 
+                    job_executions B
+                WHERE
+                    B.job_name = :jobName
+                    AND B.last_processed_item_id = A.user_id  
+                
+            )
+        
         LIMIT 1
 
 """)
