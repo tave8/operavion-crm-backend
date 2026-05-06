@@ -331,6 +331,37 @@ public class JobManager {
     
     /**
      * Process incomplete job executions.
+     * 
+     * <h1>The loop</h1>
+     * 
+     * The loop of <code>JobManager.processIncompleteJobExecutions()</code> runs
+     * as long as there are incomplete job executions, and 
+     * stops at the first retrieval that returns null, when trying 
+     * to get the next incomplete job execution. 
+     * 
+     * To avoid unnecessary complexity at this stage, 
+     * given a job, ALL its incomplete executions will be re-processed.
+     * This means that the retrieval logic for incomplete job executions
+     * has nothing to do with the job-specific 
+     * <code>JobExecutor.getItemByIdOnIncompleteExecution()</code>.
+     * 
+     * Also, this method (<code>JobManager.processIncompleteJobExecutions()</code>)
+     * does not even call <code>JobExecutor.getNextItems()</code>. 
+     * 
+     * <h1>Recap</h1>
+     * 
+     * One more time, to recap the difference:
+     * 
+     * <ul>
+     *     <li>The loop of this method, <code>JobManager.processIncompleteJobExecutions()</code>, will
+     *          stop only when all incomplete job executions of the given job will have been re-processed,
+     *          and marked with a state different from incomplete</li>
+     *     <li><code>JobManagerRepository.getNextIncompleteJobExecution()</code> 
+     *          gets the next among ALL incomplete executions of the given job</li>
+     *     <li><code>JobExecutor.getItemByIdOnIncompleteExecution()</code> applies
+     *          job-specific logic to retrieve the item in the current incomplete job execution</li>
+     * </ul>
+     * 
      */
     private int processIncompleteJobExecutions(JobName jobName, JobExecutor<?> executor) 
     {
@@ -395,6 +426,10 @@ public class JobManager {
                 }
                 
             }
+            
+            // TODO: note that nextItem could be null, we might want to 
+            //  add that to the message for this job execution? same thing 
+            //  for the method "process next items"
             
 
             // ********************
