@@ -203,6 +203,17 @@ public class JobManager {
                                             +"DETAILS: " + errorDuringProcessing.getMessage()
                 );
 
+            }
+
+
+            // ********************
+            // IF UNSUCCESSFUL JOB EXECUTION, SEND ALERT
+            // ********************
+
+            // if the job execution throw an error 
+            // we send an email to developer
+            if (errorDuringProcessing != null) {
+
                 // i get an email when job execution is unsuccessful
                 this.appEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
                         currentJobExecution,
@@ -256,10 +267,9 @@ public class JobManager {
         
         int countIncompleteJobExecutions = 0;
 
+        // i get the first incomplete job execution, if any
         Optional<JobExecution> maybeNextIncompleteJobExecution = this.jobManagerRepository.getNextIncompleteJobExecution(jobName.name());
         
-        // System.out.println("next item of incomplete job execution: " + itemOfNextIncompleteExecution);
-
         // as long as there are incomplete job executions
         while(maybeNextIncompleteJobExecution.isPresent()) {
             
@@ -288,9 +298,7 @@ public class JobManager {
             // then we must not run this job execution and must mark it somehow 
             boolean isRetryCountExceeded = incompleteJobExecution.getRetryCount() >= executor.getMaxRetries();
             
-            boolean processingWasSuccess = true;
-
-            String executionMessage = null;
+            RuntimeException errorDuringProcessing = null;
 
             // process the item, only if the retry count is not exceeded
             if (!isRetryCountExceeded) {
@@ -312,8 +320,7 @@ public class JobManager {
     
                 } catch (RuntimeException ex) {
     
-                    processingWasSuccess = false;
-                    executionMessage = ex.getMessage();
+                    errorDuringProcessing = ex;
     
                 }
                 
@@ -335,7 +342,7 @@ public class JobManager {
                 
             }
             // if this execution did not throw error
-            else if(processingWasSuccess) {
+            else if(errorDuringProcessing == null) {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
@@ -350,7 +357,25 @@ public class JobManager {
                         incompleteJobExecution,
                         JobExecutionState.FAILED,
                         "Error during processing of incomplete job execution. "
-                                            +"DETAILS: " + executionMessage
+                                            +"DETAILS: " + errorDuringProcessing.getMessage()
+                );
+                
+            }
+
+            // ********************
+            // IF UNSUCCESSFUL JOB EXECUTION, SEND ALERT
+            // ********************
+            
+            
+            // whether the job execution throw an error 
+            // or it exceeded retries, we send an email to developer
+            if (isRetryCountExceeded || errorDuringProcessing != null) {
+                
+                // i get an email when job execution is unsuccessful
+                this.appEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
+                        incompleteJobExecution,
+                        executor.getMaxRetries(),
+                        errorDuringProcessing
                 );
 
             }
