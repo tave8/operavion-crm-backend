@@ -27,7 +27,7 @@ public abstract class JobExecutor<T> {
     /**
      * How many times should the job execution be retried,
      * when the job execution is incomplete.
-     * Default to 2.
+     * Default to 3.
      */
     protected Integer maxRetries;
 
@@ -55,7 +55,7 @@ public abstract class JobExecutor<T> {
     }
     
     public JobExecutor(JobName jobName) {
-        this(jobName, 2); 
+        this(jobName, 3); 
     }
 
     /**

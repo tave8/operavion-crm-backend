@@ -30,11 +30,10 @@ public class JobExecutionService {
      * Add a new job execution.
      */
     public JobExecution addNewJobExecution(@NotNull JobName jobName,
-                                           @NotNull UUID lastProcessedItemId,
-                                           Integer maxRetries) 
+                                           @NotNull UUID lastProcessedItemId) 
     {
         // instantiate a new job execution (not managed by ORM)
-        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId, maxRetries);
+        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId);
         // add job execution to DB, so when it's returned, it's managed by ORM
         return this.jobManagerRepository.save(jobExecution);
     }
@@ -58,7 +57,15 @@ public class JobExecutionService {
     {
         return this.updateJobExecutionStateAndFinish(jobExecution, desiredState, null);
     }
-    
+
+
+    /**
+     * Increment the retry count of the given job execution.
+     */
+    public JobExecution incrementRetryCount(JobExecution jobExecution) {
+        jobExecution.incrementRetryCount();
+        return this.save(jobExecution);
+    }
 
     /**
      * Get a job execution by ID.

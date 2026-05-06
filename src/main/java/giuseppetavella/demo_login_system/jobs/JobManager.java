@@ -141,8 +141,7 @@ public class JobManager {
             // processing this item
             JobExecution currentJobExecution = this.jobExecutionService.addNewJobExecution(
                     jobName,
-                    nextItem.getItemId(),
-                    executor.getMaxRetries()
+                    nextItem.getItemId()
             );
 
             boolean processingWasSuccess = true;
@@ -256,45 +255,77 @@ public class JobManager {
             //    
             // }
             
+            // if the number of times that this job execution was retried
+            // is >= than the allowed number of retries set by this executor,
+            // then we must not run this job execution and must mark it somehow 
+            boolean isRetryCountExceeded = incompleteJobExecution.getRetryCount() >= executor.getMaxRetries();
+            
             boolean processingWasSuccess = true;
 
-            String messageIfProcessingFailed = null;
+            String executionMessage = null;
 
-            // ********************
-            // PROCESS ITEM
-            // ********************
-
-            try {
+            // process the item, only if the retry count is not exceeded
+            if (!isRetryCountExceeded) {
                 
-                executor.processItem(nextItem, incompleteJobExecution);
-
-            } catch (RuntimeException ex) {
-
-                processingWasSuccess = false;
-                messageIfProcessingFailed = ex.getMessage();
-
+                // ********************
+                // PROCESS ITEM
+                // ********************
+                
+                // we increment the retry count before
+                // processing this incomplete job execution
+                // it wouldn't make sense to do it after the processing,
+                // because at that point the job execution state
+                // will soon be changed and won't be incomplete anymore
+                this.jobExecutionService.incrementRetryCount(incompleteJobExecution);
+    
+                try {
+                    
+                    executor.processItem(nextItem, incompleteJobExecution);
+    
+                } catch (RuntimeException ex) {
+    
+                    processingWasSuccess = false;
+                    executionMessage = ex.getMessage();
+    
+                }
+                
             }
+            
 
             // ********************
-            // UPDATE JOB EXECUTION STATE (SUCCESS, FAILED)
+            // UPDATE JOB EXECUTION STATE 
             // ********************
 
-            if(processingWasSuccess) {
+            // if this execution was abandoned for 
+            // having exceed max retries allowed
+            if(isRetryCountExceeded) {
+                
+                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                        incompleteJobExecution,
+                        JobExecutionState.ABANDONED
+                );
+                
+            }
+            // if this execution did not throw error
+            else if(processingWasSuccess) {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.SUCCESS
                 );
 
-            } else {
+            } 
+            // if this execution did throw error
+            else {
 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.FAILED,
-                        messageIfProcessingFailed
+                        executionMessage
                 );
 
             }
+            
             
             // at this point, we know for sure that 
             // what was a incomplete job execution, has now been processed 

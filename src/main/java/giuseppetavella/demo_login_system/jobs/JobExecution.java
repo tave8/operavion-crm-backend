@@ -51,13 +51,14 @@ public class JobExecution {
 
     /**
      * Add custom metadata in the "extra" field inside metadata.
+     * The field in DB will have json.
      */
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private JobExecutionMetadata metadata;
     
-    @Column(name = "max_retries", nullable = false)
-    private Integer maxRetries;
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount;
     
     @Column(nullable = false)
     private String message;
@@ -88,36 +89,29 @@ public class JobExecution {
      * 
      * @param jobName the job to which this job execution belongs
      * @param lastProcessedItemId the ID of the last processed item
-     * @param maxRetries how many times this job execution will be retried,
-     *                   if it's state is incomplete. Must be >= 1
      */
     public JobExecution(@NotNull JobName jobName, 
-                        @NotNull UUID lastProcessedItemId,
-                        Integer maxRetries) 
+                        @NotNull UUID lastProcessedItemId) 
     {
-
-        // max retries must be >= 1
-        if (maxRetries == null || maxRetries < 1) {
-            throw new JobExecutionException(
-                    jobName,
-                    "While instantiating JobExecution, maxRetries value is invalid. "
-                            +"Must be >= 1. Got " + maxRetries + " instead."
-            );
-        }
         
         // the job name saved in DB will actually be a string,
         // because i want flexibility for now
         this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
         this.startedAt = OffsetDateTime.now();
+        this.retryCount = 0;
         this.metadata = new JobExecutionMetadata();
-        this.maxRetries = maxRetries;
         this.setState(JobExecutionState.INCOMPLETE);
         this.setMessage("");
+        
+    }
+    
+    public void incrementRetryCount() {
+         this.retryCount += 1;  
     }
 
-    public Integer getMaxRetries() {
-        return maxRetries;
+    public Integer getRetryCount() {
+        return retryCount;
     }
 
     /**
@@ -177,7 +171,7 @@ public class JobExecution {
      * CURR STATE   |  NEXT POSSIBLE STATES
      * ------------------------------------
      *   none            INCOMPLETE
-     *   INCOMPLETE         SUCCESS, FAILED
+     *   INCOMPLETE      SUCCESS, FAILED, ABANDONED
      *   SUCCESS          
      *   FAILED
      * 
@@ -217,7 +211,7 @@ public class JobExecution {
         
         // map: current state -> next possible states
         Map<JobExecutionState, List<JobExecutionState>> states = Map.of(
-                JobExecutionState.INCOMPLETE, List.of(JobExecutionState.SUCCESS, JobExecutionState.FAILED),
+                JobExecutionState.INCOMPLETE, List.of(JobExecutionState.SUCCESS, JobExecutionState.FAILED, JobExecutionState.ABANDONED),
                 JobExecutionState.SUCCESS, List.of(),
                 JobExecutionState.FAILED, List.of()
         );
