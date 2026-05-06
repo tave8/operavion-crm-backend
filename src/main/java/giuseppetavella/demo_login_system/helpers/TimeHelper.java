@@ -56,5 +56,23 @@ public class TimeHelper {
             throw new InvalidDataException("Input time cannot be null.");
         }
     }
+
+    /**
+     * Is the input timestamp now or in the future?
+     * 
+     * @param inputTime
+     * @return
+     */
+    public static boolean isNowOrFuture(OffsetDateTime inputTime) {
+
+        TimeHelper.requireNotNull(inputTime);
+        
+        OffsetDateTime now = OffsetDateTime.now();
+
+        boolean isNow = inputTime.equals(now);
+        boolean isFuture = inputTime.isAfter(now);
+        
+        return isNow || isFuture;
+    }
     
 }

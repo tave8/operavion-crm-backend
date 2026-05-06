@@ -17,11 +17,23 @@
     PUT /me                (update my profile)
     POST /me/avatar-image     (upload my new avatar image)
 
+
+/notifications
+    GET /                  (get my notifications)
+        unread: true|false
+        read: true|false
+        limit: 0..N
+        type: <custom notification type>
+    
+    PATCH /read                   (mark many notifications as read)    
+    PATCH /:notificationId/read     (mark notification as read)
+
+
 /ai
     /extract           
         POST /cv            (extract a CV)
                     
-    
+ 
     
 /articles
     GET /                  (get my articles)
@@ -136,6 +148,57 @@ Response
 {
     message: str
 }
+```
+
+
+## /notifications
+
+
+## GET /
+
+Query params:
+
+unread: true|false
+read: true|false
+limit: 0..N
+type: <custom notification type>
+
+```
+no body
+```
+
+Response
+
+```
+list of notifications, paginated    
+```
+
+
+## PATCH /read
+
+Request 
+```
+{
+    notificationIds: str[]
+}
+```
+
+Response 
+```
+list of updated notifications
+```
+
+
+## PATCH /:notificationId/read
+
+Request
+```
+no body
+```
+
+Response
+```
+updated notification
 ```
 
 
