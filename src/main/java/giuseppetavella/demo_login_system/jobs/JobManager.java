@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -194,6 +195,14 @@ public class JobManager {
             } 
             // error during processing
             else {
+                
+                // TODO: because the job execution has thrown, 
+                //  we assume we want to rollback any changes made, unless
+                //  they were explicitly saved in the processItem concrete job method.
+                //  the assumption is that, even if the process item has thrown,
+                //  which means it failed, we still save everything to DB,
+                //  but this could include impartial data? not sure, it might depend 
+                //  from job to job. same situation for process incomplete job executions in JobManager
                 
                 // update the job execution state
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
@@ -425,15 +434,19 @@ public class JobManager {
     private JobExecutor<?> getJobExecutor(JobName jobName) throws JobException
     {
 
-        if(jobName.equals(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE)) {
-            
-            return this.emailExpiringContracts_JobExecutor;
-
+        Map<JobName, JobExecutor<?>> jobExecutorMap = Map.of(
+        
+            JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, this.emailExpiringContracts_JobExecutor
+            // add another mapping job name : job executor here...     
+        
+        );
+        
+        // if a job executor exists for the given job name
+        if(jobExecutorMap.containsKey(jobName)) {
+        
+            return jobExecutorMap.get(jobName);
+        
         }
-        
-        
-        // add more job executors here...     
-
 
         // the given job was not mapped to an executor
 
