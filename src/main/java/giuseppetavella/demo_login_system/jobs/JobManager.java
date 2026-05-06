@@ -8,11 +8,12 @@ import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextIncompleteExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  * Cron Job Manager defines the HOW to run a specific job,
@@ -41,7 +42,7 @@ public class JobManager {
     // ******************
     
     // logger
-    private static final Logger LOGGER = Logger.getLogger(JobManager.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobManager.class);
 
     
     /**
@@ -68,50 +69,53 @@ public class JobManager {
         // ********************
         // START JOB 
         // ********************
-        
-        LOGGER.info("JOB '" + jobName + "': this job was called to be executed, executing it...");
+
+        LOGGER.info("JOB '{}': this job was called to be executed, executing it...", jobName);
+
+        LOGGER.info("JOB '{}': execution mode [processIncompleteExecutions={}, processNextItems={}]",
+                jobName, processIncompleteExecutions, processNextItems);
         
         if(processIncompleteExecutions) {
-            
-            LOGGER.info("JOB '" + jobName + "': started processing existing incomplete job executions, if any...");
+
+            LOGGER.info("JOB '{}': started processing existing incomplete job executions...", jobName);
             
             // ********************
             // PROCESS INCOMPLETE JOB EXECUTIONS
             // ********************
             
             int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
-    
-            LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedIncompleteJobExecutions+" incomplete job executions.");
+
+            LOGGER.info("JOB '{}': finished processing {} incomplete job executions.", jobName, countProcessedIncompleteJobExecutions);
         
         }
 
         if(processNextItems) {
-            
-            LOGGER.info("JOB '" + jobName + "': started processing next items, if any...");
+
+            LOGGER.info("JOB '{}': started processing next items...", jobName);
     
             // ********************
             // PROCESS NEXT ITEMS
             // ********************
     
             int countProcessedNextItems = this.processNextItems(jobName, executor);
-            
-            LOGGER.info("JOB '" + jobName + "': finished processing "+countProcessedNextItems+" next items.");
+
+            LOGGER.info("JOB '{}': finished processing {} next items.", jobName, countProcessedNextItems);
             
         }
 
-        LOGGER.info("JOB '" + jobName + "': finished executing job.");
+        LOGGER.info("JOB '{}': finished executing job.", jobName);
 
     }
     
     public void executeJob(JobName jobName,
                            boolean processIncompleteExecutions) 
     {
-        this.executeJob(jobName, processIncompleteExecutions, false);
+        this.executeJob(jobName, processIncompleteExecutions, true);
     }
 
     public void executeJob(JobName jobName)
     {
-        this.executeJob(jobName, false, false);
+        this.executeJob(jobName, true, true);
     }
 
     /**
@@ -137,7 +141,8 @@ public class JobManager {
             // processing this item
             JobExecution currentJobExecution = this.jobExecutionService.addNewJobExecution(
                     jobName,
-                    nextItem.getItemId()
+                    nextItem.getItemId(),
+                    executor.getMaxRetries()
             );
 
             boolean processingWasSuccess = true;
@@ -344,7 +349,7 @@ public class JobManager {
 
         // the given job was not mapped to an executor
 
-        LOGGER.severe("JOB '"+jobName+"': this job was not found, is not mapped or is not recognized internally.");
+        LOGGER.error("JOB '{}': this job was not found, is not mapped or is not recognized internally.", jobName);
 
         throw new JobException("Job '"+jobName +"' was not found, is not mapped or is not recognized internally.");
         

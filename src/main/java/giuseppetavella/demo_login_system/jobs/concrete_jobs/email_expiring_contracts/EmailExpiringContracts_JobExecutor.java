@@ -28,7 +28,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
     
     
     public EmailExpiringContracts_JobExecutor() {
-        super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
+        super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, 2);
     }
 
     @Override

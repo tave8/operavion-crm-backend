@@ -30,10 +30,11 @@ public class JobExecutionService {
      * Add a new job execution.
      */
     public JobExecution addNewJobExecution(@NotNull JobName jobName,
-                                           @NotNull UUID lastProcessedItemId) 
+                                           @NotNull UUID lastProcessedItemId,
+                                           Integer maxRetries) 
     {
         // instantiate a new job execution (not managed by ORM)
-        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId);
+        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId, maxRetries);
         // add job execution to DB, so when it's returned, it's managed by ORM
         return this.jobManagerRepository.save(jobExecution);
     }

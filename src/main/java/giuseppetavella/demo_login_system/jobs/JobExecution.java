@@ -49,9 +49,15 @@ public class JobExecution {
     @Column(name = "finished_at")
     private OffsetDateTime finishedAt;
 
+    /**
+     * Add custom metadata in the "extra" field inside metadata.
+     */
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private JobExecutionMetadata metadata;
+    
+    @Column(name = "max_retries", nullable = false)
+    private Integer maxRetries;
     
     @Column(nullable = false)
     private String message;
@@ -82,20 +88,37 @@ public class JobExecution {
      * 
      * @param jobName the job to which this job execution belongs
      * @param lastProcessedItemId the ID of the last processed item
+     * @param maxRetries how many times this job execution will be retried,
+     *                   if it's state is incomplete. Must be >= 1
      */
     public JobExecution(@NotNull JobName jobName, 
-                        @NotNull UUID lastProcessedItemId) 
+                        @NotNull UUID lastProcessedItemId,
+                        Integer maxRetries) 
     {
+
+        // max retries must be >= 1
+        if (maxRetries == null || maxRetries < 1) {
+            throw new JobExecutionException(
+                    jobName,
+                    "While instantiating JobExecution, maxRetries value is invalid. "
+                            +"Must be >= 1. Got " + maxRetries + " instead."
+            );
+        }
+        
         // the job name saved in DB will actually be a string,
         // because i want flexibility for now
         this.jobName = jobName.name();
         this.lastProcessedItemId = lastProcessedItemId;
         this.startedAt = OffsetDateTime.now();
         this.metadata = new JobExecutionMetadata();
+        this.maxRetries = maxRetries;
         this.setState(JobExecutionState.INCOMPLETE);
         this.setMessage("");
     }
 
+    public Integer getMaxRetries() {
+        return maxRetries;
+    }
 
     /**
      * Set the state of this job execution, and finish it (sets the 

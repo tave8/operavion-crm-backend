@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.jobs.concrete_jobs;
 import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,40 @@ import java.util.UUID;
 @Service
 public abstract class JobExecutor<T> {
     
-    private final JobName jobName;
+    protected final JobName jobName;
+
+    /**
+     * How many times should the job execution be retried,
+     * when the job execution is incomplete.
+     * Default to 2.
+     */
+    protected Integer maxRetries;
+
+    /**
+     * 
+     * @param jobName
+     * @param maxRetries the number of times the job executions of the subclass  
+     *                   will be retried, if their state is incomplete. Must be >= 1.
+     *                   This number therefore applies to all job executions of 
+     *                   this <code>jobName</code>
+     */
+    public JobExecutor(JobName jobName, Integer maxRetries) {
+        
+        // max retries must be >= 1
+        if (maxRetries == null || maxRetries < 1) {
+            throw new JobExecutionException(
+                    jobName,
+                    "While instantiating JobExecutor, maxRetries value is invalid. "
+                            +"Must be >= 1. Got " + maxRetries + " instead."
+            );
+        }
+        
+        this.jobName = jobName;
+        this.maxRetries = maxRetries;
+    }
     
     public JobExecutor(JobName jobName) {
-        this.jobName = jobName;
+        this(jobName, 2); 
     }
 
     /**
@@ -42,7 +73,13 @@ public abstract class JobExecutor<T> {
      */
     public abstract JobExecutionItem<T> getItemById(UUID itemId);
 
+    
     public JobName getJobName() {
         return jobName;
     }
+
+    public Integer getMaxRetries() {
+        return maxRetries;
+    }
+    
 }
