@@ -104,6 +104,8 @@ public class JobManager {
             LOGGER.info("JOB '{}': finished executing job.", jobName);
             
         } catch (Exception ex) {
+
+            LOGGER.error("JOB '{}': system error executing job. Error details: {}", jobName, ex.getMessage());
             
             // i get an email with details about problem
             this.appEmailService.sendEmailToDevForSystemProblemDuringBackgroundJob(
