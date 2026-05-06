@@ -1,6 +1,5 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
@@ -23,6 +22,10 @@ import java.util.Optional;
 @Service
 public class JobManager {
     
+    // mapping job name : job executor
+    @Autowired
+    private JobExecutors jobExecutors;
+    
     @Autowired
     private JobExecutionService jobExecutionService;
     
@@ -32,18 +35,6 @@ public class JobManager {
     @Autowired
     private AppEmailService appEmailService;
     
-    // ******************
-    // CONCRETE JOB EXECUTORS: START
-    // ******************
-    
-    @Autowired
-    private EmailExpiringContracts_JobExecutor emailExpiringContracts_JobExecutor;
-    
-    // add more job executors here...
-
-    // ******************
-    // CONCRETE JOB EXECUTORS: END
-    // ******************
     
     // logger
     private static final Logger LOGGER = LoggerFactory.getLogger(JobManager.class);
@@ -71,7 +62,7 @@ public class JobManager {
             // GET JOB-SPECIFIC JOB EXECUTOR
             // ********************
             
-            JobExecutor<?> executor = this.getJobExecutor(jobName);
+            JobExecutor<?> executor = this.jobExecutors.getJobExecutor(jobName);
     
             // ********************
             // START JOB 
@@ -512,44 +503,6 @@ public class JobManager {
         }
         
         return countIncompleteJobExecutions;
-
-    }
-    
-
-    /**
-     * Get the job executor for the given job.
-     * If a job executor for this job was not mapped,
-     * an exception will be thrown.
-     * 
-     * When a new job is added, you must only update the
-     * mapping between the job name (in this method)
-     * and the actual job executor.
-     * 
-     */
-    
-    private JobExecutor<?> getJobExecutor(JobName jobName) throws JobException
-    {
-
-        Map<JobName, JobExecutor<?>> jobExecutorMap = Map.of(
-        
-            JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, this.emailExpiringContracts_JobExecutor
-            // add another mapping job name : job executor here...     
-        
-        );
-        
-        // if a job executor exists for the given job name
-        if(jobExecutorMap.containsKey(jobName)) {
-        
-            return jobExecutorMap.get(jobName);
-        
-        }
-
-        // the given job was not mapped to an executor
-
-        LOGGER.error("JOB '{}': this job was not found, is not mapped or is not recognized internally.", jobName);
-
-        throw new JobException("Job '"+jobName +"' was not found, is not mapped or is not recognized internally.");
-        
 
     }
     

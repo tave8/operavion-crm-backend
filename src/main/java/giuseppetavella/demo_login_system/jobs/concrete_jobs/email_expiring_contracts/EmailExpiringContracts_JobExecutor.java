@@ -57,7 +57,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         
         // this.appEmailService.sendMeInvoiceReport();
         
-        // throw new RuntimeException("error during processing");
+        throw new RuntimeException("error during processing");
         
         // User user = (User) itemToProcess.getItem();
         //
