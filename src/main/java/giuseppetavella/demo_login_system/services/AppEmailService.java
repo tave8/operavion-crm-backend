@@ -5,6 +5,7 @@ import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
 import giuseppetavella.demo_login_system.services.base.EmailService;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -158,6 +159,46 @@ public class AppEmailService extends EmailService {
                 attachment
         );
         
+    }
+
+    /**
+     * Email the developer, about a problem.
+     */
+    public void sendEmailToDevForProblem(String subject, 
+                                         String details,
+                                         Exception exception) 
+    {
+
+        OffsetDateTime now = OffsetDateTime.now();
+
+        Map<String, Object> vars = Map.of(
+                "message", exception.getMessage(),
+                "details", details,
+                "timestamp", now,
+                "stackTrace", ExceptionUtils.getStackTrace(exception)
+        );
+
+        this.sendEmailFromTemplate(
+                "dev_emails/error",
+                vars,
+                "giuseppetavella8@gmail.com",
+                subject
+        );
+    }
+
+    
+    /**
+     * Send email to dev for background job problem.
+     */
+    public void sendEmailToDevForBackgroundJobProblem(String jobName,
+                                                      Exception exception) 
+    {
+        
+        String subject = "Error in background job. Job name: " + jobName;
+        
+        String details = "Job name: " + jobName;
+
+        this.sendEmailToDevForProblem(subject, details, exception);
     }
 
 }

@@ -1,13 +1,13 @@
 package giuseppetavella.demo_login_system.jobs;
 
 import giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextIncompleteExecutionException;
+import giuseppetavella.demo_login_system.services.AppEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,9 @@ public class JobManager {
     
     @Autowired
     private JobManagerRepository jobManagerRepository;
+    
+    @Autowired
+    private AppEmailService appEmailService;
     
     // ******************
     // CONCRETE JOB EXECUTORS: START
@@ -60,50 +63,62 @@ public class JobManager {
                            boolean processNextItems) 
     {
         
-        // ********************
-        // GET JOB-SPECIFIC JOB EXECUTOR
-        // ********************
-        
-        JobExecutor<?> executor = this.getJobExecutor(jobName);
-
-        // ********************
-        // START JOB 
-        // ********************
-
-        LOGGER.info("JOB '{}': this job was called to be executed, executing it...", jobName);
-
-        LOGGER.info("JOB '{}': execution mode [processIncompleteExecutions={}, processNextItems={}]",
-                jobName, processIncompleteExecutions, processNextItems);
-        
-        if(processIncompleteExecutions) {
-
-            LOGGER.info("JOB '{}': started processing existing incomplete job executions...", jobName);
+        try {
             
             // ********************
-            // PROCESS INCOMPLETE JOB EXECUTIONS
+            // GET JOB-SPECIFIC JOB EXECUTOR
             // ********************
             
-            int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
-
-            LOGGER.info("JOB '{}': finished processing {} incomplete job executions.", jobName, countProcessedIncompleteJobExecutions);
-        
-        }
-
-        if(processNextItems) {
-
-            LOGGER.info("JOB '{}': started processing next items...", jobName);
+            JobExecutor<?> executor = this.getJobExecutor(jobName);
     
             // ********************
-            // PROCESS NEXT ITEMS
+            // START JOB 
             // ********************
     
-            int countProcessedNextItems = this.processNextItems(jobName, executor);
-
-            LOGGER.info("JOB '{}': finished processing {} next items.", jobName, countProcessedNextItems);
+            LOGGER.info("JOB '{}': this job was called to be executed, executing it...", jobName);
+    
+            // LOGGER.info("JOB '{}': execution mode [processIncompleteExecutions={}, processNextItems={}]",
+            //         jobName, processIncompleteExecutions, processNextItems);
+            
+            if(processIncompleteExecutions) {
+    
+                // LOGGER.info("JOB '{}': started processing existing incomplete job executions...", jobName);
+                
+                // ********************
+                // PROCESS INCOMPLETE JOB EXECUTIONS
+                // ********************
+                
+                int countProcessedIncompleteJobExecutions = this.processIncompleteJobExecutions(jobName, executor);
+    
+                // LOGGER.info("JOB '{}': finished processing {} incomplete job executions.", jobName, countProcessedIncompleteJobExecutions);
+            
+            }
+    
+            if(processNextItems) {
+    
+                // LOGGER.info("JOB '{}': started processing next items...", jobName);
+        
+                // ********************
+                // PROCESS NEXT ITEMS
+                // ********************
+        
+                int countProcessedNextItems = this.processNextItems(jobName, executor);
+    
+                // LOGGER.info("JOB '{}': finished processing {} next items.", jobName, countProcessedNextItems);
+                
+            }
+    
+            LOGGER.info("JOB '{}': finished executing job.", jobName);
+            
+        } catch (Exception ex) {
+            
+            // i get an email with details about problem
+            this.appEmailService.sendEmailToDevForBackgroundJobProblem(
+                    jobName.name(), ex
+            );
             
         }
-
-        LOGGER.info("JOB '{}': finished executing job.", jobName);
+        
 
     }
     

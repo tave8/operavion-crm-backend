@@ -5,7 +5,7 @@ import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.JobExecutor;
+import giuseppetavella.demo_login_system.jobs.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import org.springframework.beans.factory.annotation.Autowired;

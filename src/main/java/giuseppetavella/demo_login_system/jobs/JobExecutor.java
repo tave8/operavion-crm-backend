@@ -1,10 +1,7 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs;
+package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.jobs.JobExecution;
-import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.enums.JobName;
 import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
-import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

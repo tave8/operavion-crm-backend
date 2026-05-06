@@ -22,6 +22,20 @@ public class EmailTestRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        // try {
+        //    
+        //     throw new RuntimeException("Hello Giuseppe, this is a mockup exception!");
+        //    
+        // } catch(RuntimeException ex) {
+        //    
+        //     this.appEmailService.sendEmailToDevForBackgroundJobProblem(
+        //             "problem developer",
+        //             "you had a problem with something",
+        //             ex        
+        //     );
+        //    
+        // }
+        
         
         // String emailID = this.emailService.sendEmail("giuseppetavella8@gmail.com", "title!", "<i>whatsup</i>");
 
