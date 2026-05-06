@@ -53,6 +53,7 @@ public class JobManager {
      * Entry point for executing a job.
      * Provides centralized error handling. 
      * 
+     * 
      * @param jobName which job to execute.
      *             
      * @throws JobExecutionException if any error during the execution of 
@@ -136,6 +137,66 @@ public class JobManager {
 
     /**
      * Process the next items.
+     *
+     * <h1>The loop</h1>
+     * 
+     * The loop of this method runs until there are no more 
+     * next items to process. The definition of "next item"
+     * is job-dependant. 
+     * 
+     * To avoid unnecessary abstraction at this stage, 
+     * we rely on the job executor's implementation 
+     * of the <code>JobExecutor.getNextItem()</code> method, to correctly end
+     * the <code>JobManager.processNextItems()</code> method's loop.
+     * 
+     * In short, it is <code>JobExecutor.getNextItem()</code>
+     * responsability to correctly get the next item, and thus
+     * avoid re-getting items that were already processed.
+     * For example, a basic mechanism for proper functioning, is the following:
+     *
+     * <pre>
+     *     
+     *  In JobExecutor.getNextItem() implementation:    
+     *     
+     *     get any next item based on the logic of this job
+     *     AND 
+     *     this item was not processed by this job 
+     *     
+     * </pre>
+     * 
+     * How do we know that an item was processed by a job?
+     * Well, we look at the job executions DB table, there's a field
+     * called <code>last_item_processed_id</code> or something like that,
+     * and get all processed items by filtering by job name.
+     * 
+     * Above was the pseudocode for getting a next (and also new) item that was 
+     * never processed by this job, however we might have other needs 
+     * and we may want to re-process the same item, for example:
+     * 
+     * <pre>
+     *     
+     *  In JobExecutor.getNextItem() implementation:
+     *
+     *     get any next item based on the logic of this job
+     *     AND 
+     *     this item was not processed TODAY by this job 
+     *      
+     * </pre>
+     * 
+     * With the example above, we've just implemented a system 
+     * for re-processing the same items, only if they were not 
+     * processed today. (For example we might want to alert employees
+     * that their contract is expiring, and we want to do so every day 
+     * until the contract is renewed).
+     * 
+     * In this example, we need to re-process not necessarily the same exact
+     * employees (because between this execution and the next they might have changed)
+     * but we will certainly have no guarantee that they will be unique employees.
+     * In other words: In general, they won't be unique employees.
+     * 
+     * In conclusion, we can use the <code>last_processed_item_id</code> field
+     * in the job executions DB table, to process unique items per job, 
+     * or to also process in general non-unique items that fulfill other conditions. 
      * 
      * @param jobName
      * @param executor
