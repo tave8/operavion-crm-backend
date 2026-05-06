@@ -30,32 +30,22 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
     public EmailExpiringContracts_JobExecutor() {
         super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, 2);
     }
-
-    // TODO: the second paramater of this method should not be 
-    //  the current job execution, because that means that
-    //  i could corrupt the current job execution
-    //  i should only pass something like the metadata?
+    
+    
     @Override
-    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution currentJobExecution) {
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecutionMetadata jobExecutionMetadata) {
         
         if (itemToProcess == null) {
             return;
         }
         
-        // if(currentJobExecution.getState().equals(JobExecutionState.INCOMPLETE)) {
-        //     System.out.println("this job execution was incomplete");
-        // }
-        
         // send email, do business-specific logic
         User user = (User) itemToProcess.getItem();
         
-        JobExecutionMetadata metadata = currentJobExecution.getMetadata();
-        
-        metadata.getExtra().put("firstname", user.getFirstname());
+        jobExecutionMetadata.getExtra().put("firstname", user.getFirstname());
         
         // metadata.getProcessedItemIds().removeIf((x) -> x.equals("id1"));
-        //
-        jobExecutionService.save(currentJobExecution);
+        
         
         try {
             Thread.sleep(2000);

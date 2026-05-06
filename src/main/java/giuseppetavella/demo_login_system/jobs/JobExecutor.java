@@ -34,7 +34,7 @@ public abstract class JobExecutor<T> {
      * 
      * @param jobName
      * @param maxRetries the number of times the job executions of the subclass  
-     *                   will be retried, if their state is incomplete. Must be >= 1.
+     *                   will be retried, if their state is incomplete. Must be >= 1 and <= 10.
      *                   This number therefore applies to all job executions of 
      *                   this <code>jobName</code>
      */
@@ -69,7 +69,7 @@ public abstract class JobExecutor<T> {
     /**
      * Process the given item with business-specific logic.
      */
-    public abstract void processItem(JobExecutionItem<?> itemToProcess, JobExecution currentJobExecution);
+    public abstract void processItem(JobExecutionItem<?> itemToProcess, JobExecutionMetadata jobExecutionMetadata);
 
     /**
      * Get the next item with business-specific logic.

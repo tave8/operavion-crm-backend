@@ -169,7 +169,7 @@ public class JobManager {
 
             try {
 
-                executor.processItem(nextItem, currentJobExecution);
+                executor.processItem(nextItem, currentJobExecution.getMetadata());
 
             } catch (RuntimeException ex) {
                 
@@ -316,7 +316,7 @@ public class JobManager {
     
                 try {
                     
-                    executor.processItem(nextItem, incompleteJobExecution);
+                    executor.processItem(nextItem, incompleteJobExecution.getMetadata());
     
                 } catch (RuntimeException ex) {
     
@@ -337,7 +337,10 @@ public class JobManager {
                 
                 this.jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
-                        JobExecutionState.ABANDONED
+                        JobExecutionState.ABANDONED,
+                        "This job execution was abandoned because "
+                                            +"its number of retries on incomplete state "
+                                            +"  exceeded its max number of retries."
                 );
                 
             }
