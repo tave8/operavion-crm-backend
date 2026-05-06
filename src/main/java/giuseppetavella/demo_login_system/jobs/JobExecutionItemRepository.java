@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface JobExecutionItemRepository<T, ID> {
     Optional<T> getNextItem(String jobName);
-    Optional<T> getItemById(ID id);
+    Optional<T> getItemByIdOnIncompleteExecution(ID id);
 }

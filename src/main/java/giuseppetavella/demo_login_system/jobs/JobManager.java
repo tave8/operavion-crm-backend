@@ -280,7 +280,7 @@ public class JobManager {
             
             // this item was probably not processed or 
             // its processin was interrupted
-            JobExecutionItem<?> nextItem = executor.getItemById(
+            JobExecutionItem<?> nextItem = executor.getItemByIdOnIncompleteExecution(
                     // the last processed item ID is searched, to get the  
                     // business-logic specific item
                     incompleteJobExecution.getLastProcessedItemId()

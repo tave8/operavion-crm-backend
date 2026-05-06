@@ -1,7 +1,6 @@
 package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
 import giuseppetavella.demo_login_system.jobs.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.jobs.JobExecutionService;
@@ -58,7 +57,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         
         // this.appEmailService.sendMeInvoiceReport();
         
-        throw new RuntimeException("error during processing");
+        // throw new RuntimeException("error during processing");
         
         // User user = (User) itemToProcess.getItem();
         //
@@ -83,9 +82,9 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
     }
 
     @Override
-    public JobExecutionItem<User> getItemById(UUID itemId) {
+    public JobExecutionItem<User> getItemByIdOnIncompleteExecution(UUID itemId) {
         
-        Optional<User> maybeNextUser = this.thisRepository.getItemById(itemId);
+        Optional<User> maybeNextUser = this.thisRepository.getItemByIdOnIncompleteExecution(itemId);
 
         if(maybeNextUser.isEmpty()) {
             return null;

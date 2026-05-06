@@ -77,9 +77,18 @@ public abstract class JobExecutor<T> {
     public abstract JobExecutionItem<T> getNextItem();
 
     /**
-     * Get the item, with business-specific logic.
+     * Get the item by ID when the job execution was incomplete, with business-specific logic.
+     * Only <code>JobManager.processIncompleteJobExecutions</code> method should call 
+     * this method <code>JobExecutor.getItemByIdOnIncompleteExecution</code>,
+     * because what we're doing is, we're getting an business-specific item, starting
+     * from an incomplete job execution, which of course is a job execution that already exists.
+     * 
+     * We specify "on incomplete execution" in the method's name, because 
+     * the concrete job executor might want to define a different logic 
+     * on incomplete job executions. For example, we might want to re-process new users
+     * of today, but re-process all incomplete job executions. 
      */
-    public abstract JobExecutionItem<T> getItemById(UUID itemId);
+    public abstract JobExecutionItem<T> getItemByIdOnIncompleteExecution(UUID itemId);
 
     
     public JobName getJobName() {

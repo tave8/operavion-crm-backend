@@ -63,10 +63,11 @@ public interface EmailExpiringContracts_JpaRepository extends JpaRepository<JobE
         FROM 
             users
         WHERE 
-            user_id = :itemId
+            true
+            AND user_id = :itemId
 
     """)
-    Optional<User> getItemById(
+    Optional<User> getItemByIdOnIncompleteExecution(
             @Param("itemId") UUID itemId
     );
 

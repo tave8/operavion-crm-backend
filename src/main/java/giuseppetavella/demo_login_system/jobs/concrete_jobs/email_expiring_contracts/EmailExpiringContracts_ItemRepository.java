@@ -20,7 +20,7 @@ public class EmailExpiringContracts_ItemRepository implements JobExecutionItemRe
     }
 
     @Override
-    public Optional<User> getItemById(UUID id) {
-        return jpaRepository.getItemById(id);
+    public Optional<User> getItemByIdOnIncompleteExecution(UUID id) {
+        return jpaRepository.getItemByIdOnIncompleteExecution(id);
     }
 }
