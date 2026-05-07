@@ -8,14 +8,12 @@ import giuseppetavella.demo_login_system.services.NotificationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/notifications")
@@ -64,6 +62,24 @@ public class NotificationsController {
         
         
     }
+
+
+    /**
+     * Read my notification.
+     */
+    @PatchMapping("/{notificationId}/read")
+    public NotificationToSendDTO readMyNotification(@AuthenticationPrincipal User currentUser,
+                                                    @PathVariable(name = "notificationId") String notificationIdAsStr) 
+    {
+
+        UUID notificationId = StringHelper.parseUUID(notificationIdAsStr);
+
+        Notification savedNotification = this.notificationsService.readMyNotification(notificationId, currentUser);
+                
+        return new NotificationToSendDTO(savedNotification);
+        
+    }
+    
     
 
 }

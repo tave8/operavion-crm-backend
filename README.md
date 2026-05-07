@@ -19,11 +19,7 @@
 
 
 /notifications
-    GET /                  (get my notifications)
-        unread: true|false
-        read: true|false
-        type: <custom notification type>
-    
+    GET /                  (get my notifications)    
     PATCH /read                   (mark many notifications as read)    
     PATCH /:notificationId/read     (mark notification as read)
 

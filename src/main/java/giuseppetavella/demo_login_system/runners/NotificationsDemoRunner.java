@@ -21,9 +21,11 @@ public class NotificationsDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // User userFromDB = this.usersService.findById("b16b6831-6c94-4f16-bf5f-89d1a60a5e79");
+        // User userFromDB = this.usersService.findById("5f29cb26-7f20-417a-8445-cfa46b2ff783");
         // Notification notificationFromDB = this.notificationsService.findById("92970e6d-a8b2-42d7-b845-57a2b238eeaf");
         //
+
+        // System.out.println(userFromDB);
         // Notification notification = new Notification(
         //         userFromDB,
         //         NotificationType.EXPIRING_EMPLOYEE_CONTRACT,

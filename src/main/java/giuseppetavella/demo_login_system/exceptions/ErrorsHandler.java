@@ -75,6 +75,15 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
+
+
+    @ExceptionHandler(NotificationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsToSendDTO handleNotificationException(NotificationException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
+
     @ExceptionHandler(UnknownFileTypeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorsToSendDTO handleUnknownFileTypeException(UnknownFileTypeException ex) {

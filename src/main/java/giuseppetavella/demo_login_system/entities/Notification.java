@@ -131,8 +131,7 @@ public class Notification {
         if(readAtWasSet) {
             throw new NotificationException(
                     this, 
-                    "The readAt attribute of the notification was "
-                    +"already set, cannot set it again."
+                    "Cannot read this notification again."
             );
         }
         

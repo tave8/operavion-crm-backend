@@ -4,6 +4,8 @@ import giuseppetavella.demo_login_system.entities.Notification;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
+import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
+import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.repositories.NotificationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +83,26 @@ public class NotificationsService {
         return this.notificationsRepository.save(notification);
     }
 
+
+    /**
+     * Read my notification.
+     * @return
+     */
+    public Notification readMyNotification(UUID notificationId, User owner) throws NotFoundException, 
+                                                                                    UnauthorizedException
+    {
+        
+        Notification notification = this.findById(notificationId);
+
+        AuthorizationHelper.requireSameUser(owner, notification.getUser());
+        
+        notification.read();
+        
+        return this.save(notification);
+    
+    }
+    
+    
+    
 
 }

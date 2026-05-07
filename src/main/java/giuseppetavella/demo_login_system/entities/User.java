@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -69,6 +70,24 @@ public class User implements UserDetails {
      */
     public User(String email, String password, String firstname, String lastname) {
         this(email, password, firstname, lastname, UserRole.USER);    
+    }
+
+
+    /**
+     * Are the given users the same?
+     */
+    public static boolean isSameUser(User user1, User user2) throws InvalidDataFormatException 
+    {
+        
+        if(user1 == null || user2 == null) {
+            throw new InvalidDataFormatException(
+                    "While validating whether two users are the same, "
+                        +"either one or both of them were null. Are you sure both users exist " 
+                        +"or have been passed correctly?"
+            );
+        }
+        
+        return user1.getUserId().equals(user2.getUserId());
     }
     
 
