@@ -123,6 +123,16 @@ public class FileHelper {
         }
         
     }
+    
+    public static byte[] getBytes(MultipartFile file) throws FileException
+    {
+        try {
+            return file.getBytes();
+        } catch (IOException e) {
+            throw new FileException(e.getMessage());
+        }
+    
+    }
 
     /**
      * Read a pdf into bytes.

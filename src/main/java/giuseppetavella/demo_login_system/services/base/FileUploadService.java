@@ -3,10 +3,10 @@ package giuseppetavella.demo_login_system.services.base;
 import giuseppetavella.demo_login_system.exceptions.FileUploadException;
 import giuseppetavella.demo_login_system.exceptions.UnknownFileTypeException;
 import giuseppetavella.demo_login_system.helpers.FileHelper;
-import giuseppetavella.demo_login_system.interfaces.FileUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 
 @Service
-public class FileUploadService implements FileUploader {
+public class FileUploadService {
 
     @Autowired
     private S3Client s3Client;
@@ -34,17 +34,7 @@ public class FileUploadService implements FileUploader {
         this.bucket = bucket;
         this.publicUrl = publicUrl;
     }
-
-    /**
-     * Use this when you cannot possibly determine
-     * the file extension.
-     */
-    @Override
-    public String upload(byte[] bytes) throws FileUploadException, UnknownFileTypeException
-    {
-        String fileExt = FileHelper.getFileType(bytes);
-        return this.upload(bytes, fileExt);
-    }
+    
     
     /**
      * Upload a file.
@@ -71,6 +61,12 @@ public class FileUploadService implements FileUploader {
         
         return this.buildFileUrlFrom(filename);
         
+    }
+    
+    
+    public String upload(MultipartFile file, String fileExt) 
+    {
+        return this.upload(FileHelper.getBytes(file), fileExt);
     }
     
     

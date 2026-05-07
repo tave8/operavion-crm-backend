@@ -90,6 +90,7 @@ public class TokenFilter extends OncePerRequestFilter {
         
         boolean isAuthPath = matcher.match("/auth/**", path);
         boolean isLoginPath = matcher.match("/auth/login", path);
+        boolean isFileUpload = matcher.match("/file-upload/**", path);
         // boolean isNotificationsPath = matcher.match("/notifications/**", path);
         // boolean isAI = matcher.match("/ai/**", path);
         // boolean isPdfGeneration =  matcher.match("/pdf-generation/**", path);
@@ -100,6 +101,11 @@ public class TokenFilter extends OncePerRequestFilter {
         //     return;
         // }
         //
+        if(isFileUpload) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         if(isFavicon) {
             filterChain.doFilter(request, response);
             return;
