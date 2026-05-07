@@ -2,9 +2,10 @@ package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.Notification;
 import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
+import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.exceptions.NotFoundException;
+import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.repositories.NotificationsRepository;
-import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+
 
 @Service
 public class NotificationsService {
@@ -29,8 +31,15 @@ public class NotificationsService {
                                                       int pageSize, 
                                                       String sortBy, 
                                                       Boolean filterRead, 
-                                                      String notificationType) 
+                                                      String notificationType) throws InvalidDataException
     {
+
+        // sortBy must be one of these values
+        StringHelper.requireInValues(
+                sortBy,
+                List.of("createdAt", "type"),
+                "sortBy"
+        );
 
         // / the size of each page (how many elements in each page)
         int finalSize = Math.min(10, pageSize);
@@ -48,5 +57,29 @@ public class NotificationsService {
         );
         
     }
+
+    /**
+     * Get a notification by ID.
+     */
+    public Notification findById(UUID id) {
+        return this.notificationsRepository.findById(id).orElseThrow(() -> new NotFoundException(id, "NOTIFICATION"));
+    }
+
+    /**
+     * Get a notification by ID.
+     */
+    public Notification findById(String id) {
+        return this.findById(
+                StringHelper.parseUUID(id)
+        );
+    }
     
+    /**
+     * Save a notification
+     */
+    public Notification save(Notification notification) {
+        return this.notificationsRepository.save(notification);
+    }
+
+
 }

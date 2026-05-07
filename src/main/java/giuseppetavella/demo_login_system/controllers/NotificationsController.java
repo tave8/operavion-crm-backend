@@ -50,6 +50,7 @@ public class NotificationsController {
                "sortBy"
        );
        
+       
         Page<Notification> notificationsPage = this.notificationsService.findNotificationsByUser(
                 currentUser,
                 page,
