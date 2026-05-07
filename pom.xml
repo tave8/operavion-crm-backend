@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>giuseppetavella</groupId>
-	<artifactId>demo-login-system</artifactId>
+	<artifactId>operavion-crm-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
