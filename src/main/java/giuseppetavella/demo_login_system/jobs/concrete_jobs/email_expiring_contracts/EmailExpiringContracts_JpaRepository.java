@@ -42,7 +42,7 @@ public interface EmailExpiringContracts_JpaRepository extends JpaRepository<JobE
                 WHERE
                     B.job_name = :jobName
                     AND B.last_processed_item_id = A.user_id  
-                
+                    AND B.started_at >= current_date
             )
         
         LIMIT 1
