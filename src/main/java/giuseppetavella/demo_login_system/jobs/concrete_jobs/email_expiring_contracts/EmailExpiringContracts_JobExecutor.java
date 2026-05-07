@@ -72,7 +72,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         //     // throw new RuntimeException(e);
         // }
         
-        
+         
         
         // this.appEmailService.sendMeInvoiceReport();
         
