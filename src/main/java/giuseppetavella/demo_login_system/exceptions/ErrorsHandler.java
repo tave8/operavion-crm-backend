@@ -126,7 +126,8 @@ public class ErrorsHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorsToSendDTO handleMethodArgumentoTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String msg = "Il tipo di qualche campo non può essere convertito nel tipo corretto. DETTAGLi: " + ex.getMessage();
+        String msg = "The type of some request parameter cannot be cast to its correct type. "
+                +"DETAILS: " + ex.getMessage();
         return new ErrorsToSendDTO(msg);
     }
 

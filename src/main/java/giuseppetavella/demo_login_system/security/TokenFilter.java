@@ -90,19 +90,25 @@ public class TokenFilter extends OncePerRequestFilter {
         
         boolean isAuthPath = matcher.match("/auth/**", path);
         boolean isLoginPath = matcher.match("/auth/login", path);
-        boolean isAI = matcher.match("/ai/**", path);
-        boolean isPdfGeneration =  matcher.match("/pdf-generation/**", path);
-        boolean isCsvGeneration =  matcher.match("/csv-generation/**", path);
+        boolean isNotificationsPath = matcher.match("/notifications/**", path);
+        // boolean isAI = matcher.match("/ai/**", path);
+        // boolean isPdfGeneration =  matcher.match("/pdf-generation/**", path);
+        // boolean isCsvGeneration =  matcher.match("/csv-generation/**", path);
+        
+        if(isNotificationsPath) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         
         if(isFavicon) {
             filterChain.doFilter(request, response);
             return;
         }
         
-        if(isAI || isPdfGeneration || isCsvGeneration) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // if(isAI || isPdfGeneration || isCsvGeneration) {
+        //     filterChain.doFilter(request, response);
+        //     return;
+        // }
         
         // there are no controls on root endpoint
         if(isRoot) {

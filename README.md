@@ -22,7 +22,6 @@
     GET /                  (get my notifications)
         unread: true|false
         read: true|false
-        limit: 0..N
         type: <custom notification type>
     
     PATCH /read                   (mark many notifications as read)    

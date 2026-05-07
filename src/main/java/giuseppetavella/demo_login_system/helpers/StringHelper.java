@@ -1,7 +1,9 @@
 package giuseppetavella.demo_login_system.helpers;
 
+import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 
+import java.util.List;
 import java.util.UUID;
 
 public class StringHelper {
@@ -23,4 +25,29 @@ public class StringHelper {
             throw new InvalidUUIDStringException(itemIdAsStr);
         }
     }
+
+
+    /**
+     * Require a string to match one of given strings. 
+     * 
+     * @throws InvalidDataException if the input string does not match 
+     *   any of the given match strings
+     */
+    public static void requireInValues(String input, 
+                                       List<String> matches, 
+                                       String varName) throws InvalidDataException
+    {
+        
+        for(String match : matches) {
+            if(input.equals(match)) {
+                return;
+            }
+        }
+        
+        throw new InvalidDataException("While validating if a string's value matches " 
+                                        +"any of potential values for variable '" + varName + "', "
+                                        +"no matching string was found. "
+                                        + "Input value '" + input + "'. Possible matches: " + String.join(",", matches));
+    }
+
 }
