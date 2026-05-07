@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.CvData;
+import giuseppetavella.demo_login_system.models.CvData;
 import giuseppetavella.demo_login_system.exceptions.AIException;
 import giuseppetavella.demo_login_system.exceptions.FileException;
 import giuseppetavella.demo_login_system.exceptions.PayloadValidationException;

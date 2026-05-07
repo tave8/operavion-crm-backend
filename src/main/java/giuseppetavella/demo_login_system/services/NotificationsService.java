@@ -24,7 +24,7 @@ public class NotificationsService {
     
     @Autowired
     private NotificationsRepository notificationsRepository;
-
+    
     /**
      * Find notifications of the given user.
      */
@@ -32,6 +32,7 @@ public class NotificationsService {
                                                       int page, 
                                                       int pageSize, 
                                                       String sortBy, 
+                                                      String sortOrder,
                                                       Boolean filterRead, 
                                                       String notificationType) throws InvalidDataException
     {
@@ -43,13 +44,21 @@ public class NotificationsService {
                 "sortBy"
         );
 
-        // / the size of each page (how many elements in each page)
-        int finalSize = Math.min(10, pageSize);
-        // the page number
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+
+        int finalSize = Math.clamp(pageSize, 1, 10);
+        
         int finalPage = Math.max(0, page);
-        // page is the function that will get translated to SQL,
-        // that will in turn filter the result set
-        Pageable pageable = PageRequest.of(finalPage, finalSize, Sort.by(sortBy));
+        
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
         
         return this.notificationsRepository.findNotificationsByUser(
                 user,

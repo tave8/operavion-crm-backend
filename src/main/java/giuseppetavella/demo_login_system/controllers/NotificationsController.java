@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.controllers;
 
 import giuseppetavella.demo_login_system.entities.Notification;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_response.NotificationToSendDTO;
 import giuseppetavella.demo_login_system.services.NotificationsService;
@@ -39,13 +40,21 @@ public class NotificationsController {
                                                           @RequestParam(value = "type", required = false) String notificationType,
                                                           @RequestParam(value = "page", defaultValue = "0") int page,
                                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                                          @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy)
+                                                          @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+                                                           @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder)
    {
+
         // sortBy must be one of these values
        StringHelper.requireInValues(
                sortBy, 
                List.of("createdAt", "type"), 
                "sortBy"
+       );
+
+       StringHelper.requireInValues(
+               sortOrder,
+               List.of("asc", "desc"),
+               "sortOrder"
        );
        
        
@@ -54,6 +63,7 @@ public class NotificationsController {
                 page,
                 pageSize,
                 sortBy,
+                sortOrder,
                 filterRead,
                 notificationType
         );
@@ -71,7 +81,7 @@ public class NotificationsController {
     public NotificationToSendDTO readMyNotification(@AuthenticationPrincipal User currentUser,
                                                     @PathVariable(name = "notificationId") String notificationIdAsStr) 
     {
-
+        
         UUID notificationId = StringHelper.parseUUID(notificationIdAsStr);
 
         Notification savedNotification = this.notificationsService.readMyNotification(notificationId, currentUser);

@@ -21,5 +21,26 @@ public class AuthorizationHelper {
         }
         
     }
+
+    /**
+     * Require that a user exists and that their ID is set,
+     * which is the assumption behind "this user is in DB".
+     */
+    public static void requireUser(User user) throws UnauthorizedException
+    {
+        
+        // user is null
+        if(user == null) {
+            throw new UnauthorizedException("User is null. Are you sure it was passed correctly "
+                                            +"and that a user was expected?");
+        }
+        
+        // user is not null, but its ID is null
+        if(user.getUserId() == null) {
+            throw new UnauthorizedException("User is not null but does not seem to exist "
+                                            +"in database either (assumption).");
+        }
+        
+    }
     
 }

@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.controllers;
 
-import giuseppetavella.demo_login_system.CvData;
+import giuseppetavella.demo_login_system.models.CvData;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.services.AppAIService;
 import giuseppetavella.demo_login_system.services.base.EmailService;

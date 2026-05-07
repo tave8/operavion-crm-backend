@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system;
+package giuseppetavella.demo_login_system.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
