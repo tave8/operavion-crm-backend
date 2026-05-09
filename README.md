@@ -5,10 +5,13 @@
 ```
 
 /auth
+    POST /signup                        (create new company + user with role admin)
+    
     POST /login                         (login for manager)
     POST /login-operator                (login for operator)
-    POST /signup                        (create new company + user with role admin)
+    
     GET  /verify-email/:code            (when user clicks link in email - mark the user with this email as verified)
+        
     POST /forgot-password/request       (is this email authorized to set a new password?)
     POST /forgot-password/verify        (can this email set a new password right now?)
     POST /forgot-password/reset         (set a new password right now)
@@ -95,6 +98,26 @@ Response
 
 ```
 userId: str
+```
+
+
+### POST /first-login-password-reset
+
+Request
+
+```
+{
+    oldPassword: str
+    newPassword: str
+}
+```
+
+Response 
+
+```
+{
+        
+}
 ```
 
 
