@@ -101,7 +101,7 @@ public class StringHelper {
      * @example "A3K9F", "BX72Q4", "T4KW29R"
      */
     public static String generatePassword() {
-        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
         final int MIN_LENGTH = 5;
         final int MAX_LENGTH = 7;
 

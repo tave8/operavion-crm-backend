@@ -47,6 +47,14 @@ public class ProfileToSendDTO {
         return lastname;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     public UUID getUserId() {
         return userId;
     }

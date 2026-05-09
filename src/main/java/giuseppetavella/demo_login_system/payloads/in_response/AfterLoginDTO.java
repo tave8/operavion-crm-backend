@@ -7,12 +7,14 @@ public class AfterLoginDTO {
     private final String accessToken;
     private final String message;
     private final boolean mustChangePasswordNow;
+    private final ProfileToSendDTO user;
     
     public AfterLoginDTO(String accessToken, User user, String message) 
     {
         this.accessToken = accessToken;
         this.message = message;
         this.mustChangePasswordNow = user.mustChangePasswordNow();
+        this.user = new ProfileToSendDTO(user);
     }
     
     public AfterLoginDTO(String accessToken, User user) {
@@ -30,5 +32,9 @@ public class AfterLoginDTO {
 
     public String getMessage() {
         return message;
+    }
+
+    public ProfileToSendDTO getUser() {
+        return user;
     }
 }
