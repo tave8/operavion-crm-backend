@@ -8,6 +8,7 @@ import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.LoginSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.OperatorLoginSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordNewPasswordSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordRequestWithEmailSentDTO;
@@ -62,15 +63,15 @@ public class AuthController {
     /**
      * Login an operator.
      */
-    // @PostMapping("/login-operator")
-    // public AfterLoginDTO loginOperator(@RequestBody @Validated OperatorLoginSentDTO body,
-    //                                     BindingResult validation)
-    // {
-    //
-    //     PayloadValidationHelper.requireNoErrors(validation);
-    //
-    //     return authService.loginOperator(body);
-    // }
+    @PostMapping("/login-operator")
+    public AfterLoginDTO loginOperator(@RequestBody @Validated OperatorLoginSentDTO body,
+                                        BindingResult validation)
+    {
+
+        PayloadValidationHelper.requireNoErrors(validation);
+
+        return authService.loginOperator(body);
+    }
 
 
     /**

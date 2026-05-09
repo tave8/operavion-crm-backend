@@ -7,6 +7,7 @@ import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import giuseppetavella.demo_login_system.payloads.in_request.LoginSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.OperatorLoginSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
@@ -96,12 +97,38 @@ public class AuthService {
     /**
      *  Login an operator.
      */
-    // public AfterLoginDTO loginOperator(OperatorLoginSentDTO body) throws NotFoundException 
-    // {
-    //
-    //   
-    //
-    // }
+    public AfterLoginDTO loginOperator(OperatorLoginSentDTO body) throws NotFoundException 
+    {
+
+        User userFound;
+        String accessToken;
+
+        try {
+
+            userFound = this.usersService.findByUsername(body.username());
+
+            // we compare the password coming from the request's body
+            // with the actual password found in the database
+            boolean isPasswordMatch = this.bcrypt.matches(body.password(), userFound.getPassword());
+
+            // se la password dell'utente corrisponde a quella che si trova
+            // nell'utente che ha questa email, vuol dire che l'utente si è loggato
+            // con successo, quindi crea il token
+            if (isPasswordMatch) {
+
+                accessToken = this.tokenTools.generateToken(userFound);
+
+            } else {
+                throw new UnauthorizedException("Wrong credentials.");
+            }
+
+        } catch (NotFoundException ex) {
+            throw new UnauthorizedException("Wrong credentials.");
+        }
+
+        return new AfterLoginDTO(accessToken);
+
+    }
 
 
 

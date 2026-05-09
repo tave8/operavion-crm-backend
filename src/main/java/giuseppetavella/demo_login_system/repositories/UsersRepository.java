@@ -20,6 +20,12 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
      */
     @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     User findByEmail(String email);
+
+    /**
+     * Find a user by username.
+     */
+    @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
+    User findByUsername(String username);
     
     /**
      * The user with the given email exists?

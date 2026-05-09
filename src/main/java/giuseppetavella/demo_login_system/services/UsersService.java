@@ -65,6 +65,23 @@ public class UsersService {
 
 
     /**
+     * Find a user by username.
+     */
+    public User findByUsername(String email) throws NotFoundException {
+        if(email == null) {
+            throw new NotFoundException("A username that was null was given.");
+        }
+
+        User userFound = this.usersRepository.findByUsername(email);
+
+        if (userFound == null) {
+            throw new NotFoundException("User with username '" + email + "' was not found.");
+        }
+
+        return userFound;
+    }
+
+    /**
      * A user with the given email exists?
      */
     public boolean existsByEmail(String email) {
@@ -164,7 +181,7 @@ public class UsersService {
      * @param lastname
      * @return
      */
-    public String generateUniqueUsernameFrom(String firstname, String lastname) {
+    private String generateUniqueUsernameFrom(String firstname, String lastname) {
 
         final int NUMBER_LENGTH = 4;
 
