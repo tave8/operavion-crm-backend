@@ -55,6 +55,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @Column(name = "verified_email_required", nullable = false)
+    private boolean verifiedEmailRequired;
     
     @Column(name = "verified_email", nullable = false)
     private boolean verifiedEmail;
@@ -101,10 +104,18 @@ public class User implements UserDetails {
         
         this.passwordChanged = false;
 
+        // all roles require email verification except for operator
+        if(role.equals(UserRole.OPERATOR)) {
+            this.verifiedEmailRequired = false;
+        } else {
+            this.verifiedEmailRequired = true;
+        }
+        
+        this.verifiedEmail = false;
+        
         this.password = password;
         this.role = role;
         this.username = username;
-        this.verifiedEmail = false;
         this.setFirstname(firstname);
         this.setLastname(lastname);
         this.setAvatarUrl(this.getDefaultAvatarUrl());
@@ -167,7 +178,11 @@ public class User implements UserDetails {
     public String getEmail() {
         return email;
     }
-    
+
+    public boolean isVerifiedEmailRequired() {
+        return verifiedEmailRequired;
+    }
+
     public String getFirstname() {
         return firstname;
     }
@@ -197,6 +212,22 @@ public class User implements UserDetails {
 
     public boolean isVerifiedEmail() {
         return verifiedEmail;
+    }
+
+    /**
+     * Is the email of this user verified, 
+     * only if it is required?
+     */
+    public boolean isVerifiedEmailIfRequired() 
+    {
+        // if the email is required to be verified,
+        // the result depends on whather the email is actually verified
+        if(this.isVerifiedEmailRequired()) {
+            return this.isVerifiedEmail();
+        }
+        // if the email is not required to be verified,
+        // it's no problem
+        return true;
     }
 
     /**
