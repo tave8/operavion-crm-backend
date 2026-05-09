@@ -6,12 +6,18 @@ import java.util.UUID;
 
 public class AfterSignupDTO {
     private final UUID userId;
+    private final String message;
     
-    public AfterSignupDTO(User user) {
+    public AfterSignupDTO(User user, String message) {
         this.userId = user.getId();    
+        this.message = message;
     }
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

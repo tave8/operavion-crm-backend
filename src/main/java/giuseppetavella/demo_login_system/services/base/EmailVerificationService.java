@@ -20,10 +20,7 @@ public class EmailVerificationService {
     
     @Autowired
     private EmailVerificationRepository emailVerificationRepository;
-
-    @Autowired
-    private UsersService usersService;
-
+    
     // a bean
     private final String serverUrl;
 
@@ -68,16 +65,11 @@ public class EmailVerificationService {
         // the code is valid
         EmailVerificationCode codeFromDB = maybeCodeFromDB.get();
 
-        User userFromDB;
+        User userFromDB = codeFromDB.getUser();
 
-        try {
-            userFromDB = this.usersService.findById(codeFromDB.getUser().getId());
-
-        } catch(NotFoundException ex) {
-            // "While verifying email verification code, user was not found. "
-            // +"This should only happen if user was deleted after "
-            // +"the code was created. " + ex.getMessage()
-            throw new EmailVerificationException("This code is not valid (error 3)");
+        // code was valid but user was deleted
+        if(userFromDB == null) {
+            throw new EmailVerificationException("This code is not valid (error 3).");
         }
 
         // the email was already verified

@@ -13,6 +13,8 @@ public class ProfileToSendDTO {
     private final String lastname;
     private final String avatarUrl;
     private final OffsetDateTime createdAt;
+    private final String role;
+    private final String username;
     
     public ProfileToSendDTO(User user) {
         this.userId = user.getId();
@@ -21,6 +23,8 @@ public class ProfileToSendDTO {
         this.lastname = user.getLastname();
         this.avatarUrl = user.getAvatarUrl();
         this.createdAt = user.getCreatedAt();
+        this.role = user.getRole().name();
+        this.username = user.getUsername();
     }
 
     public String getAvatarUrl() {

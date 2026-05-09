@@ -13,6 +13,7 @@ import giuseppetavella.demo_login_system.services.base.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -159,6 +160,7 @@ public class UsersService {
     /**
      * Add user to company based on role.
      */
+    @Transactional
     public User addUserBasedOnRole(NewUserSentDTO body, 
                                    UserRole role, 
                                    Company company, 
@@ -181,10 +183,12 @@ public class UsersService {
                     uniqueUsername
             );
             
-            // send email with verify email
-            this.appEmailService.sendVerifyEmailWithVerificationUrl(newUser);
+            User userFromDB = this.addUser(newUser);
             
-            return this.addUser(newUser);
+            // send email with verify email
+            this.appEmailService.sendVerifyEmailWithVerificationUrl(userFromDB);
+            
+            return userFromDB;
             
         }
         

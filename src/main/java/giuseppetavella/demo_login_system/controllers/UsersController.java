@@ -6,6 +6,7 @@ import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.EnumHelper;
+import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewUserSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.UpdatedProfileSentDTO;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,8 +46,12 @@ public class UsersController {
      */
     @PutMapping("/me")
     public ProfileToSendDTO updateOwnProfile(@AuthenticationPrincipal User currentUser,
-                                             @RequestBody @Validated UpdatedProfileSentDTO body)
+                                             @RequestBody @Validated UpdatedProfileSentDTO body,
+                                             BindingResult validation)
     {
+
+        PayloadValidationHelper.requireNoErrors(validation);
+        
         return new ProfileToSendDTO(
                 this.usersService.updateOwnProfile(currentUser, body)
         );
@@ -55,11 +61,16 @@ public class UsersController {
     /**
      * Add a user - only admin is authorized.
      */
-    @PostMapping("/")
+    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public NewUserToSendDTO addUser(@AuthenticationPrincipal User currentUser,
-                                     @RequestBody @Validated NewUserSentDTO body)
+                                    @RequestBody @Validated NewUserSentDTO body,
+                                    BindingResult validation)
     {
+
+        PayloadValidationHelper.requireNoErrors(validation);
+        
         // parse a string into actual enum constant, if you can 
         UserRole desiredRole = EnumHelper.parseEnum(UserRole.class, body.role());
         

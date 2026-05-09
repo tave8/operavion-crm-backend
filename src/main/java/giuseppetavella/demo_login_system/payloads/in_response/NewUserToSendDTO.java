@@ -12,6 +12,7 @@ public class NewUserToSendDTO {
     private final String firstname;
     private final String lastname;
     private final String username;
+    private final String role;
     private final String tempPassword;
 
     public NewUserToSendDTO(User user, String tempPassword) 
@@ -21,6 +22,7 @@ public class NewUserToSendDTO {
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.username = user.getUsername();
+        this.role = user.getRole().name();
         this.tempPassword = tempPassword;
     }
 
@@ -30,6 +32,10 @@ public class NewUserToSendDTO {
 
     public String getFirstname() {
         return firstname;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public String getLastname() {

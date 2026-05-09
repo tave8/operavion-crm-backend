@@ -33,6 +33,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
     
+    
     @Column(unique = true)
     private String email;
     

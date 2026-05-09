@@ -89,7 +89,10 @@ public class AuthService {
         }
         
         
-        return new AfterLoginDTO(accessToken);
+        return new AfterLoginDTO(
+                accessToken,
+                "You've logged in successfully."
+            );
         
     }
 
@@ -126,7 +129,10 @@ public class AuthService {
             throw new UnauthorizedException("Wrong credentials.");
         }
 
-        return new AfterLoginDTO(accessToken);
+        return new AfterLoginDTO(
+                accessToken,
+                "You've logged in successfully."
+        );
 
     }
 
@@ -152,7 +158,10 @@ public class AuthService {
         // send email
         this.appEmailService.sendVerifyEmail(newUser, verificationUrl);
         
-        return new AfterSignupDTO(newUser);
+        return new AfterSignupDTO(
+                newUser, 
+                "Signup was successful. We've sent you an email with a link to confirm that it's you."
+        );
     }
 
 
