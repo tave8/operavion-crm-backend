@@ -51,16 +51,18 @@ public class AuthorizationHelper {
      */
     public static void requireAdminAddValidRole(User currentUser, UserRole desiredRoleToAdd) {
         
-        // if user is not even an admin
+        // if given user is not even an admin
         if(!currentUser.getRole().equals(UserRole.ADMIN)) {
-            throw new UnauthorizedException("User is not even admin, it does "
-                                            +"not make sense to ask if it can add roles.");
+            throw new UnauthorizedException("Current user is not even admin, so it cannot "
+                                            +"add users.");
         }
         
-        // if admin is trying to add another admin
+        // an admin cannot add another admin
         if(desiredRoleToAdd.equals(UserRole.ADMIN)) {
             throw new UnauthorizedException("An admin cannot add another admin.");
         }
+        
+        
         
     }
     

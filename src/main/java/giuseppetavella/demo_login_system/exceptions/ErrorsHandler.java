@@ -233,8 +233,14 @@ public class ErrorsHandler {
         String msg = "Error while using an API. DETAILS: " + ex.getMessage();
         return new ErrorsToSendDTO(msg);
     }
-    
 
+    @ExceptionHandler(IncorrectInternalAPIUsage.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleIncorrectInternalAPIUsage(IncorrectInternalAPIUsage ex) {
+        ex.printStackTrace();
+        return new ErrorsToSendDTO("There was an error in the server (Incorrect Internal API Usage).");
+    }
+    
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

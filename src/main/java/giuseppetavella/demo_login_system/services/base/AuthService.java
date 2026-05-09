@@ -152,7 +152,7 @@ public class AuthService {
         Company company = this.companiesService.addCompany(body);
         
         // add the admin and associate it to the company
-        User newUser = this.usersService.addAdmin(body, company);
+        User newUser = this.usersService.addAdminOnlyOnce(body, company);
 
         // send email verification code to the admin
         String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(newUser);

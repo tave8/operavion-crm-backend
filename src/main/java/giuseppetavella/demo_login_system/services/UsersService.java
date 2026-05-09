@@ -108,52 +108,55 @@ public class UsersService {
     
     /**
      * Add a user.
-     * Checks if the email does not exist.
+     * Main method.
+     * Make sure that all custom checks are done,
+     * before calling this method.
      */
-    private User addUser(User user) throws UnauthorizedException  {
+    private User addAnyUser(User user) throws UnauthorizedException  {
+        
+        // if email already exists
         if(this.existsByEmail(user.getEmail())) {
             throw new UnauthorizedException("This email already exists.");
         }
+        
         return this.usersRepository.save(user);
     }
 
+    
+    
     /**
-     * 
-     * Add a user with this role to this company.
-     * 
-     * @param body
-     * @param role
-     * @param company
-     * @return
-     * @throws UnauthorizedException
+     * Add admin only once.
      */
-    private User addUser(SignupSentDTO body, UserRole role, Company company) throws UnauthorizedException {
+    public User addAdminOnlyOnce(SignupSentDTO body, Company company) {
         
-        String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
+        boolean adminAlreadyExists = this.usersRepository.existsByRoleInCompany(
+                UserRole.ADMIN, company
+        ); 
+        
+        // there can only be one admin for this company 
+        if (adminAlreadyExists) {
+            throw new UnauthorizedException(
+                    "While trying to add an admin, at least another admin for company with ID "
+                            + company.getId() + " exists. A company can only have 1 admin "
+                            +"(This could also be an internal API usage error)"
+            );
+        }
         
         String hashedPassword = this.bcrypt.encode(body.password());
-        
+
+        String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
+
         User newUser = new User(
                 company,
                 body.email(),
                 hashedPassword,
                 body.firstname(),
                 body.lastname(),
-                role,
+                UserRole.ADMIN,
                 uniqueUsername
         );
         
-        return this.addUser(newUser);
-    }
-
-    
-    /**
-     * Add admin.
-     */
-    public User addAdmin(SignupSentDTO body, Company company) {
-        // TODO: check that no other admin exists for this company
-        
-        return this.addUser(body, UserRole.ADMIN, company);
+        return this.addAnyUser(newUser);
     }
 
 
@@ -161,11 +164,17 @@ public class UsersService {
      * Add user to company based on role.
      */
     @Transactional
-    public User addUserBasedOnRole(NewUserSentDTO body, 
-                                   UserRole role, 
-                                   Company company, 
-                                   String tempPassword) 
+    public User addNonAdminUserBasedOnRole(NewUserSentDTO body, 
+                                           UserRole role, 
+                                           Company company, 
+                                           String tempPassword) 
     {
+        // you can add only non-admin users
+        if(role.equals(UserRole.ADMIN)) {
+            throw new IncorrectInternalAPIUsage("Cannot add an admin user in a method that "
+                                              +"specifically adds non-admin users.");
+        }
+        
         String hashedTempPassword = this.bcrypt.encode(tempPassword);
 
         String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
@@ -183,7 +192,7 @@ public class UsersService {
                     uniqueUsername
             );
             
-            User userFromDB = this.addUser(newUser);
+            User userFromDB = this.addAnyUser(newUser);
             
             // send email with verify email
             this.appEmailService.sendVerifyEmailWithVerificationUrl(userFromDB);
@@ -205,12 +214,10 @@ public class UsersService {
                     uniqueUsername
             );
             
-            return this.addUser(newUser);    
+            return this.addAnyUser(newUser);    
                 
         }
-        
-        // if role is operator:
-        // - generate temporary password     
+
         
         throw new UnauthorizedException("No logic was defined to add user role '"+role+"' based on role.");
         

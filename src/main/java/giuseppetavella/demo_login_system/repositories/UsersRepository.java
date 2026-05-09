@@ -1,7 +1,9 @@
 package giuseppetavella.demo_login_system.repositories;
 
+import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.ForgotPasswordCode;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -38,6 +40,12 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
      */
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.username) = LOWER(:username)")
     boolean existsByUsername(String username);
+
+    /**
+     * A user with this role already exists in this company?
+     */
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.role = :role AND u.company = :company")
+    boolean existsByRoleInCompany(UserRole role, Company company);
     
     /**
      * Set new password.

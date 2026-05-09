@@ -24,8 +24,8 @@ public class EnumHelper {
         } catch (IllegalArgumentException e) {
 
             throw new InvalidDataFormatException("While casting a string into an "
-                    +"actual enum constant, the value '" 
-                    + value + "' is not valid for enum " + enumClass.getSimpleName());            
+                                        +"actual enum constant, the value '" 
+                                        + value + "' is not valid for enum " + enumClass.getSimpleName());            
         }
 
     }

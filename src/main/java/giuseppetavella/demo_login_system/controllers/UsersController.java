@@ -59,14 +59,14 @@ public class UsersController {
 
     
     /**
-     * Add a user - only admin is authorized.
+     * Add a non-admin user - only admin is authorized.
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public NewUserToSendDTO addUser(@AuthenticationPrincipal User currentUser,
-                                    @RequestBody @Validated NewUserSentDTO body,
-                                    BindingResult validation)
+    public NewUserToSendDTO addNonAdminUser(@AuthenticationPrincipal User currentUser,
+                                            @RequestBody @Validated NewUserSentDTO body,
+                                            BindingResult validation)
     {
 
         PayloadValidationHelper.requireNoErrors(validation);
@@ -92,7 +92,7 @@ public class UsersController {
         
         String tempPassword = StringHelper.generatePassword();
         
-        User newUser = this.usersService.addUserBasedOnRole(body, desiredRole, company, tempPassword);
+        User newUser = this.usersService.addNonAdminUserBasedOnRole(body, desiredRole, company, tempPassword);
         
         return new NewUserToSendDTO(newUser, tempPassword);
     }
