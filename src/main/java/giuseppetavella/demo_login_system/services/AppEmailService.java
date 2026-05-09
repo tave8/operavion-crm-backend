@@ -6,6 +6,7 @@ import giuseppetavella.demo_login_system.jobs.JobExecution;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
 import giuseppetavella.demo_login_system.services.base.EmailService;
+import giuseppetavella.demo_login_system.services.base.EmailVerificationService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +27,8 @@ import java.util.Map;
 @Service
 public class AppEmailService extends EmailService {
  
+    @Autowired
+    private EmailVerificationService emailVerificationService;
     
     @Autowired
     private AppPdfService appPdfService;
@@ -36,18 +39,7 @@ public class AppEmailService extends EmailService {
         this.serverUrl = serverUrl;
     }
 
-
-    /**
-     * Send welcome email on signup.
-     */
-    // public void sendWelcome() {
-    //     Context context = new Context();
-    //     context.setVariable("firstname", "Giuseppe");
-    //
-    //     String htmlBody = templateEngine.process("emails/signup", context);
-    //    
-    //     this.sendEmail("giuseppetavella8@gmail.com", "Welcome!", htmlBody);
-    // }
+    
 
     /**
      * Send verify your account email.
@@ -68,6 +60,17 @@ public class AppEmailService extends EmailService {
                 "Conferma la tua email"
         );
         
+    }
+
+    /**
+     * Generate a new code verification email code 
+     * and send an email with that.
+     */
+    public void sendVerifyEmailWithVerificationUrl(User user) throws EmailSendingException
+    {
+        String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(user);
+        
+        this.sendVerifyEmail(user, verificationUrl);
     }
 
 

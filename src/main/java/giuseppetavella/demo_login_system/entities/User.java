@@ -6,6 +6,7 @@ import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
 import jakarta.persistence.*;
+import org.apache.tika.utils.AnnotationUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,7 +33,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
     
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
     
     @Column(nullable = false, unique = true)
@@ -63,7 +64,7 @@ public class User implements UserDetails {
     protected User() {}
     
     public User(Company company,
-                String email, 
+                @Nullable String email, 
                 String password, 
                 String firstname, 
                 String lastname, 
@@ -71,7 +72,14 @@ public class User implements UserDetails {
                 String username) 
     {
         this.company = company;
-        this.email = email.toLowerCase().trim();
+        
+        // if email is null or not
+        if(email == null) {
+            this.email = null;
+        } else {
+            this.email = email.toLowerCase().trim();
+        }
+        
         this.password = password;
         this.role = role;
         this.username = username;
@@ -193,7 +201,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.helpers;
 
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 
@@ -39,6 +40,26 @@ public class AuthorizationHelper {
         if(user.getId() == null) {
             throw new UnauthorizedException("User is not null but does not seem to exist "
                                             +"in database either (assumption).");
+        }
+        
+    }
+
+
+    /**
+     * The admin cannot add another admin.
+     * The admin can only add other roles.
+     */
+    public static void requireAdminAddValidRole(User currentUser, UserRole desiredRoleToAdd) {
+        
+        // if user is not even an admin
+        if(!currentUser.getRole().equals(UserRole.ADMIN)) {
+            throw new UnauthorizedException("User is not even admin, it does "
+                                            +"not make sense to ask if it can add roles.");
+        }
+        
+        // if admin is trying to add another admin
+        if(desiredRoleToAdd.equals(UserRole.ADMIN)) {
+            throw new UnauthorizedException("An admin cannot add another admin.");
         }
         
     }

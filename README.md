@@ -17,6 +17,7 @@
     GET /me               (get my profile)
     PUT /me                (update my profile)
     POST /me/avatar-image     (upload my new avatar image)
+    POST /                  (add a user, only admin authorization)
 
 
 /notifications

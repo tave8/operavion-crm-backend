@@ -4,6 +4,8 @@ import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.*;
+import giuseppetavella.demo_login_system.helpers.StringHelper;
+import giuseppetavella.demo_login_system.payloads.in_request.NewUserSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.UpdatedProfileSentDTO;
 import giuseppetavella.demo_login_system.repositories.UsersRepository;
@@ -20,6 +22,9 @@ public class UsersService {
     
     @Autowired
     private UsersRepository usersRepository;
+    
+    @Autowired
+    private AppEmailService appEmailService;
 
     @Autowired
     private PasswordEncoder bcrypt;
@@ -104,7 +109,7 @@ public class UsersService {
      * Add a user.
      * Checks if the email does not exist.
      */
-    public User addUser(User user) throws UnauthorizedException  {
+    private User addUser(User user) throws UnauthorizedException  {
         if(this.existsByEmail(user.getEmail())) {
             throw new UnauthorizedException("This email already exists.");
         }
@@ -121,7 +126,7 @@ public class UsersService {
      * @return
      * @throws UnauthorizedException
      */
-    public User addUser(SignupSentDTO body, UserRole role, Company company) throws UnauthorizedException {
+    private User addUser(SignupSentDTO body, UserRole role, Company company) throws UnauthorizedException {
         
         String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
         
@@ -138,6 +143,73 @@ public class UsersService {
         );
         
         return this.addUser(newUser);
+    }
+
+    
+    /**
+     * Add admin.
+     */
+    public User addAdmin(SignupSentDTO body, Company company) {
+        // TODO: check that no other admin exists for this company
+        
+        return this.addUser(body, UserRole.ADMIN, company);
+    }
+
+
+    /**
+     * Add user to company based on role.
+     */
+    public User addUserBasedOnRole(NewUserSentDTO body, 
+                                   UserRole role, 
+                                   Company company, 
+                                   String tempPassword) 
+    {
+        String hashedTempPassword = this.bcrypt.encode(tempPassword);
+
+        String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
+        
+        // if role is coordinator:
+        if(role.equals(UserRole.COORDINATOR)) {
+            
+            User newUser = new User(
+                    company,
+                    body.email(),
+                    hashedTempPassword,
+                    body.firstname(),
+                    body.lastname(),
+                    role,
+                    uniqueUsername
+            );
+            
+            // send email with verify email
+            this.appEmailService.sendVerifyEmailWithVerificationUrl(newUser);
+            
+            return this.addUser(newUser);
+            
+        }
+        
+        // if role is operator
+        if(role.equals(UserRole.OPERATOR)) {
+
+            User newUser = new User(
+                    company,
+                    null,
+                    hashedTempPassword,
+                    body.firstname(),
+                    body.lastname(),
+                    role,
+                    uniqueUsername
+            );
+            
+            return this.addUser(newUser);    
+                
+        }
+        
+        // if role is operator:
+        // - generate temporary password     
+        
+        throw new UnauthorizedException("No logic was defined to add user role '"+role+"' based on role.");
+        
     }
 
 
