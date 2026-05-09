@@ -35,6 +35,9 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
     
+    @Column(nullable = false, unique = true)
+    private String username;
+    
     @Column(nullable = false)
     private String password;
     
@@ -64,12 +67,14 @@ public class User implements UserDetails {
                 String password, 
                 String firstname, 
                 String lastname, 
-                UserRole role) 
+                UserRole role,
+                String username) 
     {
         this.company = company;
         this.email = email.toLowerCase().trim();
         this.password = password;
         this.role = role;
+        this.username = username;
         this.verifiedEmail = false;
         this.setFirstname(firstname);
         this.setLastname(lastname);

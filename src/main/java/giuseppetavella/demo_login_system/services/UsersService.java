@@ -105,6 +105,9 @@ public class UsersService {
      * @throws UnauthorizedException
      */
     public User addUser(SignupSentDTO body, UserRole role, Company company) throws UnauthorizedException {
+        
+        String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
+        
         String hashedPassword = this.bcrypt.encode(body.password());
         
         User newUser = new User(
@@ -113,7 +116,8 @@ public class UsersService {
                 hashedPassword,
                 body.firstname(),
                 body.lastname(),
-                role
+                role,
+                uniqueUsername
         );
         
         return this.addUser(newUser);
@@ -150,6 +154,41 @@ public class UsersService {
         // save user      
         return this.usersRepository.save(user);
 
+    }
+
+
+    /**
+     * Generate a unique username.
+     * 
+     * @param firstname
+     * @param lastname
+     * @return
+     */
+    public String generateUniqueUsernameFrom(String firstname, String lastname) {
+
+        final int NUMBER_LENGTH = 4;
+
+        // base = "mario.rossi"
+        String base = firstname.toLowerCase().trim() + "." + lastname.toLowerCase().trim();
+
+        String username;
+
+        do {
+            // Generate a random number with NUMBER_LENGTH digits
+            // e.g. Math.pow(10, 6) = 1000000
+            // Math.random() * 1000000 = 324234.123
+            // (int) 324234.123 = 324234
+            int randomNumber = (int) (Math.random() * Math.pow(10, NUMBER_LENGTH));
+
+            // Concatenate base + number
+            // e.g. "mario.rossi" + 324234 = "mario.rossi324234"
+            username = base + randomNumber;
+
+        } while (this.usersRepository.existsByUsername(username));
+        // Keep looping if the username already exists in the DB
+        // Exit when a unique one is found
+
+        return username;
     }
     
 }

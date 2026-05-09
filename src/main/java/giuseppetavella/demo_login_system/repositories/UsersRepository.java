@@ -27,6 +27,11 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     boolean existsByEmail(String email);
 
+    /**
+     * The user with this username exists?
+     */
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.username) = LOWER(:username)")
+    boolean existsByUsername(String username);
     
     /**
      * Set new password.
