@@ -231,6 +231,20 @@ public class User implements UserDetails {
     }
 
     /**
+     * Has the password of this user been changed, 
+     * only if it is required?
+     */
+    public boolean isPasswordChangedIfRequired()
+    {
+        if(this.isPasswordChangeRequired()) {
+            return this.isPasswordChanged();
+        }
+        
+        return true;
+    }
+    
+
+    /**
      * Mark this user/account as a verified email.
      */
     public void markAsVerifiedEmail() throws EmailVerificationException {

@@ -240,7 +240,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
 
         // *************************
-        // USER HAS NOT VERIFIED THEIR EMAIL
+        // USER MUST VERIFY THEIR EMAIL AND HAS NOT
         // *************************
         
         // if user has not verified their email, only 
@@ -251,6 +251,20 @@ public class TokenFilter extends OncePerRequestFilter {
                                                             + "' has not verified their email.");
             return;
         }
+
+        
+        // *************************
+        // USER MUST CHANGE THEIR PASSWORD AND HAS NOT
+        // *************************
+        // if(!currentUser.isVerifiedEmailIfRequired()) {
+        //     this.sendForbiddenErrorResponse(response, "The user with ID '"
+        //             + currentUser.getId()
+        //             + "' has not verified their email.");
+        //     return;
+        // }
+
+
+
 
         // 3. now we need to make this user available to the Security Context
         Authentication authentication = new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities());
