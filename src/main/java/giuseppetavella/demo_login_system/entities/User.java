@@ -62,6 +62,12 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
     
+    @Column(name = "password_change_required", nullable = false)
+    private boolean passwordChangeRequired;
+    
+    @Column(name = "password_changed", nullable = false)
+    private boolean passwordChanged;
+    
     protected User() {}
     
     public User(Company company,
@@ -81,6 +87,20 @@ public class User implements UserDetails {
             this.email = email.toLowerCase().trim();
         }
         
+        // only admin does not have to change password 
+        // (we assume at login, however this field could be changed,
+        // to force the user to change password)
+        if(role.equals(UserRole.ADMIN)) {
+            this.passwordChangeRequired = false;
+        } 
+        // all other roles must change their password,
+        // when first created
+        else {
+            this.passwordChangeRequired = true;
+        }
+        
+        this.passwordChanged = false;
+
         this.password = password;
         this.role = role;
         this.username = username;
@@ -108,7 +128,16 @@ public class User implements UserDetails {
         
         return user1.getId().equals(user2.getId());
     }
-    
+
+    /**
+     * The user must change password right now if:
+     * - password change is required
+     * - password was not changed
+     * @return
+     */
+    public boolean mustChangePasswordNow() {
+        return this.isPasswordChangeRequired() && !this.isPasswordChanged();
+    }
 
     public String getAvatarUrl() {
         return avatarUrl;
@@ -126,7 +155,14 @@ public class User implements UserDetails {
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
-    
+
+    public boolean isPasswordChanged() {
+        return passwordChanged;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
 
     public String getEmail() {
         return email;

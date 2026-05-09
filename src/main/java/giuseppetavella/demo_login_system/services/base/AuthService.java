@@ -91,6 +91,7 @@ public class AuthService {
         
         return new AfterLoginDTO(
                 accessToken,
+                userFound,
                 "You've logged in successfully."
             );
         
@@ -131,6 +132,7 @@ public class AuthService {
 
         return new AfterLoginDTO(
                 accessToken,
+                userFound,
                 "You've logged in successfully."
         );
 

@@ -262,7 +262,9 @@ public class UsersService {
         final int NUMBER_LENGTH = 4;
 
         // base = "mario.rossi"
-        String base = firstname.toLowerCase().trim() + "." + lastname.toLowerCase().trim();
+        String base = firstname.toLowerCase().trim().replace(" ", "")
+                + "."
+                + lastname.toLowerCase().trim().replace(" ", "");
 
         String username;
 
