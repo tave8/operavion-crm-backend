@@ -71,7 +71,7 @@ public class EmailVerificationService {
         User userFromDB;
 
         try {
-            userFromDB = this.usersService.findById(codeFromDB.getUser().getUserId());
+            userFromDB = this.usersService.findById(codeFromDB.getUser().getId());
 
         } catch(NotFoundException ex) {
             // "While verifying email verification code, user was not found. "

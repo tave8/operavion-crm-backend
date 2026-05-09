@@ -96,7 +96,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         
         User user = maybeNextUser.get();
         
-        return new JobExecutionItem<>(user, user.getUserId());
+        return new JobExecutionItem<>(user, user.getId());
         
     }
 
@@ -111,7 +111,7 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
 
         User user = maybeNextUser.get();
 
-        return new JobExecutionItem<>(user, user.getUserId());
+        return new JobExecutionItem<>(user, user.getId());
         
     }
 

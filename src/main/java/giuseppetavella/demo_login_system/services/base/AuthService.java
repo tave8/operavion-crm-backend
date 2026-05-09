@@ -1,25 +1,32 @@
 package giuseppetavella.demo_login_system.services.base;
 
+import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import giuseppetavella.demo_login_system.payloads.in_request.LoginSentDTO;
-import giuseppetavella.demo_login_system.payloads.in_request.RegistrationSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.AfterRegistrationDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
 import giuseppetavella.demo_login_system.security.TokenTools;
 import giuseppetavella.demo_login_system.services.AppEmailService;
+import giuseppetavella.demo_login_system.services.CompaniesService;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
 
     @Autowired
     private UsersService usersService;
+    
+    @Autowired
+    private CompaniesService companiesService;
 
     @Autowired
     private TokenTools tokenTools;
@@ -87,20 +94,38 @@ public class AuthService {
 
 
     /**
-     * Register/sign up a user.
+     *  Login an operator.
      */
-    public AfterRegistrationDTO signup(RegistrationSentDTO body) {
-        
-        // add a user to DB
-        User newUser = this.usersService.addUser(body);
+    // public AfterLoginDTO loginOperator(OperatorLoginSentDTO body) throws NotFoundException 
+    // {
+    //
+    //   
+    //
+    // }
 
-        // send email verification code to this user
+
+
+
+    /**
+     * Sign up a company + admin user.
+     */
+    @Transactional
+    public AfterSignupDTO signup(SignupSentDTO body) 
+    {
+        
+        // add company to DB
+        Company company = this.companiesService.addCompany(body);
+        
+        // add the admin and associate it to the company
+        User newUser = this.usersService.addUser(body, UserRole.ADMIN, company);
+
+        // send email verification code to the admin
         String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(newUser);
         
-        // sends email
+        // send email
         this.appEmailService.sendVerifyEmail(newUser, verificationUrl);
         
-        return new AfterRegistrationDTO(newUser);
+        return new AfterSignupDTO(newUser);
     }
 
 

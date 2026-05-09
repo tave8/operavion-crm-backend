@@ -4,11 +4,11 @@ import giuseppetavella.demo_login_system.entities.User;
 
 import java.util.UUID;
 
-public class AfterRegistrationDTO {
+public class AfterSignupDTO {
     private final UUID userId;
     
-    public AfterRegistrationDTO(User user) {
-        this.userId = user.getUserId();    
+    public AfterSignupDTO(User user) {
+        this.userId = user.getId();    
     }
 
     public UUID getUserId() {

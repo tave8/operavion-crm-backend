@@ -246,7 +246,7 @@ public class TokenFilter extends OncePerRequestFilter {
         // if user has not verified their email,
         if(!currentUser.isVerifiedEmail()) {
             this.sendForbiddenErrorResponse(response, "The user with ID '" 
-                                                            + currentUser.getUserId() 
+                                                            + currentUser.getId() 
                                                             + "' has not verified their email.");
             return;
         }

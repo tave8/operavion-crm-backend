@@ -1,8 +1,10 @@
 package giuseppetavella.demo_login_system.services;
 
+import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.*;
-import giuseppetavella.demo_login_system.payloads.in_request.RegistrationSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.UpdatedProfileSentDTO;
 import giuseppetavella.demo_login_system.repositories.UsersRepository;
 import giuseppetavella.demo_login_system.services.base.ImageUploadService;
@@ -91,15 +93,27 @@ public class UsersService {
         }
         return this.usersRepository.save(user);
     }
-    
-    public User addUser(RegistrationSentDTO body) throws UnauthorizedException {
+
+    /**
+     * 
+     * Add a user with this role to this company.
+     * 
+     * @param body
+     * @param role
+     * @param company
+     * @return
+     * @throws UnauthorizedException
+     */
+    public User addUser(SignupSentDTO body, UserRole role, Company company) throws UnauthorizedException {
         String hashedPassword = this.bcrypt.encode(body.password());
         
         User newUser = new User(
+                company,
                 body.email(),
                 hashedPassword,
                 body.firstname(),
-                body.lastname()
+                body.lastname(),
+                role
         );
         
         return this.addUser(newUser);

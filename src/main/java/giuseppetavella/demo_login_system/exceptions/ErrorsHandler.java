@@ -174,7 +174,7 @@ public class ErrorsHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorsToSendDTO handleMissingRoute(NoResourceFoundException ex) {
-        String msg = "Questa risorsa sembra non esistere, o non esiste questo endpoint.";
+        String msg = "This resource does not exist, or this endpoint does not exist.";
         return new ErrorsToSendDTO(msg);
     }
 
@@ -240,7 +240,7 @@ public class ErrorsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleGenericException(Exception ex) {
         ex.printStackTrace();
-        return new ErrorsToSendDTO("C'è stato un error nei server. Stiamo risolvendo.");
+        return new ErrorsToSendDTO("There was an error in the server.");
     }
 
 }

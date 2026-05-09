@@ -36,7 +36,7 @@ public class AuthorizationHelper {
         }
         
         // user is not null, but its ID is null
-        if(user.getUserId() == null) {
+        if(user.getId() == null) {
             throw new UnauthorizedException("User is not null but does not seem to exist "
                                             +"in database either (assumption).");
         }

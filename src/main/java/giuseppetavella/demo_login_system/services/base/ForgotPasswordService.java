@@ -140,7 +140,7 @@ public class ForgotPasswordService {
             this.requireNotClickedCode(code);
             
             // the code must belong to a user that exists
-            User owner = this.usersService.findById(code.getUser().getUserId());
+            User owner = this.usersService.findById(code.getUser().getId());
             
             // the code must belong to a user with verified email
             this.requireVerifiedEmail(owner);
@@ -199,7 +199,7 @@ public class ForgotPasswordService {
             this.requireClickedCode(code);
 
             // the code must belong to a user that exists
-            User owner = this.usersService.findById(code.getUser().getUserId());
+            User owner = this.usersService.findById(code.getUser().getId());
 
             // the code must belong to a user with verified email
             this.requireVerifiedEmail(owner);

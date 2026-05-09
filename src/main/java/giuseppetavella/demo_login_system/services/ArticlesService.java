@@ -33,7 +33,7 @@ public class ArticlesService {
      * the owner of the article?
      */
     public boolean isMyArticle(User owner, User maybeOwner) {
-        return owner.getUserId().equals(maybeOwner.getUserId());
+        return owner.getId().equals(maybeOwner.getId());
     } 
 
     /**
@@ -97,7 +97,7 @@ public class ArticlesService {
      * Checks if the user exists.
      */
     public Article addArticle(Article article) throws NotFoundException {
-        boolean userExists = this.usersService.existsById(article.getUser().getUserId());
+        boolean userExists = this.usersService.existsById(article.getUser().getId());
         if(!userExists) {
             throw new UnauthorizedException("The user associated with this article does not exist in DB.");
         }

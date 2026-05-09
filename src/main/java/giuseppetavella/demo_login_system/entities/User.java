@@ -26,7 +26,11 @@ public class User implements UserDetails {
     
     @Id
     @GeneratedValue
-    private UUID userId;
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
     
     @Column(nullable = false, unique = true)
     private String email;
@@ -47,7 +51,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
     
-    @Column(nullable = false)
+    @Column(name = "verified_email", nullable = false)
     private boolean verifiedEmail;
     
     @Column(name = "created_at", nullable = false)
@@ -55,23 +59,24 @@ public class User implements UserDetails {
     
     protected User() {}
     
-    public User(String email, String password, String firstname, String lastname, UserRole role) {
-        this.email = email.toLowerCase();
+    public User(Company company,
+                String email, 
+                String password, 
+                String firstname, 
+                String lastname, 
+                UserRole role) 
+    {
+        this.company = company;
+        this.email = email.toLowerCase().trim();
         this.password = password;
         this.role = role;
+        this.verifiedEmail = false;
         this.setFirstname(firstname);
         this.setLastname(lastname);
         this.setAvatarUrl(this.getDefaultAvatarUrl());
         this.createdAt = OffsetDateTime.now();
     }
-
-    /**
-     * Default user role is USER
-     */
-    public User(String email, String password, String firstname, String lastname) {
-        this(email, password, firstname, lastname, UserRole.USER);    
-    }
-
+    
 
     /**
      * Are the given users the same?
@@ -87,7 +92,7 @@ public class User implements UserDetails {
             );
         }
         
-        return user1.getUserId().equals(user2.getUserId());
+        return user1.getId().equals(user2.getId());
     }
     
 
@@ -116,6 +121,11 @@ public class User implements UserDetails {
     public String getFirstname() {
         return firstname;
     }
+
+    public Company getCompany() {
+        return company;
+    }
+    
 
     public void setFirstname(String firstname) throws InvalidDataException {
         if(firstname == null) {
@@ -159,8 +169,8 @@ public class User implements UserDetails {
         return role;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UUID getId() {
+        return id;
     }
     
 
@@ -184,7 +194,7 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return "User{" +
-                ", userId=" + userId +
+                ", id=" + id +
                 ", email='" + email + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +

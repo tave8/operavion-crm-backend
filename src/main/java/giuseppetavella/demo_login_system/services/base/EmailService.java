@@ -5,7 +5,9 @@ import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.Attachment;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
+import giuseppetavella.demo_login_system.enums.internal.Language;
 import giuseppetavella.demo_login_system.exceptions.HtmlTemplateException;
+import giuseppetavella.demo_login_system.helpers.LanguageHelper;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.services.file_generators.HtmlTemplateService;
@@ -143,6 +145,29 @@ public class EmailService {
 
     }
 
+    public String sendEmailFromTemplateWithDefaultLanguage(String template,
+                                                    Map<String, Object> vars,
+                                                    String recipient,
+                                                    String subject) throws HtmlTemplateException
+    {
+
+        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
+
+    }
+
+    public String sendEmailFromTemplateWithLanguage(String templateAfterLanguage,
+                                                   Map<String, Object> vars,
+                                                   String recipient,
+                                                   String subject) throws HtmlTemplateException
+    {
+
+        String lang = LanguageHelper.getLanguage().getValue();
+        
+        String templatePathWithLanguage = lang + "/" + templateAfterLanguage;
+        
+        return this.sendEmailFromTemplate(templatePathWithLanguage, vars, recipient, subject, List.of());
+
+    }
     
     /**
      * Build the email params.
@@ -159,6 +184,8 @@ public class EmailService {
                 .subject(subject)
                 .html(html)
                 .attachments(attachments)
+                // for now i get the response
+                .replyTo("giuseppetavella8@gmail.com")
                 .build();
     }
 

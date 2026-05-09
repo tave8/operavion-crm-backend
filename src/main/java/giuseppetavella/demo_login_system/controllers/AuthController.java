@@ -5,16 +5,15 @@ package giuseppetavella.demo_login_system.controllers;
 import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.ForgotPasswordVerificationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
-import giuseppetavella.demo_login_system.exceptions.PayloadValidationException;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.LoginSentDTO;
-import giuseppetavella.demo_login_system.payloads.in_request.RegistrationSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordNewPasswordSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordRequestWithEmailSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.VerifyForgotPasswordCodeSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.AfterRegistrationDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.forgot_password.ForgotPasswordToSendDTO;
 import giuseppetavella.demo_login_system.services.base.AuthService;
 import giuseppetavella.demo_login_system.services.base.EmailVerificationService;
@@ -25,7 +24,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -48,26 +46,43 @@ public class AuthController {
     // ************************************
     
     /**
-     * Login a user.
+     * Login a company + user admin.
      */
     @PostMapping("/login")
-    public AfterLoginDTO login(@RequestBody @Validated LoginSentDTO body) {
+    public AfterLoginDTO login(@RequestBody @Validated LoginSentDTO body, 
+                               BindingResult validation) 
+    {
+        
+        PayloadValidationHelper.requireNoErrors(validation);
+        
         return authService.login(body);
     }
 
 
     /**
+     * Login an operator.
+     */
+    // @PostMapping("/login-operator")
+    // public AfterLoginDTO loginOperator(@RequestBody @Validated OperatorLoginSentDTO body,
+    //                                     BindingResult validation)
+    // {
+    //
+    //     PayloadValidationHelper.requireNoErrors(validation);
+    //
+    //     return authService.loginOperator(body);
+    // }
+
+
+    /**
      * Sign up a user.
      */
-    @PostMapping("/register")
+    @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public AfterRegistrationDTO register(@RequestBody @Validated RegistrationSentDTO body,
-                                         BindingResult validation) {
+    public AfterSignupDTO signup(@RequestBody @Validated SignupSentDTO body,
+                                   BindingResult validation) 
+    {
 
-        if (validation.hasErrors()) {
-            List<String> errors = validation.getFieldErrors().stream().map(error -> error.getDefaultMessage()).toList();
-            throw new PayloadValidationException(errors);
-        }
+        PayloadValidationHelper.requireNoErrors(validation);
         
         return this.authService.signup(body);
 

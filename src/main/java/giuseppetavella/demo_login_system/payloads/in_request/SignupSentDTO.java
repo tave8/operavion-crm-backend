@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record RegistrationSentDTO(
+public record SignupSentDTO(
         
         @NotBlank(message = "Missing 'email' field.")
         @Email(message = "Email must be valid.")
@@ -20,7 +20,11 @@ public record RegistrationSentDTO(
 
         @NotBlank(message = "Missing 'lastname' field.")
         @Size(min = 2, max = 30, message = "Lastname must have between 2 and 30 characters.")
-        String lastname
+        String lastname,
+
+        @NotBlank(message = "Missing 'legalName' field.")
+        @Size(min = 2, max = 30, message = "Legal name must have between 2 and 30 characters.")
+        String legalName
 ) 
 {
 }

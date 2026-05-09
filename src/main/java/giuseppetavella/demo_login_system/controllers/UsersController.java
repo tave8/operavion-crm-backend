@@ -26,7 +26,7 @@ public class UsersController {
     public ProfileToSendDTO getOwnProfile(@AuthenticationPrincipal User currentUser)
     {
         return new ProfileToSendDTO(
-                this.usersService.findById(currentUser.getUserId())
+                this.usersService.findById(currentUser.getId())
         );
     }
     

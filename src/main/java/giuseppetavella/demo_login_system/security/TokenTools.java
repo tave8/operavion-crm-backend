@@ -39,7 +39,7 @@ public class TokenTools {
     }
 
     public String generateToken(User user) {
-        return this.generateToken(user.getUserId().toString());
+        return this.generateToken(user.getId().toString());
     }
 
     public void verifyToken(String token) {

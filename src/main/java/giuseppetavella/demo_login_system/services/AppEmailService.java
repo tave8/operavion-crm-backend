@@ -65,7 +65,7 @@ public class AppEmailService extends EmailService {
                 "emails/verify_email",
                 vars,
                 user.getEmail(),
-                "Verify your email"
+                "Conferma la tua email"
         );
         
     }

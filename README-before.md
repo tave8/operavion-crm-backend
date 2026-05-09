@@ -5,12 +5,11 @@
 ```
 
 /auth
-    POST /login                         (login for manager)
-    POST /login-operator                (login for operator)
-    POST /signup                        (create new company + user with role admin)
-    GET  /verify-email/:code            (when user clicks link in email - mark the user with this email as verified)
+    POST /login                         (login)
+    POST /register                      (create new profile/account)
+    GET  /verify-email/:code            (mark the account with this email as verified)
     POST /forgot-password/request       (is this email authorized to set a new password?)
-    POST /forgot-password/verify        (can this email set a new password right now?)
+    POST /forgot-password/verify  (can this email set a new password right now?)
     POST /forgot-password/reset         (set a new password right now)
 
 /users
@@ -62,28 +61,11 @@ Response
 accessToken: str
 ```
 
-
-### POST /login-operator
-
-Request
-
-```
-username: str
-password: str
-```
-
-Response
-
-```
-accessToken: str
-```
-
-### POST /signup
+### POST /register
 
 Request 
 
 ```
-legalName: str
 email: str
 password: str
 firstname: str

@@ -15,7 +15,7 @@ public class ProfileToSendDTO {
     private final OffsetDateTime createdAt;
     
     public ProfileToSendDTO(User user) {
-        this.userId = user.getUserId();
+        this.userId = user.getId();
         this.email = user.getEmail();
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
