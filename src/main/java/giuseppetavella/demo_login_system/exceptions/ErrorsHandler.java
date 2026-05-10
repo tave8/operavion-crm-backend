@@ -100,7 +100,7 @@ public class ErrorsHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorsToSendDTO handleAuthorizationDenied(AuthorizationDeniedException ex) {
-        return new ErrorsToSendDTO("Non hai la giusta autorizzazzione. DETTAGLI: "+ ex.getMessage());
+        return new ErrorsToSendDTO("You don't have the right authorization. DETAILS: "+ ex.getMessage());
     }
 
     @ExceptionHandler(PayloadValidationException.class)

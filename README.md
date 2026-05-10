@@ -20,6 +20,7 @@
     GET /me               (get my profile)
     PUT /me                (update my profile)
     POST /me/avatar-image     (upload my new avatar image)
+    GET /                   (get my users, aka my team)
     POST /                  (add a user, only admin authorization)
 
 

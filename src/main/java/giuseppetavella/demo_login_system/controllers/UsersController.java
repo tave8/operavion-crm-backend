@@ -14,6 +14,7 @@ import giuseppetavella.demo_login_system.payloads.in_response.NewUserToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -57,6 +58,33 @@ public class UsersController {
         );
     }
 
+
+    /**
+     * Get my users, aka my team.
+     * It means, all users of my company, except admin.
+     */
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Page<ProfileToSendDTO> getMyUsers(@AuthenticationPrincipal User currentUser
+                                             // @RequestParam(value = "role", required = false) String notificationType,
+                                             // @RequestParam(value = "page", defaultValue = "0") int page,
+                                             // @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                             // @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+                                             // @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder
+    ) 
+    {
+        // the current logged in user (the admin)
+        // has the company
+        // so we get users of its company
+        
+        Company company = currentUser.getCompany();
+    
+        Page<User> usersPage = this.usersService.getNonAdminUsersByCompany(company);
+        
+        return usersPage.map(user -> new ProfileToSendDTO(user));
+        
+    }
+        
     
     /**
      * Add a non-admin user - only admin is authorized.

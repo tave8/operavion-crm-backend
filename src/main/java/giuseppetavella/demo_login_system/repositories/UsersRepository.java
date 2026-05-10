@@ -4,6 +4,8 @@ import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.ForgotPasswordCode;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.UserRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -46,7 +48,26 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
      */
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.role = :role AND u.company = :company")
     boolean existsByRoleInCompany(UserRole role, Company company);
-    
+
+
+    /**
+     * Get all users of the given company.
+     */
+    @Query("SELECT u FROM User u WHERE u.company = :company")
+    Page<User> getUsersByCompany(Company company, Pageable pageable);
+
+
+    /**
+     * Get all users of the given company, except given role.
+     */
+    @Query("SELECT u FROM User u WHERE u.company = :company AND u.role != :roleToExclude")
+    Page<User> getUsersByCompanyExceptRole(
+            Company company, 
+            UserRole roleToExclude,
+            Pageable pageable
+    );
+
+
     /**
      * Set new password.
      * This must be done with caution, only after all security steps

@@ -11,6 +11,10 @@ import giuseppetavella.demo_login_system.payloads.in_request.UpdatedProfileSentD
 import giuseppetavella.demo_login_system.repositories.UsersRepository;
 import giuseppetavella.demo_login_system.services.base.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -253,6 +257,55 @@ public class UsersService {
 
         // save user      
         return this.usersRepository.save(user);
+
+    }
+
+
+    /**
+     * Get all users of the given company
+     */
+    public Page<User> getUsersByCompany(Company company) 
+    {
+        String sortBy = "createdAt";
+        String sortOrder = "desc";
+        int finalPage = 0;
+        int finalSize = 1000;
+
+        // int finalSize = Math.clamp(pageSize, 1, 10);
+
+        // int finalPage = Math.max(0, page);
+
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
+        
+        return this.usersRepository.getUsersByCompany(company, pageable);
+        
+    }
+
+    /**
+     * Get all users of the given company, except admin
+     */
+    public Page<User> getNonAdminUsersByCompany(Company company)
+    {
+        String sortBy = "createdAt";
+        String sortOrder = "desc";
+        int finalPage = 0;
+        int finalSize = 1000;
+
+        // int finalSize = Math.clamp(pageSize, 1, 10);
+
+        // int finalPage = Math.max(0, page);
+
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
+
+        return this.usersRepository.getUsersByCompanyExceptRole(company, UserRole.ADMIN, pageable);
 
     }
 
