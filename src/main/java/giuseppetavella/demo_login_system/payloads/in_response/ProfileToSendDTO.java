@@ -15,6 +15,7 @@ public class ProfileToSendDTO {
     private final OffsetDateTime createdAt;
     private final String role;
     private final String username;
+    private final boolean mustChangePasswordNow;
     
     public ProfileToSendDTO(User user) {
         this.userId = user.getId();
@@ -25,6 +26,7 @@ public class ProfileToSendDTO {
         this.createdAt = user.getCreatedAt();
         this.role = user.getRole().name();
         this.username = user.getUsername();
+        this.mustChangePasswordNow = user.mustChangePasswordNow();
     }
 
     public String getAvatarUrl() {
@@ -57,5 +59,9 @@ public class ProfileToSendDTO {
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public boolean isMustChangePasswordNow() {
+        return mustChangePasswordNow;
     }
 }
