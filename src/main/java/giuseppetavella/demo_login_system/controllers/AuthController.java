@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.controllers;
 
 
 // import giuseppetavella.demo_login_system.services.base.AuthService;
+import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.ForgotPasswordVerificationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
@@ -13,14 +14,17 @@ import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordNewPasswordSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.ForgotPasswordRequestWithEmailSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.forgot_password.VerifyForgotPasswordCodeSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.reset_password.ResetPasswordOldPasswordSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.forgot_password.ForgotPasswordToSendDTO;
 import giuseppetavella.demo_login_system.services.base.AuthService;
 import giuseppetavella.demo_login_system.services.base.EmailVerificationService;
 import giuseppetavella.demo_login_system.services.base.ForgotPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -88,6 +92,27 @@ public class AuthController {
         return this.authService.signup(body);
 
     }
+
+    // ************************************
+    // RESET PASSWORD AT FIRST LOGIN
+    // ************************************
+    
+    /**
+     * Reset password at first login.
+     */
+    @PostMapping("/reset-password-first-login")
+    public ProfileToSendDTO resetPasswordAtFirstLoging(@RequestBody @Validated ResetPasswordOldPasswordSentDTO body,
+                                                        @AuthenticationPrincipal User currentUser,
+                                                        BindingResult validation)
+    {
+
+        PayloadValidationHelper.requireNoErrors(validation);
+
+        return this.authService.resetPasswordAtFirstLogin(currentUser, body);
+
+    }
+    
+    
 
     
     // ************************************

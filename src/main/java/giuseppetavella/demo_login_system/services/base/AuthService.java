@@ -9,13 +9,16 @@ import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import giuseppetavella.demo_login_system.payloads.in_request.LoginSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.OperatorLoginSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.reset_password.ResetPasswordOldPasswordSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.security.TokenTools;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import giuseppetavella.demo_login_system.services.CompaniesService;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,6 +142,18 @@ public class AuthService {
     }
 
 
+    /**
+     * Reset password at first login.
+     * The user must, of course, be logged in.
+     * @return
+     */
+    public ProfileToSendDTO resetPasswordAtFirstLogin(User currentUser, 
+                                                      ResetPasswordOldPasswordSentDTO body) 
+    {
+        
+        return new ProfileToSendDTO(currentUser);
+        
+    }
 
 
     /**

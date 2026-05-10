@@ -10,6 +10,8 @@
     POST /login                         (login for manager)
     POST /login-operator                (login for operator)
     
+    POST /reset-password-first-login    (reset password at first login)
+    
     GET  /verify-email/:code            (when user clicks link in email - mark the user with this email as verified)
         
     POST /forgot-password/request       (is this email authorized to set a new password?)

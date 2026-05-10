@@ -89,7 +89,7 @@ public class TokenFilter extends OncePerRequestFilter {
         boolean isFavicon = matcher.match("/favicon.ico", path);
         
         boolean isAuthPath = matcher.match("/auth/**", path);
-        boolean isLoginPath = matcher.match("/auth/login", path);
+        boolean isResetPasswordPath = matcher.match("/auth/reset-password-first-login", path);
         boolean isFileUpload = matcher.match("/file-upload/**", path);
         // boolean isNotificationsPath = matcher.match("/notifications/**", path);
         // boolean isAI = matcher.match("/ai/**", path);
@@ -124,25 +124,32 @@ public class TokenFilter extends OncePerRequestFilter {
         }
 
 
-        // *************************
-        // IF THE USER IS TRYING TO LOGIN
-        // *************************
-        
-        if(isLoginPath) {
-            // System.out.println("TRYING TO LOGIN");
-            filterChain.doFilter(request, response);
-            return;
-        }
         
         // *************************
         // THIS IS AN AUTHENTICATION ENDPOINT
         // *************************
         
+        // under the authentication routes, reset password is special
+        // because it does require login, so it must go through security filters
+        // just like all other login-protected routes.
+        
+        // assumption: reset password path is under authentication path
+        // this will not work if reset password path has a parent endpoint segment
+        // that is not /auth. for example, if base endpoint segment is /, then 
+        // this if-condition will not work as expected. so do not change reset password path.
         if(isAuthPath) {
-            // System.out.println("AUTHENTICATION ENDPOINT THAT IS NOT LOGIN");
-            // System.out.println("this is an /auth/** path");
-            filterChain.doFilter(request, response);
-            return;
+            // if this is reset password endpoint, it's login-protected, 
+            // so go through security
+            if(isResetPasswordPath) {
+                // do nothing. because we are not returning,
+                // code will go security checks     
+            } 
+            // if this auth endpoint is not a reset password endpoint, it's public,
+            // so skip security
+            else {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
         
         // System.out.println("PATH PROTECTED BY LOGIN");
