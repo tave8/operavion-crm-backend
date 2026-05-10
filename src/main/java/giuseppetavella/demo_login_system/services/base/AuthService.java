@@ -140,20 +140,7 @@ public class AuthService {
         );
 
     }
-
-
-    /**
-     * Reset password at first login.
-     * The user must, of course, be logged in.
-     * @return
-     */
-    public ProfileToSendDTO resetPasswordAtFirstLogin(User currentUser, 
-                                                      ResetPasswordOldPasswordSentDTO body) 
-    {
-        
-        return new ProfileToSendDTO(currentUser);
-        
-    }
+    
 
 
     /**

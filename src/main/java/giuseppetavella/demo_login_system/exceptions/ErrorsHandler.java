@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.exceptions;
 import giuseppetavella.demo_login_system.payloads.in_response.ErrorsToSendDTO;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -234,11 +235,16 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(msg);
     }
 
-    @ExceptionHandler(IncorrectInternalAPIUsage.class)
+    /**
+     * This error occurred when a table did not exist in DB.
+     * It said "JDBC exception executing SQL [ERROR: relation "users" does not exist"
+     * So it should be a good error handler in cases like this.
+     */
+    @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorsToSendDTO handleIncorrectInternalAPIUsage(IncorrectInternalAPIUsage ex) {
+    public ErrorsToSendDTO handleIncorrectInternalAPIUsage(InvalidDataAccessResourceUsageException ex) {
         ex.printStackTrace();
-        return new ErrorsToSendDTO("There was an error in the server (Incorrect Internal API Usage).");
+        return new ErrorsToSendDTO("There was an error in the server.");
     }
     
 

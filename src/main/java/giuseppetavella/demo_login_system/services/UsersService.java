@@ -8,6 +8,8 @@ import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewUserSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.UpdatedProfileSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_request.reset_password.ResetPasswordOldPasswordSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.repositories.UsersRepository;
 import giuseppetavella.demo_login_system.services.base.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class UsersService {
     @Autowired
     private ImageUploadService imageUploadService;
 
+
+    
     /**
      * Find a user by ID.
      */
@@ -226,7 +230,7 @@ public class UsersService {
         throw new UnauthorizedException("No logic was defined to add user role '"+role+"' based on role.");
         
     }
-
+    
 
     /**
      * Update my profile, given the ID.
@@ -308,6 +312,48 @@ public class UsersService {
         return this.usersRepository.getUsersByCompanyExceptRole(company, UserRole.ADMIN, pageable);
 
     }
+
+
+    /**
+     * Reset password at first login.
+     * The user must, of course, be logged in.
+     * @return
+     */
+    @Transactional
+    public ProfileToSendDTO resetPasswordAtFirstLogin(User currentUser,
+                                                      ResetPasswordOldPasswordSentDTO body)
+    {
+
+        // check: is user allowed to reset password?
+        if(!currentUser.mustChangePasswordNow()) {
+            throw new UnauthorizedException("User is not authorized to change password now. "
+                    +"Verify that the user has the relevant authorization or role.");
+        }
+
+
+        boolean isPasswordMatch = this.bcrypt.matches(body.oldPassword(), currentUser.getPassword());
+
+        // check: do old password (just sent) and actual password (in DB) match?
+        if(!isPasswordMatch) {
+            throw new UnauthorizedException("Wrong credentials");
+        }
+
+        // all good, set the new password
+
+        String newHashedPassword = this.bcrypt.encode(body.newPassword());
+        
+        // set the new password
+        currentUser.setPassword(newHashedPassword);
+        // mark as password changed
+        currentUser.setPasswordChanged(true);
+        // save user in DB
+        User userFromDB = this.usersRepository.save(currentUser);
+        // return the saved user
+        return new ProfileToSendDTO(userFromDB);
+
+    }
+
+    
 
 
     /**

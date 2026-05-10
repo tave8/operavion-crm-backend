@@ -19,6 +19,7 @@ import giuseppetavella.demo_login_system.payloads.in_response.AfterLoginDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.AfterSignupDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.forgot_password.ForgotPasswordToSendDTO;
+import giuseppetavella.demo_login_system.services.UsersService;
 import giuseppetavella.demo_login_system.services.base.AuthService;
 import giuseppetavella.demo_login_system.services.base.EmailVerificationService;
 import giuseppetavella.demo_login_system.services.base.ForgotPasswordService;
@@ -37,6 +38,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+    
+    @Autowired
+    private UsersService usersService;
     
     @Autowired
     private EmailVerificationService emailVerificationService;
@@ -108,7 +112,7 @@ public class AuthController {
 
         PayloadValidationHelper.requireNoErrors(validation);
 
-        return this.authService.resetPasswordAtFirstLogin(currentUser, body);
+        return this.usersService.resetPasswordAtFirstLogin(currentUser, body);
 
     }
     

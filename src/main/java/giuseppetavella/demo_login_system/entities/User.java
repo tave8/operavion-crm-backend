@@ -203,6 +203,26 @@ public class User implements UserDetails {
         return lastname;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setPasswordChanged(boolean passwordChanged) {
+        this.passwordChanged = passwordChanged;
+    }
+
+    public void setVerifiedEmailRequired(boolean verifiedEmailRequired) {
+        this.verifiedEmailRequired = verifiedEmailRequired;
+    }
+
+    public void setVerifiedEmail(boolean verifiedEmail) {
+        this.verifiedEmail = verifiedEmail;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
+    }
+
     public void setLastname(String lastname) throws InvalidDataException {
         if(lastname == null) {
             throw new InvalidDataException("Lastname cannot be null.");
