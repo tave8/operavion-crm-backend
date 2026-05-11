@@ -55,10 +55,11 @@ public class ClientsService {
      * Find clients of the given company.
      */
     public Page<Client> findClientsByCompany(Company company,
-                                                int page,
-                                                int pageSize,
-                                                String sortBy,
-                                                String sortOrder) throws InvalidDataException
+                                            String legalName,
+                                            int page,
+                                            int pageSize,
+                                            String sortBy,
+                                            String sortOrder) throws InvalidDataException
     {
 
         // we can sort by these values
@@ -86,9 +87,18 @@ public class ClientsService {
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
+        
+        // we assume there's no legal name
+        String legalNamePattern = null;
+        
+        // create pattern for legal name, if a legal name was specified
+        if(!legalName.trim().isEmpty()) {
+            legalNamePattern = "%" + legalName.toLowerCase().trim() + "%";
+        }
 
         return this.clientsRepository.findClientsByCompany(
                 company,
+                legalNamePattern,
                 pageable
         );
 

@@ -42,8 +42,11 @@ public class ClientsController {
     public Page<ClientToSendDTO> getClients(@AuthenticationPrincipal User currentUser,
                                                @RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                               // by default, clients are ordered by their legal name ascending: a,b,c...
                                                @RequestParam(value = "sortBy", defaultValue = "legalName") String sortBy,
-                                               @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder) 
+                                               @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
+                                               // you can search clients by legal name
+                                               @RequestParam(value = "legalName", defaultValue = "") String legalName) 
     {
 
         // sortBy must be one of these values
@@ -63,6 +66,7 @@ public class ClientsController {
 
         Page<Client> clientsPage = this.clientsService.findClientsByCompany(
                 company,
+                legalName,
                 page,
                 pageSize,
                 sortBy,
