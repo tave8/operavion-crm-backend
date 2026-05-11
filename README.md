@@ -31,6 +31,7 @@
     POST /                  (add a client)
     
     POST /:clientId/addresses    (add the address to this client - address in body)
+    GET /:clientId/addresses     (get addresses of this client)
     
 
 /geocoding           

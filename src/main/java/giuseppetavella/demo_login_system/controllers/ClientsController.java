@@ -147,6 +147,47 @@ public class ClientsController {
 
 
     }
+
+    /**
+     * Get client-address association.
+     */
+    @GetMapping("/{clientId}/addresses")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Page<ClientAddressToSendDTO> getClientAddresses(@AuthenticationPrincipal User currentUser,
+                                                     @PathVariable("clientId") String clientIdAsStr,
+                                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                     // @RequestParam(value = "sortBy", defaultValue = "clientId") String sortBy,
+                                                     @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
+    {
+
+        UUID clientId = StringHelper.parseUUID(clientIdAsStr);
+        
+        // StringHelper.requireInValues(
+        //         sortBy,
+        //         List.of("clientId"),
+        //         "sortBy"
+        // );
+
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+
+
+        Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findClientAddresses(
+                clientId,
+                page,
+                pageSize,
+                // sortBy,
+                sortOrder
+        );
+
+        return clientsAddressesPage.map(clientAddress -> new ClientAddressToSendDTO(clientAddress));
+
+
+    }
     
     
 }
