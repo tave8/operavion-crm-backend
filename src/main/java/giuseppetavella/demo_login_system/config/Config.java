@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.config;
 import com.cloudinary.Cloudinary;
 import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,14 @@ import java.util.Map;
 @PropertySource("application.properties")
 public class Config {
 
+    /**
+     * HTTP client. 
+     */
+    // @Bean(name = "httpClient")
+    // public OkHttpClient getHttpClient() {
+    //     return new OkHttpClient();
+    // }
+    //
     /**
      * The URL of this server.
      */

@@ -26,6 +26,10 @@
     POST /                  (add a user, only admin authorization)
 
 
+/geocoding           
+    GET /autocomplete     (returns a list of addresses given a query)  
+    
+
 /notifications
     GET /                  (get my notifications)    
     PATCH /read                   (mark many notifications as read)    
@@ -189,6 +193,19 @@ Response
     message: str
 }
 ```
+
+
+## /geocoding
+
+### /autocomplete
+
+Request 
+
+search,
+lang
+
+
+
 
 
 ## /notifications

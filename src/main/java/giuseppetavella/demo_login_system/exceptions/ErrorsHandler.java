@@ -116,13 +116,12 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
-    // @ExceptionHandler(CaricamentoFileException.class)
-    // @ResponseStatus(HttpStatus.BAD_REQUEST)
-    // public ErrorsToSendDTO handleCaricamentoFile(CaricamentoFileException ex) {
-    //     String msg = "Errore durante il caricamento di un file. DETTAGLI: " + ex.getMessage();
-    //     return new ErrorsToSendDTO(msg);
-    // }
-
+    @ExceptionHandler(GeocodingAPIException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleGeocodingAPIException(GeocodingAPIException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+    
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
