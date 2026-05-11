@@ -7,6 +7,7 @@ import java.util.UUID;
 public class ClientToSendDTO {
     
     private final UUID clientId;
+    private final String legalName;
     private final String email;
     private final String phone;
     private final String legalAddress;
@@ -15,6 +16,7 @@ public class ClientToSendDTO {
 
     public ClientToSendDTO(Client client) {
         this.clientId = client.getId();
+        this.legalName = client.getLegalName();
         this.email = client.getEmail();
         this.legalAddress = client.getLegalAddress().getDisplayName();
         this.legalAddressLat = client.getLegalAddress().getLat();
@@ -36,6 +38,10 @@ public class ClientToSendDTO {
 
     public double getLegalAddressLat() {
         return legalAddressLat;
+    }
+
+    public String getLegalName() {
+        return legalName;
     }
 
     public double getLegalAddressLon() {

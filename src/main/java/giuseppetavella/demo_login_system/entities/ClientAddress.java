@@ -24,6 +24,8 @@ public class ClientAddress {
     @ManyToOne
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
+    
+    protected ClientAddress() {}
 
     public ClientAddress(Client client, Address address) {
         this.address = address;

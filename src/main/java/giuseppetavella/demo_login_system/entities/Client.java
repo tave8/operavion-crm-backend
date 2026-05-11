@@ -31,6 +31,8 @@ public class Client {
 
     @Column(nullable = false)
     private String vat;
+    
+    protected Client() {}
 
     public Client(Company company, Address legalAddress, String email, String legalName, String vat, String phone) {
         this.company = company;
