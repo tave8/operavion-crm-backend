@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.repositories;
 
 import giuseppetavella.demo_login_system.entities.Client;
 import giuseppetavella.demo_login_system.entities.ClientAddress;
+import giuseppetavella.demo_login_system.entities.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,19 @@ import java.util.UUID;
 public interface ClientAddressesRepository extends JpaRepository<ClientAddress, UUID> {
 
     /**
+     * Find client addresses of company.
+     *
+     * @return
+     */
+    @Query("SELECT c FROM ClientAddress c WHERE c.client.company = :company")
+    Page<ClientAddress> findClientAddressessByCompany(
+            Company company,
+            Pageable pageable
+    );
+
+
+
+    /**
      * Find addresses of the given client.
      * 
      * @param client
@@ -21,7 +35,7 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
      * @return
      */
     @Query("SELECT c FROM ClientAddress c WHERE c.client = :client")
-    Page<ClientAddress> findClientAddresses(
+    Page<ClientAddress> findAddressesByClient(
             Client client,
             Pageable pageable
     );

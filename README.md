@@ -29,10 +29,9 @@
 /clients
     GET /                   (get my clients)
     POST /                  (add a client)
-    
-    POST /:clientId/addresses    (add the address to this client - address in body)
+    GET /addresses                (get client addresses of my company)
     GET /:clientId/addresses     (get addresses of this client)
-    
+    POST /:clientId/addresses    (add the address to this client - address in body)
 
 /geocoding           
     GET /autocomplete     (returns a list of addresses given a query)  

@@ -1,9 +1,6 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Address;
-import giuseppetavella.demo_login_system.entities.Client;
-import giuseppetavella.demo_login_system.entities.ClientAddress;
-import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.entities.*;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.repositories.ClientAddressesRepository;
@@ -61,17 +58,58 @@ public class ClientAddressesService {
         
     }
 
+    /**
+     * Get client addresses of company.
+     */
+    public Page<ClientAddress> findClientAddressesByCompany(Company company,
+                                                            int page,
+                                                            int pageSize,
+                                                            String sortOrder)
+    {
+
+        // we can sort in these "directions"
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+        
+
+        // how many elements the page has
+        int finalSize = Math.clamp(pageSize, 1, 20);
+
+        // at which page we start at  
+        int finalPage = Math.max(0, page);
+
+        // Sort sort = sortOrder.equals("asc")
+        //         ? Sort.by(sortBy).ascending()
+        //         : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(
+                finalPage,
+                finalSize
+                // sort
+        );
+
+        return this.clientAddressesRepository.findClientAddressessByCompany(
+                company,
+                pageable
+        );
+
+    }
+    
 
     /**
-     * Find client-address associations.
+     * Get addresses of client.
      * 
      * @return
      */
-    public Page<ClientAddress> findClientAddresses(UUID clientId,
-                                                   int page,
-                                                   int pageSize,
-                                                   // String sortBy,
-                                                   String sortOrder) 
+    public Page<ClientAddress> findAddressesByClient(User currentUser,
+                                                       UUID clientId,
+                                                       int page,
+                                                       int pageSize,
+                                                       // String sortBy,
+                                                       String sortOrder) 
     {
 
         // // we can sort by these values
@@ -90,6 +128,10 @@ public class ClientAddressesService {
         
         
         Client clientFromDB = this.clientsService.findById(clientId);
+        
+        // make sure that this client belongs to the same
+        // company as the current user
+        AuthorizationHelper.requireSameCompany(clientFromDB.getCompany(), currentUser.getCompany());
 
         // how many elements the page has
         int finalSize = Math.clamp(pageSize, 1, 20);
@@ -107,7 +149,7 @@ public class ClientAddressesService {
                 // sort
         );
 
-        return this.clientAddressesRepository.findClientAddresses(
+        return this.clientAddressesRepository.findAddressesByClient(
                 clientFromDB,
                 pageable
         );

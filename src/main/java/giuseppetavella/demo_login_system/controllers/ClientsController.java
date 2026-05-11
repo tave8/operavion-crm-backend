@@ -123,7 +123,7 @@ public class ClientsController {
 
 
     /**
-     * Add a client-address association.
+     * Add an address to a client.
      */
     @PostMapping("/{clientId}/addresses")
     @ResponseStatus(HttpStatus.CREATED)
@@ -152,17 +152,50 @@ public class ClientsController {
 
     }
 
+
     /**
-     * Get client-address association.
+     * Get client addresses of my company.
+     */
+    @GetMapping("/addresses")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Page<ClientAddressToSendDTO> getClientAddressesOfMyCompany(@AuthenticationPrincipal User currentUser,
+                                                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                   @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                                   @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
+    {
+        
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+
+        Company company = currentUser.getCompany();
+
+        Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findClientAddressesByCompany(
+                company,
+                page,
+                pageSize,
+                sortOrder
+        );
+
+        return clientsAddressesPage.map(clientAddress -> new ClientAddressToSendDTO(clientAddress));
+
+
+    }
+    
+
+    /**
+     * Get the addresses of a client.
      */
     @GetMapping("/{clientId}/addresses")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Page<ClientAddressToSendDTO> getClientAddresses(@AuthenticationPrincipal User currentUser,
-                                                     @PathVariable("clientId") String clientIdAsStr,
-                                                     @RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
-                                                     // @RequestParam(value = "sortBy", defaultValue = "clientId") String sortBy,
-                                                     @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
+    public Page<ClientAddressToSendDTO> getAddressesOfClient(@AuthenticationPrincipal User currentUser,
+                                                             @PathVariable("clientId") String clientIdAsStr,
+                                                             @RequestParam(value = "page", defaultValue = "0") int page,
+                                                             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                             // @RequestParam(value = "sortBy", defaultValue = "clientId") String sortBy,
+                                                             @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
     {
 
         UUID clientId = StringHelper.parseUUID(clientIdAsStr);
@@ -180,7 +213,8 @@ public class ClientsController {
         );
 
 
-        Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findClientAddresses(
+        Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findAddressesByClient(
+                currentUser,
                 clientId,
                 page,
                 pageSize,
