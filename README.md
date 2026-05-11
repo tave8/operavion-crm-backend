@@ -26,6 +26,11 @@
     POST /                  (add a user, only admin authorization)
 
 
+/clients
+    GET /                   (get my clients)
+    POST /                  (add a client)
+    
+
 /geocoding           
     GET /autocomplete     (returns a list of addresses given a query)  
     
@@ -475,45 +480,34 @@ Article
 
 
 
-# Custom Authorization System (multi-tenant)
+```
 
+1 company has 1 legal address
+1 client has 1 legal address
+1 client has N physical address
+
+
+Client
+    legalAddressId
+
+
+Company
+    legalAddressId
+
+
+Address
+    id
+    address
+    lat
+    lon
+
+
+ClientAddress
+    clientId
+    addressId    
 
 ```
 
-companies
-
-admins
-
-normal users
-
-custom roles 
-
-pages
-
-actions
- 
------ 
-
-1 company --has--> N users
-
-1 user --associated to--> 1 company
-
-1 admin --creates--> N custom roles
-
-1 custom role --assigned to--> N normal users
-
-1 normal user --is assigned--> 1 custom role
-
-1 page --has--> N actions
-
-1 action --associated to--> 1 page
-
-1 custom role --associated to--> N pages
-
-1 custom role --associated to--> N actions
-
-
-```
 
 
 

@@ -12,18 +12,18 @@ import lombok.Data;
 public class GeocodingAutocompleteResultItemToSendDTO {
     private final double lat;
     private final double lon;
-    private final String label;
+    private final String displayName;
     private final double confidence;
     private final String country;
     private final String state;
     private final String county;
     private final String resultType;
 
-    public GeocodingAutocompleteResultItemToSendDTO(double confidence, double lat, double lon, String label, String country, String state, String county, String resultType) {
+    public GeocodingAutocompleteResultItemToSendDTO(double confidence, double lat, double lon, String displayName, String country, String state, String county, String resultType) {
         this.confidence = confidence;
         this.lat = lat;
         this.lon = lon;
-        this.label = label;
+        this.displayName = displayName;
         this.country = country;
         this.state = state;
         this.county = county;
@@ -42,8 +42,8 @@ public class GeocodingAutocompleteResultItemToSendDTO {
         return country;
     }
 
-    public String getLabel() {
-        return label;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public double getLat() {
@@ -68,7 +68,7 @@ public class GeocodingAutocompleteResultItemToSendDTO {
                 "confidence=" + confidence +
                 ", lat=" + lat +
                 ", lon=" + lon +
-                ", label='" + label + '\'' +
+                ", label='" + displayName + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", county='" + county + '\'' +
