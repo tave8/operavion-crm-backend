@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.payloads.in_request;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
 public record NewClientSentDTO(
@@ -13,6 +14,7 @@ public record NewClientSentDTO(
         String phone,
 
         @NotNull(message = "Missing 'email' field")
+        @Email(message = "Email is not valid.")
         String email,
 
         @NotNull(message = "Missing 'vat' field")

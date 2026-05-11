@@ -33,7 +33,7 @@ public class GeocodingService {
     // these result types go from the most precise (left)
     // to the most generic (right)
     private static final List<String> RESULT_TYPE_PRECISION = List.of(
-            "building", "street", "suburb", "postcode", "city", "county", "state", "country"
+            "building", "amenity", "street", "suburb", "postcode", "city", "county", "state", "country"
     );
 
 

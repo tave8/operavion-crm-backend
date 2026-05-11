@@ -10,6 +10,7 @@ public class ClientToSendDTO {
     private final String legalName;
     private final String email;
     private final String phone;
+    private final String vat;
     private final String legalAddress;
     private final double legalAddressLat;
     private final double legalAddressLon;
@@ -22,6 +23,7 @@ public class ClientToSendDTO {
         this.legalAddressLat = client.getLegalAddress().getLat();
         this.legalAddressLon = client.getLegalAddress().getLon();
         this.phone = client.getPhone();
+        this.vat = client.getVat();
     }
 
     public UUID getClientId() {
