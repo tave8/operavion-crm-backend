@@ -26,11 +26,13 @@ public class GeocodingController {
      */
     @GetMapping("/autocomplete")
     public GeocodingAutocompleteToSendDTO geocode(
-            @RequestParam(value = "q", required = true) String query
+            @RequestParam(value = "q") String query,
+            @RequestParam(value = "lang", defaultValue = "en") String language
     ) 
     {
-
-        return this.appGeocodingService.doGeocodeRequest(query, "it", 10);
+        // TODO: should check that the language is valid
+        //  also, could give some flexibility into how many results are returned
+        return this.appGeocodingService.doGeocodeRequest(query, language, 10);
         
     }
     
