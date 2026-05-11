@@ -16,14 +16,14 @@ public class Address {
     private String displayName;
 
     @Column(nullable = false)
-    private double lat;
+    private Double lat;
     
     @Column(nullable = false)
-    private double lon;
+    private Double lon;
     
     protected Address() {}
 
-    public Address(double lat, double lon, String displayName) 
+    public Address(Double lat, Double lon, String displayName) 
     {
         this.displayName = displayName;
         this.lat = lat;
@@ -34,11 +34,11 @@ public class Address {
         return displayName;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public double getLon() {
+    public Double getLon() {
         return lon;
     }
 
