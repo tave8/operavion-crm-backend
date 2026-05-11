@@ -25,15 +25,25 @@ public class ClientAddress {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
     
+    // the name of the client-address serves simply as a label
+    @Column(nullable = false)
+    private String name;
+    
     protected ClientAddress() {}
 
-    public ClientAddress(Client client, Address address) {
+    public ClientAddress(Client client, Address address, String name) 
+    {
         this.address = address;
         this.client = client;
+        this.name = name;
     }
 
     public Address getAddress() {
         return address;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Client getClient() {

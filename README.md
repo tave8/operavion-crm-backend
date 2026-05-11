@@ -30,6 +30,8 @@
     GET /                   (get my clients)
     POST /                  (add a client)
     
+    POST /:clientId/addresses/:addressId    (add this address to this client)
+    
 
 /geocoding           
     GET /autocomplete     (returns a list of addresses given a query)  
