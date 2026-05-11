@@ -26,24 +26,24 @@ public class ClientAddress {
     private Address address;
     
     // the name of the client-address serves simply as a label
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "address_name", nullable = false)
+    private String addressName;
     
     protected ClientAddress() {}
 
-    public ClientAddress(Client client, Address address, String name) 
+    public ClientAddress(Client client, Address address, String addressName) 
     {
         this.address = address;
         this.client = client;
-        this.name = name;
+        this.addressName = addressName;
     }
 
     public Address getAddress() {
         return address;
     }
 
-    public String getName() {
-        return name;
+    public String getAddressName() {
+        return addressName;
     }
 
     public Client getClient() {

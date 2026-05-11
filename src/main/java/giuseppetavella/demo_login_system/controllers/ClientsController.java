@@ -1,11 +1,15 @@
 package giuseppetavella.demo_login_system.controllers;
 
 import giuseppetavella.demo_login_system.entities.*;
+import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
+import giuseppetavella.demo_login_system.payloads.in_request.NewClientAddressSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewClientSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.NotificationToSendDTO;
+import giuseppetavella.demo_login_system.services.ClientAddressesService;
 import giuseppetavella.demo_login_system.services.ClientsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/clients")
@@ -24,6 +29,9 @@ public class ClientsController {
     
     @Autowired
     private ClientsService clientsService;
+    
+    @Autowired
+    private ClientAddressesService clientAddressesService;
     
     
     /*
@@ -107,6 +115,37 @@ public class ClientsController {
         return new ClientToSendDTO(clientFromDB);
         
         
+    }
+
+
+    /**
+     * Add a client-address association.
+     */
+    @PostMapping("/{clientId}/addresses")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ClientAddressToSendDTO addAddressToClient(@RequestBody @Validated NewClientAddressSentDTO body,
+                                                     BindingResult validation,
+                                                     @AuthenticationPrincipal User currentUser,
+                                                     @PathVariable("clientId") String clientIdAsStr)
+    {
+
+        PayloadValidationHelper.requireNoErrors(validation);
+        
+        UUID clientId = StringHelper.parseUUID(clientIdAsStr);
+
+        // create an address
+        Address address = new Address(
+                body.addressLat(),
+                body.addressLon(),
+                body.address()
+        );
+        
+        ClientAddress clientAddressFromDB = this.clientAddressesService.addAddressToClient(clientId, address, body.addressName(), currentUser);
+
+        return new ClientAddressToSendDTO(clientAddressFromDB);
+
+
     }
     
     

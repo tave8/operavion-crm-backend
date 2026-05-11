@@ -30,7 +30,7 @@
     GET /                   (get my clients)
     POST /                  (add a client)
     
-    POST /:clientId/addresses/:addressId    (add this address to this client)
+    POST /:clientId/addresses    (add the address to this client - address in body)
     
 
 /geocoding           

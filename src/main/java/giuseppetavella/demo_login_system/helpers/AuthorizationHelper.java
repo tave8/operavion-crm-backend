@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.helpers;
 
+import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
@@ -21,6 +22,16 @@ public class AuthorizationHelper {
             throw new UnauthorizedException("You are not authorized to access this resource.");
         }
         
+    }
+
+    public static void requireSameCompany(Company company1, Company company2) throws UnauthorizedException,
+            InvalidDataFormatException
+    {
+        // if not same company
+        if(!Company.isSameCompany(company1, company2)) {
+            throw new UnauthorizedException("You are not authorized to access this resource.");
+        }
+
     }
 
     /**

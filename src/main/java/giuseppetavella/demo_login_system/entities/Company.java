@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.entities;
 
+import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
@@ -28,6 +29,23 @@ public class Company {
         this.email = email;
         this.legalName = legalName;
         this.createdAt = OffsetDateTime.now();
+    }
+
+    /**
+     * Are the given companies the same?
+     */
+    public static boolean isSameCompany(Company company1, Company company2) throws InvalidDataFormatException
+    {
+
+        if(company1 == null || company2 == null) {
+            throw new InvalidDataFormatException(
+                    "While validating whether two companies are the same, "
+                            +"either one or both of them were null. Are you sure both companies exist "
+                            +"or have been passed correctly?"
+            );
+        }
+
+        return company1.getId().equals(company2.getId());
     }
 
     public OffsetDateTime getCreatedAt() {

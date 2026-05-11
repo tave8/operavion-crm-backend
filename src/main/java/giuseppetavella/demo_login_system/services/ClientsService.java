@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.*;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.repositories.ClientsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ClientsService {
@@ -23,6 +25,10 @@ public class ClientsService {
     @Autowired
     private AddressesService addressesService;
     
+    
+    public Client findById(UUID clientId) {
+        return this.clientsRepository.findById(clientId).orElseThrow(() -> new NotFoundException(clientId, "CLIENT"));
+    }
 
     /**
      * Add a client with a legal address.
@@ -43,7 +49,7 @@ public class ClientsService {
         
     }
 
-
+    
 
     /**
      * Find clients of the given company.
