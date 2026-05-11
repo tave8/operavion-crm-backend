@@ -8,8 +8,7 @@ import lombok.Data;
  * of result items of any geocoding API.
  * It is therefore API-agnostic.
  */
-@Data
-@AllArgsConstructor
+
 public class GeocodingAutocompleteResultItemToSendDTO {
     private final double lat;
     private final double lon;
@@ -19,4 +18,61 @@ public class GeocodingAutocompleteResultItemToSendDTO {
     private final String state;
     private final String county;
     private final String resultType;
+
+    public GeocodingAutocompleteResultItemToSendDTO(double confidence, double lat, double lon, String label, String country, String state, String county, String resultType) {
+        this.confidence = confidence;
+        this.lat = lat;
+        this.lon = lon;
+        this.label = label;
+        this.country = country;
+        this.state = state;
+        this.county = county;
+        this.resultType = resultType;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public String getResultType() {
+        return resultType;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    @Override
+    public String toString() {
+        return "GeocodingAutocompleteResultItemToSendDTO{" +
+                "confidence=" + confidence +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", label='" + label + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", county='" + county + '\'' +
+                ", resultType='" + resultType + '\'' +
+                '}';
+    }
 }

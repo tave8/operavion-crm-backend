@@ -15,6 +15,7 @@ public class GeoapifyJsonResultItemDTO {
     private String country;
     private String state;
     private String county;
+    // the actual property name in the received JSON is result_type
     @JsonProperty("result_type")
     private String resultType;
     

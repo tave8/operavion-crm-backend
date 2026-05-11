@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.services.base;
 
+import giuseppetavella.demo_login_system.api_payloads.in_response.GeoapifyJsonResultItemDTO;
 import giuseppetavella.demo_login_system.api_payloads.in_response.GeoapifyJsonSentDTO;
 import giuseppetavella.demo_login_system.exceptions.GeocodingAPIException;
 import giuseppetavella.demo_login_system.payloads.in_response.GeocodingAutocompleteResultItemToSendDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,13 @@ public class GeocodingService {
     private String GEOAPIFY_API_KEY;
     
     private final String API_URL = "https://api.geoapify.com/v1/geocode/search";
+    
+    // these result types go from the most precise (left)
+    // to the most generic (right)
+    private static final List<String> RESULT_TYPE_PRECISION = List.of(
+            "building", "street", "suburb", "postcode", "city", "county", "state", "country"
+    );
+
 
     /**
      * API-agnostic geocoding call.
@@ -56,17 +65,31 @@ public class GeocodingService {
         // map the API-specific item, to the API-agnostic item
         // this makes our code API-independent
         
-        List<GeocodingAutocompleteResultItemToSendDTO> results = body.getResults().stream().map(
-                item -> new GeocodingAutocompleteResultItemToSendDTO(
-                item.getLat(),
-                item.getLon(),
-                item.getFormatted(),
-                item.getRank().getConfidence(),
-                item.getCountry(),
-                item.getState(),
-                item.getCounty(),
-                item.getResultType()
-        )).toList();
+        List<GeocodingAutocompleteResultItemToSendDTO> results = body.getResults().stream()
+                
+                // sort by confidence first, and then by result type
+                .sorted(Comparator
+                        .comparingDouble((GeoapifyJsonResultItemDTO r) -> r.getRank().getConfidence())
+                        .reversed()
+                        .thenComparingInt(r -> RESULT_TYPE_PRECISION.indexOf(r.getResultType()))
+                )
+                
+                // map the API-specific payload, to the API-agnostic payload
+                .map(
+                item -> {
+                    
+                    return new GeocodingAutocompleteResultItemToSendDTO(
+                            item.getRank().getConfidence(),
+                            item.getLat(),
+                            item.getLon(),
+                            item.getFormatted(),
+                            item.getCountry(),
+                            item.getState(),
+                            item.getCounty(),
+                            item.getResultType()
+                    );
+                    
+                }).toList();
         
         return new GeocodingAutocompleteToSendDTO(results);
         
