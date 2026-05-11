@@ -60,7 +60,12 @@ public class GeocodingService {
                 item -> new GeocodingAutocompleteResultItemToSendDTO(
                 item.getLat(),
                 item.getLon(),
-                item.getFormatted()
+                item.getFormatted(),
+                item.getRank().getConfidence(),
+                item.getCountry(),
+                item.getState(),
+                item.getCounty(),
+                item.getResultType()
         )).toList();
         
         return new GeocodingAutocompleteToSendDTO(results);
@@ -101,6 +106,10 @@ public class GeocodingService {
         String url = this.buildUrl(params);
 
         URI uri;
+        
+        // bug fix: url was double encoded.
+        // make sure that url is encoded once.
+        // using uri prevents double encoding
         
         try {
             
