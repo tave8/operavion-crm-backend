@@ -1,9 +1,6 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
-import giuseppetavella.demo_login_system.entities.ChecklistEntry;
-import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.entities.*;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
@@ -35,6 +32,15 @@ public class ChecklistsService {
     @Autowired
     private TasksService tasksService;
 
+
+    /**
+     * Find checklist by ID.
+     */
+    public Checklist findById(UUID checklistId) throws NotFoundException {
+        return this.checklistsRepository.findById(checklistId).orElseThrow(() -> new NotFoundException(checklistId, "checklist"));
+    }    
+
+    
     /**
      * Add a checklist with simple entries.
      * See the relevant payload for info on what "simple entries" means.

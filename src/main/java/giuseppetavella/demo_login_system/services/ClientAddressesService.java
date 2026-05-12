@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.*;
+import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.repositories.ClientAddressesRepository;
@@ -27,7 +28,18 @@ public class ClientAddressesService {
     @Autowired
     private AddressesService addressesService;
 
-    
+
+
+    /**
+     * Find client address by ID.
+     */
+    public ClientAddress findById(UUID clientAddressId) throws NotFoundException {
+        return this.clientAddressesRepository
+                .findById(clientAddressId)
+                .orElseThrow(() -> new NotFoundException(clientAddressId, "client address"));
+    }
+
+
     /**
      * Add a client-address association.
      */

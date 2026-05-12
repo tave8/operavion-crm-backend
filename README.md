@@ -32,6 +32,10 @@
     GET /addresses                (get client addresses of my company)
     GET /:clientId/addresses     (get addresses of this client)
     POST /:clientId/addresses    (add the address to this client - address in body)
+    
+    
+/client-addresses
+    POST /:clientAddressId/checklists/:checklistId          (add a checklist to this client address)
 
 
 /tasks
@@ -224,6 +228,29 @@ Request
 search,
 lang
 
+
+## /client-addresses
+
+### POST /:clientAddressId/checklists/:checklistId       
+
+
+Add a checklist to this client address.
+
+Request 
+
+```
+{
+    
+}
+```
+
+Response 
+
+```
+{
+
+}
+```
 
 
 ## /checklists
