@@ -13,7 +13,7 @@ public class Checklist {
     private UUID id;
     
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
     @Column(nullable = false)
