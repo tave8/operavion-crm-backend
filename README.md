@@ -33,9 +33,22 @@
     GET /:clientId/addresses     (get addresses of this client)
     POST /:clientId/addresses    (add the address to this client - address in body)
 
+
+/tasks
+    GET  /                        (get tasks of my company)
+    POST /                       (add a task of my company)
+        
+
+/checklists
+    GET  /                        (get checklists of my company)
+    POST /                        (add a checklist, add checklist entries)
+
+
 /geocoding           
     GET /autocomplete     (returns a list of addresses given a query)  
     
+
+
 
 /notifications
     GET /                  (get my notifications)    

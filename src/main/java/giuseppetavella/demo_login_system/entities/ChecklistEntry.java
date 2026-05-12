@@ -5,7 +5,13 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "checklist_entries")
+@Table(
+        name = "checklist_entries",
+        uniqueConstraints = {
+                // for the same checklist, the positions must be unique
+                @UniqueConstraint(columnNames = {"checklist_id", "position"})
+        }
+)
 public class ChecklistEntry {
     
     @Id
@@ -20,14 +26,19 @@ public class ChecklistEntry {
     @JoinColumn(name = "checklist_id", nullable = false)
     private Checklist checklist;
     
+    // position indicates the position/index 
+    // of this checklist entry for the checklist it belongs to 
+    @Column(nullable = false)
+    private Integer position;
+    
     protected ChecklistEntry() {}
     
-    public ChecklistEntry(Checklist checklist, Task task) 
+    public ChecklistEntry(Checklist checklist, Task task, Integer position) 
     {
         
         this.checklist = checklist;
         this.task = task;
-        
+        this.position = position;
     }
 
     public Checklist getChecklist() {
@@ -40,6 +51,10 @@ public class ChecklistEntry {
 
     public Task getTask() {
         return task;
+    }
+
+    public Integer getPosition() {
+        return position;
     }
 
     @Override
