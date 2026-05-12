@@ -77,7 +77,7 @@ public class ClientsService {
         );
 
         // how many elements the page has
-        int finalSize = Math.clamp(pageSize, 1, 20);
+        int finalSize = Math.clamp(pageSize, 1, 100);
 
         // at which page we start at  
         int finalPage = Math.max(0, page);

@@ -1,11 +1,20 @@
 package giuseppetavella.demo_login_system.services;
 
+import giuseppetavella.demo_login_system.entities.Client;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewTaskSentDTO;
 import giuseppetavella.demo_login_system.repositories.TasksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TasksService {
@@ -36,6 +45,62 @@ public class TasksService {
         Task task = new Task(company, body.name());
         
         return this.save(task);
+    }
+
+
+    /**
+     * Find tasks by name.
+     */
+    public Page<Task> findTasksByName(Company company,
+                                     String taskName,
+                                     int page,
+                                     int pageSize,
+                                     String sortBy,
+                                     String sortOrder) throws InvalidDataException
+    {
+
+        // we can sort by these values
+        StringHelper.requireInValues(
+                sortBy,
+                List.of("name"),
+                "sortBy"
+        );
+
+        // we can sort in these "directions"
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+
+        // number of elements in page
+        int finalSize = Math.clamp(pageSize, 1, 100);
+
+        // which pagination page was requested
+        int finalPage = Math.max(0, page);
+
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
+
+        // we assume there's no task name
+        String taskNamePattern = null;
+
+        // create pattern for task name, if a task name was specified
+        // if task name is not blank or empty
+        if(!taskName.trim().isEmpty()) {
+            // create partial match pattern with task name in lower case
+            taskNamePattern = "%" + taskName.toLowerCase().trim() + "%";
+        }
+
+        return this.tasksRepository.findTasksByName(
+                company,
+                taskNamePattern,
+                pageable
+        );
+
     }
     
     
