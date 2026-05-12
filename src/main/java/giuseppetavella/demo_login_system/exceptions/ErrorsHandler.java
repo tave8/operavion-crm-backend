@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.List;
+
 @RestControllerAdvice
 public class ErrorsHandler {
     //
@@ -182,9 +184,23 @@ public class ErrorsHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorsToSendDTO handleMaybeMissingBody(HttpMessageNotReadableException ex) {
-        String msg = "La richiesta non è ben formata; forse manca il body, "
-                +"i campi del body non sono ben formati, o qualche valore categorico non viene soddisfatto (ENUM)?";
-        return new ErrorsToSendDTO(msg);
+        String msg = "The request body is malformed or missing. Possible causes: " +
+                "the body is missing entirely; " +
+                "a field has the wrong type (e.g. a string was given where a number is expected); " +
+                "a list was given where a single value is expected, or vice versa; " +
+                "an invalid enum value was provided; " +
+                "the JSON syntax is invalid (e.g. missing quotes, brackets, or commas); " +
+                "a date or number format is incorrect.";
+        
+        // i make a list with with the error message coming from the exception
+        // i need the specific exception message to give an appropriate message to the client,
+        // because this exception seems to prove hard to debug or hard to 
+        // trace back the problem
+        List<String> errors = List.of(ex.getMessage());
+        
+        ErrorsToSendDTO errorsToSend = new ErrorsToSendDTO(msg, errors);
+        
+        return errorsToSend;
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

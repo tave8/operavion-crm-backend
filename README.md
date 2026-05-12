@@ -226,6 +226,33 @@ lang
 
 
 
+## /checklists
+
+
+### POST /
+
+
+Request 
+
+```
+{
+    name: str
+    entries: [
+        {
+            taskId: str
+            position: number
+        }
+    ]
+}
+```
+
+
+Response 
+
+```
+<no body>
+```
+
 
 
 ## /notifications

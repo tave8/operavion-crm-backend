@@ -3,7 +3,9 @@ package giuseppetavella.demo_login_system.services;
 import giuseppetavella.demo_login_system.entities.Client;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewTaskSentDTO;
 import giuseppetavella.demo_login_system.repositories.TasksRepository;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TasksService {
@@ -22,6 +25,14 @@ public class TasksService {
     @Autowired
     private TasksRepository tasksRepository;
 
+    /**
+     * Find a task by ID
+     */
+    public Task findById(UUID taskId) throws NotFoundException 
+    {
+        return this.tasksRepository.findById(taskId).orElseThrow(() -> new NotFoundException(taskId, "TASK"));
+    }
+    
     /**
      * Save a task to DB.
      * @return

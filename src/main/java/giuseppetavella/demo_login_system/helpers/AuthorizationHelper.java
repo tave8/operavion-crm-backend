@@ -19,7 +19,8 @@ public class AuthorizationHelper {
     {
         // if not same user
         if(!User.isSameUser(user1, user2)) {
-            throw new UnauthorizedException("You are not authorized to access this resource.");
+            throw new UnauthorizedException("You are not authorized to access this resource. "
+                                            +"Reason: some data does not belong to the same user.");
         }
         
     }
@@ -29,7 +30,8 @@ public class AuthorizationHelper {
     {
         // if not same company
         if(!Company.isSameCompany(company1, company2)) {
-            throw new UnauthorizedException("You are not authorized to access this resource.");
+            throw new UnauthorizedException("You are not authorized to access this resource. "
+                                            +"Reason: some data does not belong to your company.");
         }
 
     }
