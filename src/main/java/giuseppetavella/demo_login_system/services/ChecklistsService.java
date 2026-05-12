@@ -13,9 +13,14 @@ import giuseppetavella.demo_login_system.payloads.in_request.ChecklistSimpleEntr
 import giuseppetavella.demo_login_system.payloads.in_request.NewChecklistWithSimpleEntriesSentDTO;
 import giuseppetavella.demo_login_system.repositories.ChecklistsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -89,8 +94,53 @@ public class ChecklistsService {
             }
 
         }
-            
         
+    }
+
+
+
+    /**
+     * Get checklists.
+     */
+    public Page<Checklist> findChecklists(Company company,
+                                          int page,
+                                          int pageSize,
+                                          String sortBy,
+                                          String sortOrder) throws InvalidDataException
+    {
+
+        // we can sort by these values
+        StringHelper.requireInValues(
+                sortBy,
+                List.of("name"),
+                "sortBy"
+        );
+
+        // we can sort in these "directions"
+        StringHelper.requireInValues(
+                sortOrder,
+                List.of("asc", "desc"),
+                "sortOrder"
+        );
+
+        // number of elements in page
+        int finalSize = Math.clamp(pageSize, 1, 100);
+
+        // which pagination page was requested
+        int finalPage = Math.max(0, page);
+
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
+        
+
+        return this.checklistsRepository.findChecklists(
+                company,
+                pageable
+        );
+
     }
     
 }
