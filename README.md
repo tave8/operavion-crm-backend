@@ -41,7 +41,7 @@
 
 /checklists
     GET  /                        (get checklists of my company)
-    POST /                        (add a checklist, add checklist entries)
+    POST /                        (add a checklist, add checklist entries. the payload contains an array of task id's)
 
 
 /geocoding           
