@@ -37,6 +37,9 @@ public class ForgotPasswordService {
     @Autowired
     private PasswordEncoder bcrypt;
     
+    // the base endpoint at which the user 
+    // will land upon clicking the authorization link
+    private final String FRONTEND_ENDPOINT = "/auth/forgot-password/verify";
     
     // this is a constructor-injected dependency
     private final String frontendUrl;
@@ -419,7 +422,9 @@ public class ForgotPasswordService {
      * This will be the clickable link shown in the email.
      */
     private String buildForgotPasswordAuthorizationUrl(String code) {
-        String path = "/forgot-password/verify/" + code;
+        // something like:
+        // /auth/forgot-password/verify/:code
+        String path = FRONTEND_ENDPOINT + "/" + code;
         return this.frontendUrl + path;
     }
 

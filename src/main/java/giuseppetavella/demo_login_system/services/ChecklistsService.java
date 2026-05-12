@@ -43,8 +43,8 @@ public class ChecklistsService {
      * which we are about to do right now.
      */
     @Transactional
-    public void addChecklistWithSimpleEntries(NewChecklistWithSimpleEntriesSentDTO body,
-                                              Company company) 
+    public Checklist addChecklistWithSimpleEntries(NewChecklistWithSimpleEntriesSentDTO body,
+                                                    Company company) 
     {
     
         Checklist newChecklist = new Checklist(company, body.name());
@@ -94,6 +94,8 @@ public class ChecklistsService {
             }
 
         }
+        
+        return checklistFromDB;
         
     }
 

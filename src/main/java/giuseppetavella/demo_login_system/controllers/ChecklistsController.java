@@ -42,7 +42,7 @@ public class ChecklistsController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public void addChecklistWithSimpleEntries(@RequestBody @Validated NewChecklistWithSimpleEntriesSentDTO body,
+    public ChecklistToSendDTO addChecklistWithSimpleEntries(@RequestBody @Validated NewChecklistWithSimpleEntriesSentDTO body,
                                               BindingResult validation,
                                               @AuthenticationPrincipal User currentUser) 
     {
@@ -51,10 +51,9 @@ public class ChecklistsController {
         
         Company company = currentUser.getCompany();
         
-        this.checklistsService.addChecklistWithSimpleEntries(
-                body,
-                company
-        );
+        Checklist checklistFromDB = this.checklistsService.addChecklistWithSimpleEntries(body, company);
+        
+        return new ChecklistToSendDTO(checklistFromDB);
         
     }
 
