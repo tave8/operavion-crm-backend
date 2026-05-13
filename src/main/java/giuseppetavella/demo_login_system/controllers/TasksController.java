@@ -36,7 +36,7 @@ public class TasksController {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Page<TaskToSendDTO> getTasks(@AuthenticationPrincipal User currentUser,
                                             @RequestParam(value = "page", defaultValue = "0") int page,
-                                            @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                            @RequestParam(value = "pageSize", defaultValue = "100") int pageSize,
                                             @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
                                             @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
                                             @RequestParam(value = "name", defaultValue = "") String taskName)

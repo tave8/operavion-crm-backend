@@ -21,9 +21,9 @@ public class SeedDataDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Company company = this.companiesService.findById(UUID.fromString("922fb7dd-95cd-4266-aad9-c6f734f8386c"));
-
-        this.seedDataService.seedStandardChecklists(company);
+        // Company company = this.companiesService.findById(UUID.fromString("922fb7dd-95cd-4266-aad9-c6f734f8386c"));
+        //
+        // this.seedDataService.seedStandardChecklists(company);
         
     }
     

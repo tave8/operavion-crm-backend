@@ -16,6 +16,7 @@ import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.security.TokenTools;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import giuseppetavella.demo_login_system.services.CompaniesService;
+import giuseppetavella.demo_login_system.services.SeedDataService;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -40,6 +41,9 @@ public class AuthService {
     
     @Autowired
     private EmailVerificationService emailVerificationService;
+    
+    @Autowired
+    private SeedDataService seedDataService;
 
     @Autowired
     private PasswordEncoder bcrypt;
@@ -151,19 +155,22 @@ public class AuthService {
     {
         
         // add company to DB
-        Company company = this.companiesService.addCompany(body);
+        Company companyFromDB = this.companiesService.addCompany(body);
         
         // add the admin and associate it to the company
-        User newUser = this.usersService.addAdminOnlyOnce(body, company);
+        User newUserFromDB = this.usersService.addAdminOnlyOnce(body, companyFromDB);
 
         // send email verification code to the admin
-        String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(newUser);
+        String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(newUserFromDB);
         
         // send email
-        this.appEmailService.sendVerifyEmail(newUser, verificationUrl);
+        this.appEmailService.sendVerifyEmail(newUserFromDB, verificationUrl);
+        
+        // seed data - this could be done async
+        this.seedDataService.seedStandardChecklists(companyFromDB);
         
         return new AfterSignupDTO(
-                newUser, 
+                newUserFromDB, 
                 "Signup was successful. We've sent you an email with a link to confirm that it's you."
         );
     }

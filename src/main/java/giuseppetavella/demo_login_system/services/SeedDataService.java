@@ -4,6 +4,7 @@ import giuseppetavella.demo_login_system.entities.Checklist;
 import giuseppetavella.demo_login_system.entities.ChecklistEntry;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.exceptions.SeedDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,13 +73,22 @@ public class SeedDataService {
         for (String checklistName : taskMap.keySet()) 
         {
             
-            List<String> taskNames = taskMap.get(checklistName);
+            try {
+                
+                List<String> taskNames = taskMap.get(checklistName);
+                
+                this.addTasksToChecklist(
+                        company,
+                        checklistName,
+                        taskNames
+                );
+                
+            } catch (RuntimeException e) {
             
-            this.addTasksToChecklist(
-                    company,
-                    checklistName,
-                    taskNames
-            );
+                throw new SeedDataException("For checklist: " + checklistName + " DETAILS: " + e.getMessage());
+            
+            }
+            
             
         }
         
