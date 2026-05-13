@@ -5,6 +5,7 @@ import giuseppetavella.demo_login_system.entities.ClientAddress;
 import java.util.UUID;
 
 public class ClientAddressToSendDTO {
+    private final UUID id;
     private final UUID clientId;
     private final UUID addressId;
     private final String addressName;
@@ -14,6 +15,7 @@ public class ClientAddressToSendDTO {
     private final double addressLon;
 
     public ClientAddressToSendDTO(ClientAddress clientAddress) {
+        this.id = clientAddress.getId();
         this.addressId = clientAddress.getAddress().getId();
         this.clientId = clientAddress.getClient().getId();
         this.addressName = clientAddress.getAddressName();
