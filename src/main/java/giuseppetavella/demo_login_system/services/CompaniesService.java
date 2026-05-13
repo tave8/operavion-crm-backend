@@ -1,18 +1,29 @@
 package giuseppetavella.demo_login_system.services;
 
+import giuseppetavella.demo_login_system.entities.Checklist;
 import giuseppetavella.demo_login_system.entities.Company;
+import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
 import giuseppetavella.demo_login_system.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CompaniesService {
 
     @Autowired
     private CompanyRepository companyRepository;
-    
+
+    /**
+     * Find company by ID.
+     */
+    public Company findById(UUID companyId) throws NotFoundException {
+        return this.companyRepository.findById(companyId).orElseThrow(() -> new NotFoundException(companyId, "company"));
+    }
+
     public Company save(Company company) {
         return this.companyRepository.save(company);
     }

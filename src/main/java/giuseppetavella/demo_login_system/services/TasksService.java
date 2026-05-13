@@ -41,6 +41,11 @@ public class TasksService {
     {
         return this.tasksRepository.save(task);
     }
+    
+    public List<Task> saveAll(List<Task> tasks) 
+    {
+        return this.tasksRepository.saveAll(tasks);    
+    }
 
 
     /**

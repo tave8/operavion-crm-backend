@@ -32,6 +32,15 @@ public class ChecklistsService {
     @Autowired
     private TasksService tasksService;
 
+    /**
+     * Save a checklist. 
+     * 
+     * @param checklist
+     * @return
+     */
+    public Checklist save(Checklist checklist) {
+        return this.checklistsRepository.save(checklist);
+    }
 
     /**
      * Find checklist by ID.
