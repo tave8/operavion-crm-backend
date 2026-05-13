@@ -16,6 +16,7 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
 
     /**
      * Find client addresses of company.
+     * Search by address name OR client legal name.
      *
      * @return
      */
@@ -26,13 +27,16 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
         WHERE 
             c.client.company = :company 
             AND (
-                :addressNamePattern IS NULL
-                OR LOWER(c.addressName) LIKE :addressNamePattern
+                :searchQueryPattern IS NULL 
+                OR (
+                     (LOWER(c.addressName) LIKE :searchQueryPattern)
+                     OR (LOWER(c.client.legalName) LIKE :searchQueryPattern)
+                )
             )
      """)
     Page<ClientAddress> findClientAddressessByCompany(
             Company company,
-            String addressNamePattern,
+            String searchQueryPattern,
             Pageable pageable
     );
 

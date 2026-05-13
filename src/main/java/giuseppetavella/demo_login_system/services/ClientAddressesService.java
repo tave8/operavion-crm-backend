@@ -74,7 +74,7 @@ public class ClientAddressesService {
      * Get client addresses of company.
      */
     public Page<ClientAddress> findClientAddressesByCompany(Company company,
-                                                            String addressName,
+                                                            String searchQuery,
                                                             int page,
                                                             int pageSize,
                                                             String sortOrder,
@@ -111,16 +111,16 @@ public class ClientAddressesService {
                 sort
         );
 
-        String addressNamePattern = null;
+        String searchQueryPattern = null;
 
-        // create pattern for legal name, if a legal name was specified
-        if(!addressName.trim().isEmpty()) {
-            addressNamePattern = "%" + addressName.toLowerCase().trim() + "%";
+        if(!searchQuery.trim().isEmpty()) {
+            String searchQueryCleaned = searchQuery.toLowerCase().trim();
+            searchQueryPattern = "%" + searchQueryCleaned + "%";
         }
 
         return this.clientAddressesRepository.findClientAddressessByCompany(
                 company,
-                addressNamePattern,
+                searchQueryPattern,
                 pageable
         );
 

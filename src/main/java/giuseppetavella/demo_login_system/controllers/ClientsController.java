@@ -165,7 +165,7 @@ public class ClientsController {
                                                                       @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
                                                                       @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder, 
                                                                       @RequestParam(value = "sortBy", defaultValue = "addressName") String sortBy,
-                                                                      @RequestParam(value = "addressName", defaultValue = "") String addressName)
+                                                                      @RequestParam(value = "q", defaultValue = "") String query)
     {
 
         StringHelper.requireInValues(
@@ -184,7 +184,7 @@ public class ClientsController {
 
         Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findClientAddressesByCompany(
                 company,
-                addressName,
+                query,
                 page,
                 pageSize,
                 sortOrder,
