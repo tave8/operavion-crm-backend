@@ -8,8 +8,10 @@ import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewChecklistWithSimpleEntriesSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewTaskSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ChecklistEntryToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ChecklistToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.TaskToSendDTO;
+import giuseppetavella.demo_login_system.services.ChecklistEntriesService;
 import giuseppetavella.demo_login_system.services.ChecklistsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,9 @@ public class ChecklistsController {
     
     @Autowired
     private ChecklistsService checklistsService;
+    
+    @Autowired
+    private ChecklistEntriesService checklistEntriesService;
 
     /**
      * Add a checklist with "simple entries".
@@ -53,7 +58,9 @@ public class ChecklistsController {
         
         Checklist checklistFromDB = this.checklistsService.addChecklistWithSimpleEntries(body, company);
         
-        return new ChecklistToSendDTO(checklistFromDB);
+        List<ChecklistEntryToSendDTO> entries = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklistFromDB);
+        
+        return new ChecklistToSendDTO(checklistFromDB, entries);
         
     }
 
@@ -96,7 +103,10 @@ public class ChecklistsController {
                 sortOrder
         );
 
-        return checklistsPage.map(checklist -> new ChecklistToSendDTO(checklist));
+        return checklistsPage.map(checklist -> {
+            List<ChecklistEntryToSendDTO> entries = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklist);
+            return new ChecklistToSendDTO(checklist, entries);
+        });
 
     }
 
