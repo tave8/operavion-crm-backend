@@ -22,10 +22,15 @@ public interface ChecklistsRepository extends JpaRepository<Checklist, UUID> {
         FROM Checklist c
         WHERE
             c.company = :company
+            AND (
+                :searchQueryPattern IS NULL
+                OR LOWER(c.name) LIKE :searchQueryPattern
+            )
 
     """)
     Page<Checklist> findChecklists(
             Company company,
+            String searchQueryPattern,
             Pageable pageable
     );
 

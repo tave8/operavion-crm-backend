@@ -64,11 +64,12 @@ public class ChecklistsController {
      * */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public Page<ChecklistToSendDTO> getTasks(@AuthenticationPrincipal User currentUser,
-                                             @RequestParam(value = "page", defaultValue = "0") int page,
-                                             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
-                                             @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-                                             @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
+    public Page<ChecklistToSendDTO> getChecklists(@AuthenticationPrincipal User currentUser,
+                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                 @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                 @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+                                                 @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder,
+                                                  @RequestParam(value = "q", defaultValue = "") String query)
     {
 
         // sortBy must be one of these values
@@ -88,6 +89,7 @@ public class ChecklistsController {
 
         Page<Checklist> checklistsPage = this.checklistsService.findChecklists(
                 company,
+                query,
                 page,
                 pageSize,
                 sortBy,

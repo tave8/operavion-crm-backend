@@ -111,6 +111,7 @@ public class ChecklistsService {
      * Get checklists.
      */
     public Page<Checklist> findChecklists(Company company,
+                                          String searchQuery, 
                                           int page,
                                           int pageSize,
                                           String sortBy,
@@ -143,9 +144,11 @@ public class ChecklistsService {
 
         Pageable pageable = PageRequest.of(finalPage, finalSize, sort);
         
-
+        String searchQueryPattern = StringHelper.buildSearchQueryPattern(searchQuery);
+        
         return this.checklistsRepository.findChecklists(
                 company,
+                searchQueryPattern,
                 pageable
         );
 

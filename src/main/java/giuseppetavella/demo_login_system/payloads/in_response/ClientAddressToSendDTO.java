@@ -41,6 +41,10 @@ public class ClientAddressToSendDTO {
         return clientName;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public double getAddressLon() {
         return addressLon;
     }

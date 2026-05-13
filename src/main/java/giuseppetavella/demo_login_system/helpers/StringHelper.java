@@ -117,4 +117,36 @@ public class StringHelper {
         return password.toString();
     }
 
+
+    /**
+     * If query is not empty (contains something), return a search pattern.
+     * 
+     * If query is empty or blank or null, return null.
+     * 
+     * <pre>
+     * Example:
+     *      null    ->   null
+     *      "  "    ->   null
+     *      "abc "  ->   "%abc%"
+     *      " ABC " ->   "%abc%"
+     * </pre>
+     * 
+     * @return
+     */
+    public static String buildSearchQueryPattern(String query) {
+        
+        if(query == null) {
+            return null;
+        }
+        
+        if(query.trim().isEmpty()) {
+            return null;
+        }
+
+        String queryCleaned = query.toLowerCase().trim();
+        
+        return "%" + queryCleaned + "%";
+
+    }
+    
 }
