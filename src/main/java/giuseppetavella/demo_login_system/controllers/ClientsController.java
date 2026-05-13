@@ -161,10 +161,18 @@ public class ClientsController {
     @GetMapping("/addresses")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Page<ClientAddressToSendDTO> getClientAddressesOfMyCompany(@AuthenticationPrincipal User currentUser,
-                                                                   @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                   @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
-                                                                   @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder)
+                                                                      @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                      @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                                      @RequestParam(value = "sortOrder", defaultValue = "asc") String sortOrder, 
+                                                                      @RequestParam(value = "sortBy", defaultValue = "addressName") String sortBy,
+                                                                      @RequestParam(value = "addressName", defaultValue = "") String addressName)
     {
+
+        StringHelper.requireInValues(
+                sortBy,
+                List.of("addressName"),
+                "sortOrder"
+        );
         
         StringHelper.requireInValues(
                 sortOrder,
@@ -176,9 +184,11 @@ public class ClientsController {
 
         Page<ClientAddress> clientsAddressesPage = this.clientAddressesService.findClientAddressesByCompany(
                 company,
+                addressName,
                 page,
                 pageSize,
-                sortOrder
+                sortOrder,
+                sortBy
         );
 
         return clientsAddressesPage.map(clientAddress -> new ClientAddressToSendDTO(clientAddress));

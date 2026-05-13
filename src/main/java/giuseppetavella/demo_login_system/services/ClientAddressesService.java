@@ -74,11 +74,19 @@ public class ClientAddressesService {
      * Get client addresses of company.
      */
     public Page<ClientAddress> findClientAddressesByCompany(Company company,
+                                                            String addressName,
                                                             int page,
                                                             int pageSize,
-                                                            String sortOrder)
+                                                            String sortOrder,
+                                                            String sortBy)
     {
 
+        StringHelper.requireInValues(
+                sortBy,
+                List.of("addressName"),
+                "sortOrder"
+        );
+        
         // we can sort in these "directions"
         StringHelper.requireInValues(
                 sortOrder,
@@ -93,18 +101,26 @@ public class ClientAddressesService {
         // at which page we start at  
         int finalPage = Math.max(0, page);
 
-        // Sort sort = sortOrder.equals("asc")
-        //         ? Sort.by(sortBy).ascending()
-        //         : Sort.by(sortBy).descending();
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(
                 finalPage,
-                finalSize
-                // sort
+                finalSize,
+                sort
         );
+
+        String addressNamePattern = null;
+
+        // create pattern for legal name, if a legal name was specified
+        if(!addressName.trim().isEmpty()) {
+            addressNamePattern = "%" + addressName.toLowerCase().trim() + "%";
+        }
 
         return this.clientAddressesRepository.findClientAddressessByCompany(
                 company,
+                addressNamePattern,
                 pageable
         );
 

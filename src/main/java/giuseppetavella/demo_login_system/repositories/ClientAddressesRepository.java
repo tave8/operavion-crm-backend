@@ -19,9 +19,20 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
      *
      * @return
      */
-    @Query("SELECT c FROM ClientAddress c WHERE c.client.company = :company")
+    @Query(""" 
+            
+        SELECT c 
+        FROM ClientAddress c 
+        WHERE 
+            c.client.company = :company 
+            AND (
+                :addressNamePattern IS NULL
+                OR LOWER(c.addressName) LIKE :addressNamePattern
+            )
+     """)
     Page<ClientAddress> findClientAddressessByCompany(
             Company company,
+            String addressNamePattern,
             Pageable pageable
     );
 
