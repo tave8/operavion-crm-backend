@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Seed data for users.
@@ -34,22 +35,63 @@ public class SeedDataService {
 
     /**
      * Seed standard checklists for a company.
-     * 
+     *
      * @param company
      */
     @Transactional
     public void seedStandardChecklists(Company company) 
     {
-    
-        String checklistName = "Pulizia Giornaliera Uffici";
-        List<String> taskNames = List.of(
-            "Svuotare i cestini",
-            "Passare l'aspirapolvere",
-            "Lavare i pavimenti",
-            "Pulire i bagni",
-            "Rifornire carta igienica e sapone"
+        
+        Map<String, List<String>> taskMap = Map.of(
+                "Pulizia Giornaliera Uffici", List.of(
+                        "Svuotare i cestini",
+                        "Passare l'aspirapolvere",
+                        "Lavare i pavimenti",
+                        "Pulire i bagni",
+                        "Rifornire carta igienica e sapone"
+                ),
+                "Pulizia Scale Condominio", List.of(
+                        "Spazzare le scale", 
+                        "Lavare le scale",
+                        "Pulire l'ascensore", 
+                        "Pulire l'ingresso",
+                        "Svuotare i cestini condominiali"
+                ),
+                "Sanificazione Bagni", List.of(
+                        "Pulire i sanitari",
+                        "Disinfettare le superfici",
+                        "Lavare i pavimenti",
+                        "Rifornire carta igienica e sapone",
+                        "Pulire gli specchi"
+                )
+                // add more checklist name : task names here...         
         );
         
+        
+        // for each checklist name, get its task names 
+        for (String checklistName : taskMap.keySet()) 
+        {
+            
+            List<String> taskNames = taskMap.get(checklistName);
+            
+            this.addTasksToChecklist(
+                    company,
+                    checklistName,
+                    taskNames
+            );
+            
+        }
+        
+
+    }
+    
+
+    @Transactional
+    private void addTasksToChecklist(Company company, 
+                                    String checklistName, 
+                                    List<String> taskNames) 
+    {
+
         Checklist checklistFromDB = this.checklistsService.save(new Checklist(
                 company, checklistName
         ));
