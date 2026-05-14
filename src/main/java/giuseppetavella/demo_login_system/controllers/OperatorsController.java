@@ -2,7 +2,9 @@ package giuseppetavella.demo_login_system.controllers;
 
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.ShiftsService;
 import giuseppetavella.demo_login_system.services.UsersService;
@@ -27,6 +29,21 @@ public class OperatorsController {
     private UsersService usersService;
 
     /**
+     * Find all operators of company. 
+     * 
+     * @param currentUser
+     * @return
+     */
+    @GetMapping
+    public List<ProfileToSendDTO> findOperators(@AuthenticationPrincipal User currentUser)
+    {
+        Company company = currentUser.getCompany();
+        
+        return this.usersService.findUsersByRoleDTO(company, UserRole.OPERATOR);
+    }
+    
+
+    /**
      * Find shifts by operator.
      */
     @GetMapping("/{operatorId}/shifts")
@@ -44,6 +61,7 @@ public class OperatorsController {
         
         return this.shiftsService.findShiftsByOperatorDTO(operator);  
     }
+    
     
     
 }

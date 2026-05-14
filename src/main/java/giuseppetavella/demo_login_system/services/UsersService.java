@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -288,6 +289,27 @@ public class UsersService {
         return this.usersRepository.getUsersByCompany(company, pageable);
         
     }
+
+
+    /**
+     * Find users by role.
+     * @return
+     */
+    public List<User> findUsersByRole(Company company, UserRole role)
+    {
+        return this.usersRepository.findUsersByRole(company, role);
+    }
+
+    public List<ProfileToSendDTO> findUsersByRoleDTO(Company company, UserRole role)
+    {
+        return this
+                .findUsersByRole(company, role)
+                .stream()
+                .map(ProfileToSendDTO::new)
+                .toList();
+    }
+    
+    
 
     /**
      * Get all users of the given company, except admin

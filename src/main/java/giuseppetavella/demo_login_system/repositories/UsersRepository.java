@@ -13,11 +13,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface UsersRepository extends JpaRepository<User, UUID> {
 
+    
+    @Query("""
+        
+        SELECT u
+        FROM User u
+        WHERE 
+            u.company = :company
+            AND u.role = :role    
+        
+    """)
+    List<User> findUsersByRole(
+            @Param("company") Company company,
+            @Param("role") UserRole role
+    );
 
     /**
      * Find a user by email.
