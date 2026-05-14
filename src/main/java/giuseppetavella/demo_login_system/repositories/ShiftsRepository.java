@@ -16,6 +16,29 @@ import java.util.UUID;
 public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
     /**
+     * Find shifts by operator.
+     * 
+     * @param operator
+     * @return
+     */
+    @Query("""
+    
+        SELECT s
+        FROM Shift s
+        WHERE 
+            s IN (
+                SELECT so.shift
+                FROM ShiftOperator so
+                WHERE so.operator = :operator   
+            )
+            
+    """)
+    List<Shift> findShiftsByOperator(
+            @Param("operator") User operator
+    );
+    
+    
+    /**
      * Find operators by shift.
      * 
      * @param shift

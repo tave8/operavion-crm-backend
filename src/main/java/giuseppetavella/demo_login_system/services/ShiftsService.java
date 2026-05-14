@@ -109,6 +109,18 @@ public class ShiftsService {
     }
 
 
+    public List<Shift> findShiftsByOperator(User operator)
+    {
+        return this.shiftsRepository.findShiftsByOperator(operator);
+    }
+
+    public List<ShiftToSendDTO> findShiftsByOperatorDTO(User operator)
+    {
+        return this.findShiftsByOperator(operator)
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();
+    }
     /**
      * Find the shift days of the shift.
      * 

@@ -25,6 +25,21 @@ public class AuthorizationHelper {
         
     }
 
+    /**
+     * Require that the given user is an operator.
+     */
+    public static void requireUserOperator(User candidateOperator) 
+    {
+        
+        if(!candidateOperator.getRole().equals(UserRole.OPERATOR)) {
+            throw new UnauthorizedException(
+                    "The given user must be an operator. "
+                    +"Got " +  candidateOperator.getRole()+ " instead."
+            );
+        }
+        
+    }
+
     public static void requireSameCompany(Company company1, Company company2) throws UnauthorizedException,
             InvalidDataFormatException
     {
