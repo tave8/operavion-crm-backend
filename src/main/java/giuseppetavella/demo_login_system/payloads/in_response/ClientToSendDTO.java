@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.payloads.in_response;
 
-import giuseppetavella.demo_login_system.entities.Client;
+import giuseppetavella.demo_login_system.entities.clients.Client;
 
 import java.util.UUID;
 

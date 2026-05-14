@@ -1,14 +1,11 @@
 package giuseppetavella.demo_login_system.controllers;
 
-import giuseppetavella.demo_login_system.entities.Client;
 import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.entities.checklists.Task;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
-import giuseppetavella.demo_login_system.payloads.in_request.NewClientSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewTaskSentDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ClientToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.TaskToSendDTO;
 import giuseppetavella.demo_login_system.services.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;

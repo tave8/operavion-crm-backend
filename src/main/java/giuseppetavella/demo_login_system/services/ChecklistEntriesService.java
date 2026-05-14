@@ -1,7 +1,7 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
-import giuseppetavella.demo_login_system.entities.ChecklistEntry;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
+import giuseppetavella.demo_login_system.entities.checklists.ChecklistEntry;
 import giuseppetavella.demo_login_system.payloads.in_response.ChecklistEntryToSendDTO;
 import giuseppetavella.demo_login_system.repositories.ChecklistEntriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;

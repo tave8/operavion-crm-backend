@@ -1,6 +1,5 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;

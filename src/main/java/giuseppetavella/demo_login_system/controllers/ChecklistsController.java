@@ -1,16 +1,13 @@
 package giuseppetavella.demo_login_system.controllers;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
 import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.Task;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewChecklistWithSimpleEntriesSentDTO;
-import giuseppetavella.demo_login_system.payloads.in_request.NewTaskSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ChecklistEntryToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ChecklistToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.TaskToSendDTO;
 import giuseppetavella.demo_login_system.services.ChecklistEntriesService;
 import giuseppetavella.demo_login_system.services.ChecklistsService;
 import org.springframework.beans.factory.annotation.Autowired;

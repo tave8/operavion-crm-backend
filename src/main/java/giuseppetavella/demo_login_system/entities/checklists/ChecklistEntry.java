@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.entities;
+package giuseppetavella.demo_login_system.entities.checklists;
 
 import jakarta.persistence.*;
 

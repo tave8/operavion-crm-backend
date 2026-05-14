@@ -1,9 +1,9 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
-import giuseppetavella.demo_login_system.entities.ChecklistEntry;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
+import giuseppetavella.demo_login_system.entities.checklists.ChecklistEntry;
 import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.entities.checklists.Task;
 import giuseppetavella.demo_login_system.exceptions.SeedDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

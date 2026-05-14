@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.entities.shift;
+package giuseppetavella.demo_login_system.entities.shifts;
 
 import giuseppetavella.demo_login_system.entities.User;
 import jakarta.persistence.*;

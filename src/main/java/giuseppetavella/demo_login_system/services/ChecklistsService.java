@@ -1,6 +1,9 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.*;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
+import giuseppetavella.demo_login_system.entities.checklists.ChecklistEntry;
+import giuseppetavella.demo_login_system.entities.checklists.Task;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;

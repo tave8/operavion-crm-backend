@@ -1,7 +1,7 @@
-package giuseppetavella.demo_login_system.entities.shift;
+package giuseppetavella.demo_login_system.entities.shifts;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
-import giuseppetavella.demo_login_system.entities.ClientAddress;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

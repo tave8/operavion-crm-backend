@@ -1,8 +1,8 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Checklist;
-import giuseppetavella.demo_login_system.entities.ClientAddress;
-import giuseppetavella.demo_login_system.entities.ClientAddressChecklist;
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddressChecklist;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.exceptions.ClientAddressChecklistException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;

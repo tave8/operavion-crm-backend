@@ -1,16 +1,14 @@
 package giuseppetavella.demo_login_system.controllers;
 
 import giuseppetavella.demo_login_system.entities.*;
-import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.entities.clients.Client;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewClientAddressSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewClientSentDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressChecklistToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.NotificationToSendDTO;
-import giuseppetavella.demo_login_system.services.ClientAddressChecklistsService;
 import giuseppetavella.demo_login_system.services.ClientAddressesService;
 import giuseppetavella.demo_login_system.services.ClientsService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package giuseppetavella.demo_login_system.repositories;
 
-import giuseppetavella.demo_login_system.entities.Client;
-import giuseppetavella.demo_login_system.entities.ClientAddress;
+import giuseppetavella.demo_login_system.entities.clients.Client;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

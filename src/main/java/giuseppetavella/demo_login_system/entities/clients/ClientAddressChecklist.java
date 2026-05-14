@@ -1,5 +1,6 @@
-package giuseppetavella.demo_login_system.entities;
+package giuseppetavella.demo_login_system.entities.clients;
 
+import giuseppetavella.demo_login_system.entities.checklists.Checklist;
 import jakarta.persistence.*;
 
 import java.util.UUID;

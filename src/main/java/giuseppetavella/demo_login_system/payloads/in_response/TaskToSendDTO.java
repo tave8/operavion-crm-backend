@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.payloads.in_response;
 
-import giuseppetavella.demo_login_system.entities.Task;
+import giuseppetavella.demo_login_system.entities.checklists.Task;
 
 import java.util.UUID;
 

@@ -1,6 +1,8 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.*;
+import giuseppetavella.demo_login_system.entities.clients.Client;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;

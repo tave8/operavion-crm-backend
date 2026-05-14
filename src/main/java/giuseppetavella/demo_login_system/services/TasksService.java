@@ -1,9 +1,7 @@
 package giuseppetavella.demo_login_system.services;
 
-import giuseppetavella.demo_login_system.entities.Client;
 import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.Task;
-import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.entities.checklists.Task;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.StringHelper;

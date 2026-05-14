@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.controllers;
 
-import giuseppetavella.demo_login_system.entities.ClientAddressChecklist;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddressChecklist;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
