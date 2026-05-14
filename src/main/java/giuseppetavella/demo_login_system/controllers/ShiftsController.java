@@ -56,14 +56,14 @@ public class ShiftsController {
      * @return
      */
     @GetMapping
-    public List<Shift> findShifts(@AuthenticationPrincipal User currentUser,
+    public List<ShiftToSendDTO> findShifts(@AuthenticationPrincipal User currentUser,
                                   @RequestParam(value = "from", required = false) LocalDate startDate,
                                   @RequestParam(value = "to", required = false) LocalDate endDate) 
     {
         
         Company company = currentUser.getCompany();
         
-        return this.shiftsService.findShiftsBetween(company, startDate, endDate);
+        return this.shiftsService.findShiftsBetweenDTO(company, startDate, endDate);
         
     }
     

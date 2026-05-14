@@ -36,6 +36,56 @@ public class ShiftsService {
     @Autowired
     private ChecklistEntriesService checklistEntriesService;
 
+
+    /**
+     * Shift -> Shift DTO
+     * 
+     * @return
+     */
+    public ShiftToSendDTO toShiftDTO(Shift shift) 
+    {
+
+        Checklist checklist = shift.getChecklist();
+        ClientAddress clientAddress = shift.getClientAddress();
+        
+        List<ChecklistEntryToSendDTO> entriesDTO = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklist);
+
+        List<ShiftDayToSendDTO> shiftDaysToSendDTO = this.findShiftDaysByShiftDTO(shift);
+        
+        ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddress);
+
+        ChecklistToSendDTO checklistToSendDTO = new ChecklistToSendDTO(checklist, entriesDTO);
+
+        return new ShiftToSendDTO(
+                shift,
+                shiftDaysToSendDTO,
+                clientAddressToSendDTO,
+                checklistToSendDTO
+        );
+        
+    }
+
+
+    /**
+     * Find the shift days of the shift.
+     * 
+     * @param shift
+     * @return
+     */
+    public List<ShiftDay> findShiftDaysByShift(Shift shift)
+    {
+        return this.shiftDaysRepository.findByShift(shift);
+    }
+    
+    public List<ShiftDayToSendDTO> findShiftDaysByShiftDTO(Shift shift)
+    {
+        return this.findShiftDaysByShift(shift)
+                    .stream()
+                    .map(ShiftDayToSendDTO::new)
+                    .toList();
+    }
+    
+    
     /**
      * Add a shift.
      * 
@@ -79,24 +129,9 @@ public class ShiftsService {
                                     .toList();
         
         // save shift days
-        List<ShiftDay> shiftDaysFromDB = this.shiftDaysRepository.saveAll(shiftDays);
+        this.shiftDaysRepository.saveAll(shiftDays);
         
-        List<ShiftDayToSendDTO> shiftDaysToSendDTO = shiftDaysFromDB.stream()
-                                                    .map(shiftDay -> new ShiftDayToSendDTO(shiftDay))
-                                                    .toList();
-        
-        List<ChecklistEntryToSendDTO> entriesDTO = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklistFromDB);
-
-        ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddressFromDB);
-        
-        ChecklistToSendDTO checklistToSendDTO = new ChecklistToSendDTO(checklistFromDB, entriesDTO);
-        
-        return new ShiftToSendDTO(
-                shiftFromDB,
-                shiftDaysToSendDTO,
-                clientAddressToSendDTO,
-                checklistToSendDTO
-        );
+        return this.toShiftDTO(shiftFromDB);
         
     }
     
@@ -107,6 +142,16 @@ public class ShiftsService {
     public List<Shift> findShiftsBetween(Company company, LocalDate startDate, LocalDate endDate) {
         return shiftsRepository.findShiftsBetween(company, startDate, endDate);
     }
+
+    public List<ShiftToSendDTO> findShiftsBetweenDTO(Company company, LocalDate startDate, LocalDate endDate) {
+        return shiftsRepository
+                .findShiftsBetween(company, startDate, endDate)
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();   
+    }
+    
+    
 
     /**
      * Find all shifts of an operator.
