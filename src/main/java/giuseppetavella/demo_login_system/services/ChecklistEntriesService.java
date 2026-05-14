@@ -36,7 +36,9 @@ public class ChecklistEntriesService {
     public List<ChecklistEntryToSendDTO> getEntriesByChecklistAsDTO(Checklist checklist) {
         return this.checklistEntriesRepository
                 .getEntriesByChecklist(checklist)
-                .stream().map(ChecklistEntryToSendDTO::new).toList();
+                .stream()
+                .map(ChecklistEntryToSendDTO::new)
+                .toList();
     }
     
     

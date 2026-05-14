@@ -4,6 +4,7 @@ import giuseppetavella.demo_login_system.entities.*;
 import giuseppetavella.demo_login_system.entities.checklists.Checklist;
 import giuseppetavella.demo_login_system.entities.checklists.ChecklistEntry;
 import giuseppetavella.demo_login_system.entities.checklists.Task;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
@@ -11,6 +12,8 @@ import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.ChecklistSimpleEntrySentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewChecklistWithSimpleEntriesSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ChecklistEntryToSendDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ChecklistToSendDTO;
 import giuseppetavella.demo_login_system.repositories.ChecklistsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,8 +36,26 @@ public class ChecklistsService {
     private ChecklistEntriesService checklistEntriesService;
     
     @Autowired
+    private ClientAddressesService clientAddressesService;
+    
+    @Autowired
     private TasksService tasksService;
 
+
+    /**
+     * Checklist -> Checklist DTO 
+     * 
+     * @param checklist
+     * @return
+     */
+    public ChecklistToSendDTO toChecklistDTO(Checklist checklist)
+    {
+        List<ChecklistEntryToSendDTO> entries = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklist);
+    
+        return new ChecklistToSendDTO(checklist, entries);
+    }
+    
+    
     /**
      * Save a checklist. 
      * 
@@ -118,6 +139,36 @@ public class ChecklistsService {
     }
 
 
+    /**
+     * Find checklists by client address.
+     * 
+     * @return
+     */
+    public List<Checklist> findChecklistsByClientAddress(Company company,
+                                                         ClientAddress clientAddress)
+    {
+        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+        
+        return this.checklistsRepository.findChecklistsByClientAddress(clientAddress);
+    }
+
+    
+    public List<ChecklistToSendDTO> findChecklistsByClientAddressDTO(Company company,
+                                                                     ClientAddress clientAddress)
+    {
+        return this.findChecklistsByClientAddress(company, clientAddress)
+                    .stream()
+                    .map(this::toChecklistDTO)
+                    .toList();
+    }
+
+    public List<ChecklistToSendDTO> findChecklistsByClientAddressDTO(Company company,
+                                                                     UUID clientAddressId)
+    {
+        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+        
+        return this.findChecklistsByClientAddressDTO(company, clientAddress);
+    }
 
     /**
      * Get checklists.
