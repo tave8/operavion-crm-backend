@@ -48,6 +48,9 @@
     POST /                        (add a checklist, add checklist entries. the payload contains an array of task id's)
 
     
+/operators/:userId/shifts         (find shifts by operator)
+    
+    
 /client-addresses/:clientAddressId/checklists   (get checklists by client address)
     
     

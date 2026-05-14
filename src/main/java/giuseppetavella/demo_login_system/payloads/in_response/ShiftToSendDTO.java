@@ -15,6 +15,7 @@ public class ShiftToSendDTO {
     private final ClientAddressToSendDTO clientAddress;
     private final ChecklistToSendDTO checklist;
     private final List<ShiftDayToSendDTO> days;
+    private final List<ProfileToSendDTO> operators;
     private final LocalDate startDate;
     private final LocalDate endDate;
     private final LocalTime startTime;
@@ -24,7 +25,8 @@ public class ShiftToSendDTO {
                           List<ShiftDayToSendDTO> days,
                           ClientAddressToSendDTO clientAddress,
                           ChecklistToSendDTO checklist,
-                          String shiftName) 
+                          String shiftName,
+                          List<ProfileToSendDTO> operators) 
     {
     
         this.id = shift.getId();
@@ -32,6 +34,7 @@ public class ShiftToSendDTO {
         this.clientAddress = clientAddress;
         this.checklist = checklist;
         this.days = days;
+        this.operators = operators;
         this.startDate = shift.getStartDate();
         this.endDate = shift.getEndDate();
         this.startTime = shift.getStartTime();
@@ -48,6 +51,10 @@ public class ShiftToSendDTO {
 
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+    public List<ProfileToSendDTO> getOperators() {
+        return operators;
     }
 
     public String getName() {

@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.repositories;
 
 import giuseppetavella.demo_login_system.entities.Company;
+import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.shifts.Shift;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,31 @@ import java.util.UUID;
 
 @Repository
 public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
+
+    /**
+     * Find operators by shift.
+     * 
+     * @param shift
+     * @return
+     */
+    @Query("""
+        
+        SELECT 
+            DISTINCT u
+        FROM 
+            User u
+        WHERE 
+            u IN (
+                SELECT so.operator
+                FROM ShiftOperator so
+                WHERE so.shift = :shift
+            ) 
+                
+    """)
+    List<User> findOperatorsByShift(
+            @Param("shift") Shift shift
+    );
+    
 
     @Query("""
         SELECT s FROM Shift s

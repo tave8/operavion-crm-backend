@@ -69,9 +69,15 @@ public class ShiftsService {
         Checklist checklist = shift.getChecklist();
         ClientAddress clientAddress = shift.getClientAddress();
         
+        // find data
+        
         List<ChecklistEntryToSendDTO> entriesDTO = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklist);
 
         List<ShiftDayToSendDTO> shiftDaysToSendDTO = this.findShiftDaysByShiftDTO(shift);
+        
+        List<ProfileToSendDTO> operatorsToSendDTO = this.findOperatorsByShiftDTO(shift);
+        
+        // instantiate DTO's
         
         ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddress);
 
@@ -96,7 +102,8 @@ public class ShiftsService {
                 shiftDaysToSendDTO,
                 clientAddressToSendDTO,
                 checklistToSendDTO,
-                shiftName
+                shiftName,
+                operatorsToSendDTO
         );
         
     }
@@ -119,6 +126,25 @@ public class ShiftsService {
                     .stream()
                     .map(ShiftDayToSendDTO::new)
                     .toList();
+    }
+
+    /**
+     * Find operators by shift.
+     * 
+     * @param shift
+     * @return
+     */
+    public List<User> findOperatorsByShift(Shift shift)
+    {
+        return this.shiftsRepository.findOperatorsByShift(shift);
+    }
+
+    public List<ProfileToSendDTO> findOperatorsByShiftDTO(Shift shift)
+    {
+        return this.findOperatorsByShift(shift)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
     }
     
     
