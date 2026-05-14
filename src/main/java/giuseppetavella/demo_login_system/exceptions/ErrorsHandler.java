@@ -138,7 +138,25 @@ public class ErrorsHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        return new ErrorsToSendDTO("Some data violates data integrity.");
+        String message = ex.getMessage();
+
+        if (message.contains("duplicate key")) {
+            return new ErrorsToSendDTO("One or more values already exist and cannot be duplicated.");
+        }
+        if (message.contains("foreign key") && message.contains("insert")) {
+            return new ErrorsToSendDTO("One or more referenced resources do not exist.");
+        }
+        if (message.contains("foreign key") && message.contains("delete")) {
+            return new ErrorsToSendDTO("This resource cannot be deleted because it is referenced by other data.");
+        }
+        if (message.contains("not-null") || message.contains("null value")) {
+            return new ErrorsToSendDTO("One or more required fields are missing.");
+        }
+        if (message.contains("check constraint")) {
+            return new ErrorsToSendDTO("One or more values do not meet the required constraints.");
+        }
+
+        return new ErrorsToSendDTO("The request contains conflicting or invalid data.");
     }
     
     
