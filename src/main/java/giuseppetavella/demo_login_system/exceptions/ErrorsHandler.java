@@ -99,6 +99,12 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
+    @ExceptionHandler(ShiftException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsToSendDTO handleShiftException(ShiftException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
     /**
      * Handles exceptions raised when current user of request
      * is not authorized to access an endpoint. We protect

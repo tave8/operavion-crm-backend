@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.entities.shifts;
 
 import jakarta.persistence.*;
 
+import java.time.DayOfWeek;
 import java.util.UUID;
 
 @Entity
@@ -22,11 +23,12 @@ public class ShiftDay {
     private Shift shift;
     
     @Column(nullable = false)
-    private Integer day;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek day;
     
     protected ShiftDay() {}
     
-    public ShiftDay(Shift shift, Integer day) 
+    public ShiftDay(Shift shift, DayOfWeek day) 
     {
 
         this.setShift(shift);
@@ -34,16 +36,11 @@ public class ShiftDay {
         
     }
 
-    public Integer getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
-    public void setDay(Integer day) {
-        // TODO: check that day is between 1 and 7
-        if (day < 1 || day > 7) {
-            throw new IllegalArgumentException("Day must be between 1 and 7");
-        }
-        
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
