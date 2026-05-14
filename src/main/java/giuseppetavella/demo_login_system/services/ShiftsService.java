@@ -139,12 +139,18 @@ public class ShiftsService {
     /**
      * Find all shifts between two dates.
      */
-    public List<Shift> findShiftsBetween(Company company, LocalDate startDate, LocalDate endDate) {
-        return shiftsRepository.findShiftsBetween(company, startDate, endDate);
+    public List<Shift> findShiftsBetween(Company company, LocalDate from, LocalDate to) {
+        if (from == null && to == null) return shiftsRepository.findShifts(company);
+        if (from == null) return shiftsRepository.findShiftsUntil(company, to);
+        if (to == null)   return shiftsRepository.findShiftsFrom(company, from);
+        return shiftsRepository.findShiftsBetween(company, from, to);
     }
 
-    public List<ShiftToSendDTO> findShiftsBetweenDTO(Company company, LocalDate startDate, LocalDate endDate) {
-        return shiftsRepository
+    public List<ShiftToSendDTO> findShiftsBetweenDTO(Company company, 
+                                                     LocalDate startDate, 
+                                                     LocalDate endDate) 
+    {
+        return this
                 .findShiftsBetween(company, startDate, endDate)
                 .stream()
                 .map(this::toShiftDTO)
