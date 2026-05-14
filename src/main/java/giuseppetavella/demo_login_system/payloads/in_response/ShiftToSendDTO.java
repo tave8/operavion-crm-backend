@@ -11,6 +11,7 @@ import java.util.UUID;
 public class ShiftToSendDTO {
     
     private final UUID id;
+    private final String name; 
     private final ClientAddressToSendDTO clientAddress;
     private final ChecklistToSendDTO checklist;
     private final List<ShiftDayToSendDTO> days;
@@ -22,10 +23,12 @@ public class ShiftToSendDTO {
     public ShiftToSendDTO(Shift shift, 
                           List<ShiftDayToSendDTO> days,
                           ClientAddressToSendDTO clientAddress,
-                          ChecklistToSendDTO checklist) 
+                          ChecklistToSendDTO checklist,
+                          String shiftName) 
     {
     
         this.id = shift.getId();
+        this.name = shiftName;
         this.clientAddress = clientAddress;
         this.checklist = checklist;
         this.days = days;
@@ -33,7 +36,6 @@ public class ShiftToSendDTO {
         this.endDate = shift.getEndDate();
         this.startTime = shift.getStartTime();
         this.endTime = shift.getEndTime();
-        
     }
 
     public ChecklistToSendDTO getChecklist() {
@@ -46,6 +48,10 @@ public class ShiftToSendDTO {
 
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LocalDate getStartDate() {

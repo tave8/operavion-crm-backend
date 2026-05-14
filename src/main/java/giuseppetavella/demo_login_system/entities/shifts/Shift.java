@@ -61,6 +61,7 @@ public class Shift {
         this.setStartTime(startTime);
         
     }
+    
 
     public Checklist getChecklist() {
         return checklist;
