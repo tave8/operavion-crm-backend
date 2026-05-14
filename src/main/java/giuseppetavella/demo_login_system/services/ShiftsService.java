@@ -6,10 +6,13 @@ import giuseppetavella.demo_login_system.entities.checklists.Checklist;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.shifts.Shift;
 import giuseppetavella.demo_login_system.entities.shifts.ShiftDay;
+import giuseppetavella.demo_login_system.entities.shifts.ShiftOperator;
+import giuseppetavella.demo_login_system.exceptions.ShiftException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.*;
 import giuseppetavella.demo_login_system.repositories.ShiftDaysRepository;
+import giuseppetavella.demo_login_system.repositories.ShiftOperatorsRepository;
 import giuseppetavella.demo_login_system.repositories.ShiftsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +33,9 @@ public class ShiftsService {
     private ShiftDaysRepository shiftDaysRepository;
     
     @Autowired
+    private ShiftOperatorsRepository shiftOperatorsRepository;
+    
+    @Autowired
     private ClientAddressesService clientAddressesService;
     
     @Autowired
@@ -40,6 +43,9 @@ public class ShiftsService {
     
     @Autowired
     private ChecklistEntriesService checklistEntriesService;
+    
+    @Autowired
+    private UsersService usersService;
 
     private static final Map<DayOfWeek, String> DAY_ABBR_IT = Map.of(
             DayOfWeek.MONDAY,    "LUN",
@@ -109,6 +115,65 @@ public class ShiftsService {
     }
 
 
+    /**
+     * Assign an operator to a shift.
+     * Of course, they must both exist.
+     * 
+     * @param operator
+     * @return
+     */
+    public ShiftOperator assignOperatorToShift(Company company,
+                                               User operator, 
+                                               Shift shift)
+    {
+        
+        if(operator.getId() == null) {
+            throw new ShiftException("While assigning operator to shift, "
+                                        +"operator's ID is null. The operator must be coming from DB.");
+        }
+        if(shift.getId()  == null) {
+            throw new ShiftException("While assigning operator to shift, "
+                                    +"shift's ID is null. The shift must be coming from DB.");
+        }
+        
+        AuthorizationHelper.requireSameCompany(company, operator.getCompany());
+        
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        ShiftOperator shiftOperator = new ShiftOperator(shift, operator);
+        
+        return this.shiftOperatorsRepository.save(shiftOperator);
+        
+    }
+
+
+    public ShiftOperator assignOperatorToShift(Company company, 
+                                               UUID operatorId,
+                                               Shift shift)
+    {
+        User operator = this.usersService.findById(operatorId);
+        
+        return this.assignOperatorToShift(company, operator, shift);
+
+    }
+
+
+    public List<ShiftOperator> assignOperatorsToShift(Company company,
+                                                      List<UUID> operatorIds,
+                                                      Shift shift)
+    {
+        
+        List<ShiftOperator> shiftOperators = new ArrayList<>();
+
+        for(UUID operatorId : operatorIds) {
+            ShiftOperator shiftOperator = this.assignOperatorToShift(company, operatorId, shift);
+            shiftOperators.add(shiftOperator);
+        }
+        
+        return shiftOperators;
+    }
+    
+
     public List<Shift> findShiftsByOperator(User operator)
     {
         return this.shiftsRepository.findShiftsByOperator(operator);
@@ -121,6 +186,8 @@ public class ShiftsService {
                 .map(this::toShiftDTO)
                 .toList();
     }
+    
+    
     /**
      * Find the shift days of the shift.
      * 
@@ -193,6 +260,13 @@ public class ShiftsService {
         
         // save the shift in DB
         Shift shiftFromDB = this.shiftsRepository.save(newShift);
+        
+        // save the 
+        List<ShiftOperator> shiftOperators = this.assignOperatorsToShift(
+                company,
+                body.operatorIds(),
+                shiftFromDB
+        );
         
         // save the days of the shift in DB
         

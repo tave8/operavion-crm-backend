@@ -16,6 +16,9 @@ public record NewShiftSentDTO(
 
         @NotNull(message = "Missing 'checklistId' field")
         UUID checklistId,
+        
+        @NotNull(message = "Missing 'operatorIds' field")
+        List<UUID> operatorIds,
 
         @NotNull(message = "Missing 'startDate' field")
         LocalDate startDate,
