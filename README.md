@@ -48,6 +48,30 @@
     POST /                        (add a checklist, add checklist entries. the payload contains an array of task id's)
 
 
+/shifts                                 # shifts
+    ?from
+    ?to
+    
+    GET /:shiftId/operators             # who works in this shift
+        ?from
+        ?to 
+
+    GET /operators/:userId              # shifts of this operator
+        ?from
+        ?to
+
+    GET /client-addresses/:clientAddressId   # shifts at this address
+        ?from
+        ?to
+
+    POST /                              # create a shift
+    PUT /:shiftId                       # update a shift (missing)
+    DELETE /:shiftId                    # delete a shift (missing)
+    POST /:shiftId/operators            # assign operator to shift
+    DELETE /:shiftId/operators/:userId  # remove operator from shift
+
+
+
 /geocoding           
     GET /autocomplete     (returns a list of addresses given a query)  
     
