@@ -3,18 +3,74 @@ package giuseppetavella.demo_login_system.repositories;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.shifts.Shift;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
+    /**
+
+     * 
+     * <pre>
+     * shifts belong to that operator 
+     *
+     * AND (
+     *     :endDate > shift.startDate
+     *     AND :startDate < shift.endDate
+     * )
+     * 
+     * AND (
+     *     :endTime > shift.startTime
+     *     AND :startTime < shift.endTime
+     * )
+     * </pre>
+     *
+     * 
+     */
+    @Query("""
+        
+        SELECT 
+            s
+        FROM 
+            Shift s
+        WHERE 
+            s IN (
+                SELECT 
+                    so.shift
+                FROM 
+                    ShiftOperator so
+                WHERE 
+                   so.operator = :operator
+                   AND (
+                       :inDate > s.startDate
+                       AND :inDate < s.endDate     
+                   )
+                   AND (
+                       :endTime > s.startTime
+                       AND :startTime < s.endTime   
+                   )
+            )      
+                
+            
+    """)
+    List<Shift> findShiftsByOperatorInDateBetweenTime(
+        User operator,
+        LocalDate inDate,
+        LocalTime startTime,
+        LocalTime endTime
+    );
+    
+    
     /**
      * Find shifts by operator.
      * 

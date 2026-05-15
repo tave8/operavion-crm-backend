@@ -9,6 +9,7 @@ import giuseppetavella.demo_login_system.entities.shifts.ShiftDay;
 import giuseppetavella.demo_login_system.entities.shifts.ShiftOperator;
 import giuseppetavella.demo_login_system.exceptions.ShiftException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.helpers.TimeHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.*;
 import giuseppetavella.demo_login_system.repositories.ShiftDaysRepository;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -304,38 +306,55 @@ public class ShiftsService {
                 .map(this::toShiftDTO)
                 .toList();   
     }
+
     
-    
+    /**
+     * Find the shifts of an operator, in a date, in a time range.
+     * 
+     * @return
+     */
+    public List<Shift> findShiftsByOperatorInDateBetweenTime(User operator,
+                                                            LocalDate inDate,
+                                                            LocalTime startTime,
+                                                            LocalTime endTime)
+    {
+        // TODO: check that fromStartTime <= toStartTime
+        //    with DataValidationHelper
+        
+        return this.shiftsRepository.findShiftsByOperatorInDateBetweenTime(
+                operator,
+                inDate,
+                startTime,
+                endTime
+        );
+    }
+
 
     /**
-     * Find all shifts of an operator.
+     * Is the operator in a shift?
+     * Does the operator have a shift assigned?
      */
-    // public List<Shift> findShiftsByOperator(User operator) {
-    //     return shiftsRepository.findShiftsByOperator(operator);
-    // }
-    //
-    // /**
-    //  * Find all shifts of an operator between two dates.
-    //  */
-    // public List<Shift> findShiftsByOperatorBetween(User operator, LocalDate startDate, LocalDate endDate) {
-    //     return shiftsRepository.findShiftsByOperatorBetween(operator, startDate, endDate);
-    // }
-    //
-    // /**
-    //  * Find all operators that have shifts between two dates.
-    //  */
-    // public List<User> findOperatorsBetween(LocalDate startDate, LocalDate endDate) {
-    //     return shiftsRepository.findOperatorsBetween(startDate, endDate);
-    // }
-    //
-    // /**
-    //  * Find all operators that have no shifts between two dates.
-    //  */
-    // public List<User> findOperatorsWithoutShiftsBetween(LocalDate startDate, LocalDate endDate) {
-    //     return shiftsRepository.findOperatorsWithoutShiftsBetween(startDate, endDate);
-    // }
-
-
+    public boolean isOperatorInShiftInDateBetweenTime(User operator,
+                                                       LocalDate inDate,
+                                                       LocalTime startTime,
+                                                       LocalTime endTime)
+    {
+        
+        List<Shift> currentShifts = this.findShiftsByOperatorInDateBetweenTime(
+                operator,
+                inDate, 
+                startTime,
+                endTime
+        );
+        
+        // the operator is said to be in a shift, if there
+        // exists at least a shift for that date, 
+        // in the given time range
+        return !currentShifts.isEmpty();
+        
+    }
+    
+    
 
     private String formatDays(List<DayOfWeek> days) {
 
