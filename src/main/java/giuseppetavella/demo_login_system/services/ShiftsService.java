@@ -326,7 +326,36 @@ public class ShiftsService {
                 .toList();
     }
 
+    
 
+
+    public List<User> findOperatorsByClientAddressBetweenDates(ClientAddress clientAddress,
+                                                                 LocalDate startDate,
+                                                                 LocalDate endDate)
+    {
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return this.shiftsRepository.findOperatorsByClientAddressBetweenDates(
+                clientAddress,
+                newStartDate,
+                newEndDate
+        );
+    }
+
+
+    public List<ProfileToSendDTO> findOperatorsByClientAddressBetweenDatesDTO(ClientAddress clientAddress,
+                                                                              LocalDate startDate,
+                                                                              LocalDate endDate)
+    {
+        return this
+                .findOperatorsByClientAddressBetweenDates(clientAddress, startDate, endDate)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
+    
 
     /**
      * Add a shift.

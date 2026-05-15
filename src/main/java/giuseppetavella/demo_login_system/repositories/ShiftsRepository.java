@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.repositories;
 
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.shifts.Shift;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -229,6 +230,52 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
     """)
     List<User> findOperatorsWithoutShiftsBetweenDates(
             Company company,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+
+
+    /**
+     * Find operators with shifts between a date range, 
+     * with the shift taking place at the given client address.
+     *
+     *
+     * @return list of users
+     */
+    @Query("""
+
+        SELECT 
+            DISTINCT u
+        FROM 
+            User u
+        WHERE 
+            u.role = 'OPERATOR'
+            AND 
+                u IN (
+                    SELECT 
+                        so.operator
+                    FROM 
+                        ShiftOperator so
+                    WHERE 
+                        so.shift IN (
+                            SELECT 
+                                s
+                            FROM 
+                                Shift s
+                            WHERE 
+                                (
+                                    :endDate >= s.startDate
+                                    AND :startDate <= s.endDate
+                                )
+                                AND 
+                                    s.clientAddress = :clientAddress   
+                        )
+                ) 
+
+    """)
+    List<User> findOperatorsByClientAddressBetweenDates(
+            ClientAddress clientAddress,
             LocalDate startDate,
             LocalDate endDate
     );
