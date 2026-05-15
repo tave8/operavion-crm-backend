@@ -67,6 +67,26 @@ public class OperatorsController {
                 endDate
         );  
     }
+
+
+    /**
+     * Find shifts by current operator, between dates.
+     */
+    @GetMapping("/me/shifts")
+    public List<ShiftToSendDTO> findMyShifts(@AuthenticationPrincipal User currentUser,
+                                             @RequestParam(value = "from", required = false) LocalDate startDate,
+                                             @RequestParam(value = "to", required = false) LocalDate endDate)
+    {
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        AuthorizationHelper.requireUserOperator(currentUser);
+
+        return this.shiftsService.findShiftsByOperatorBetweenDatesDTO(
+                currentUser,
+                startDate,
+                endDate
+        );
+    }
     
     
     

@@ -42,6 +42,11 @@
     ?from
     ?to
     ?hasShifts=true|false
+ 
+ 
+/operators/me/shifts               (find my shifts)
+    ?from
+    ?to
 
 
 /tasks
