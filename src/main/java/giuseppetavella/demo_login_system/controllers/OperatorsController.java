@@ -6,6 +6,7 @@ import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.OperatorShiftAvailabilityToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.ShiftsService;
 import giuseppetavella.demo_login_system.services.UsersService;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,7 +89,46 @@ public class OperatorsController {
                 endDate
         );
     }
+
     
-    
-    
+    /**
+     * Get the operator availability.
+     */
+    @GetMapping("/{operatorId}/shifts/availability")
+    public OperatorShiftAvailabilityToSendDTO getOperatorAvailability(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable UUID operatorId,
+            // this query param is required
+            @RequestParam(value = "date") LocalDate inDate,
+            // these query params are optional
+            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
+            @RequestParam(value = "toTime", required = false) LocalTime toTime
+    )
+    {
+
+        DataValidationHelper.requireValidRange(fromTime, toTime);
+        
+        Company company = currentUser.getCompany();
+        
+        User operator = this.usersService.findById(operatorId);
+        
+        AuthorizationHelper.requireSameCompany(company, operator.getCompany());
+        
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        // bug fix: i had passed currentUser instead of operator
+        // learned: check if the passed user is truly an operator
+        // you might not get any resultset back and wonder why,
+        // when it could be that the user is not even an operator
+        // and non-operators don't have shifts
+        return this.shiftsService.getOperatorAvailability(
+                operator,
+                inDate,
+                fromTime,
+                toTime
+        );
+        
+    }
+
+
 }

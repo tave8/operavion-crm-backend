@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -281,5 +282,64 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
     );
 
 
+
+    /**
+     * Is operator busy on given date and time range?
+     * 
+     * For an operator to be busy on a day between a time range:
+     * 
+     * The shift for that day for that operator exists, 
+     * AND the operator is busy in the input time range for that day,
+     * (there exists an overlap between shift time and input time) 
+     * AND the day itself is included in the days defined for that shift.
+     * 
+     *
+     */
+    // @Query("""
+    //    
+    //     SELECT 
+    //         EXISTS (
+    //             SELECT 
+    //                 s
+    //             FROM 
+    //                 Shift s
+    //             WHERE 
+    //                 s IN (
+    //                     SELECT 
+    //                         so.shift
+    //                     FROM 
+    //                         ShiftOperator so
+    //                     WHERE 
+    //                        so.operator = :operator
+    //                        AND (
+    //                            :inDate >= s.startDate
+    //                            AND :inDate <= s.endDate     
+    //                        )
+    //                        AND (
+    //                            :endTime >= s.startTime
+    //                             AND :startTime <= s.endTime 
+    //                        )     
+    //                 )      
+    //                 AND 
+    //                     :dayOfDate IN (
+    //                         SELECT 
+    //                             sd.day
+    //                         FROM
+    //                             ShiftDay sd
+    //                         WHERE
+    //                             sd.shift = s        
+    //                     )    
+    //         )    
+    //            
+    //        
+    // """)
+    // boolean isOperatorBusyOn(
+    //         User operator,
+    //         LocalDate inDate,
+    //         LocalTime startTime,
+    //         LocalTime endTime,
+    //         DayOfWeek dayOfDate
+    // );
+    
 
 }

@@ -48,6 +48,9 @@
     ?from
     ?to
 
+/operators/:operatorId/shifts/availability       (get the operator's availability)
+    ?date
+
 
 /tasks
     GET  /                        (get tasks of my company)

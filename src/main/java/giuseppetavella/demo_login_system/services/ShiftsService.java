@@ -9,7 +9,6 @@ import giuseppetavella.demo_login_system.entities.shifts.ShiftDay;
 import giuseppetavella.demo_login_system.entities.shifts.ShiftOperator;
 import giuseppetavella.demo_login_system.exceptions.ShiftException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
-import giuseppetavella.demo_login_system.helpers.TimeHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.*;
 import giuseppetavella.demo_login_system.repositories.ShiftDaysRepository;
@@ -23,7 +22,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ShiftsService {
@@ -354,6 +352,113 @@ public class ShiftsService {
                 .stream()
                 .map(operator -> new ProfileToSendDTO(operator))
                 .toList();
+    }
+
+    
+    /**
+     * Get the operator availability, in the given date, 
+     * between a time range.
+     * 
+     */
+    public OperatorShiftAvailabilityToSendDTO getOperatorAvailability(User operator,
+                                                                      LocalDate inDate,
+                                                                      LocalTime startTime,
+                                                                      LocalTime endTime)
+    {
+        
+        if(inDate == null) {
+            throw new ShiftException("When searching if operator is busy on a date, "
+                                     +"the date cannot be null.");
+        }
+        
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        // the week day of the input inDate
+        // we extract it here because we don't want to mess with SQL or JPQL quirks
+        // we just get the week day here and pass it explicitly
+        DayOfWeek dayOfDate = inDate.getDayOfWeek();
+        
+        // find the shifts with the given filters, as if you were 
+        // normally searching for the shifts of this operator 
+        List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
+                operator, 
+                inDate, 
+                startTime, 
+                endTime
+        );
+        
+        
+        // if there are no shifts matching the input filters, 
+        // then the operator is not busy, thus it's available
+        if(shifts.isEmpty()) {
+            
+            return new OperatorShiftAvailabilityToSendDTO(
+                    true,
+                    List.of(),
+                    inDate
+            );
+            
+        }
+        
+        // if at least a matching shift exists, we check
+        // whether the weekday of the input date matches 
+        // the weekday of ANY of the weekdays in ANY of the matching shifts  
+        
+        
+        // we get all info about each shift, by turning it into a DTO
+        // this will give us the checklist, the client address, 
+        // days, operators etc. for each shift
+        // we need the days
+        List<ShiftToSendDTO> shiftsDTO = shifts
+                                            .stream()
+                                            .map(this::toShiftDTO)
+                                            .toList(); 
+        
+        
+        // busyiness is defined as the presence of 1+ matching shifts 
+        // AND the weekday of the input date being present in any of the weekdays
+        // of any of these matching shifts
+        boolean isBusy = shiftsDTO
+                                 .stream()
+                                 .anyMatch(shiftDTO -> {
+                                    // the match exists, and thus the input date's weekday exists,
+                                    // if this weekday is contained in any of the weekdays 
+                                    // of any of the matching shifts' weekdays 
+                                    return shiftDTO
+                                              .getDays()
+                                              .stream()
+                                              .map(sd -> sd.getDay())
+                                              .toList()
+                                              .contains(dayOfDate);
+                                 });
+        
+
+        /**
+         * We choose not to send shifts, if the operator is busy.
+         * Even though busy might mean "busy because of date & time overlap"
+         * or "days of shift include input date".
+         * Thus, we only show shifts, if the operator is truly busy.
+         */
+
+        if(isBusy) {
+            return new OperatorShiftAvailabilityToSendDTO(
+                    false,
+                    // we send shifts only if operator is busy
+                    shiftsDTO,
+                    inDate
+            );
+        }
+        
+        return new OperatorShiftAvailabilityToSendDTO(
+                true,
+                // if operator is available, we don't send shifts,
+                // so we don't differentiate the reasons "busy because of date & time overlap"
+                // or "busy because operator has a shift at this day, but the shift's days do not include"
+                // the input date"
+                List.of(),
+                inDate
+        );
+        
     }
     
 
