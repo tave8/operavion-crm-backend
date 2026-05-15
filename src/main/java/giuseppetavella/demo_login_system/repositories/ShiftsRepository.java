@@ -19,23 +19,11 @@ import java.util.UUID;
 public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
     /**
-
+     * Find shifts of an operator, in a given date,
+     * between a time range.
      * 
-     * <pre>
-     * shifts belong to that operator 
-     *
-     * AND (
-     *     :endDate > shift.startDate
-     *     AND :startDate < shift.endDate
-     * )
-     * 
-     * AND (
-     *     :endTime > shift.startTime
-     *     AND :startTime < shift.endTime
-     * )
-     * </pre>
-     *
-     * 
+     * @return shifts that match the above mentioned criteria, where 
+     *          a partial overlap exists
      */
     @Query("""
         
@@ -52,53 +40,119 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
                 WHERE 
                    so.operator = :operator
                    AND (
-                       :inDate > s.startDate
-                       AND :inDate < s.endDate     
+                       :inDate >= s.startDate
+                       AND :inDate <= s.endDate     
                    )
                    AND (
-                       :endTime > s.startTime
-                       AND :startTime < s.endTime   
+                       :endTime >= s.startTime
+                       AND :startTime <= s.endTime   
                    )
             )      
                 
             
     """)
-    List<Shift> findShiftsByOperatorInDateBetweenTime(
+    List<Shift> findShiftsByOperatorInDateBetweenTimes(
         User operator,
         LocalDate inDate,
         LocalTime startTime,
         LocalTime endTime
     );
-    
+
     
     /**
-     * Find shifts by operator.
-     * 
-     * @param operator
-     * @return
+     * Find shifts of an operator.
+     *
+     * @return list of shifts
      */
     @Query("""
-    
-        SELECT s
-        FROM Shift s
+        
+        SELECT 
+            s
+        FROM 
+            Shift s
         WHERE 
             s IN (
-                SELECT so.shift
-                FROM ShiftOperator so
-                WHERE so.operator = :operator   
-            )
+                SELECT 
+                    so.shift
+                FROM 
+                    ShiftOperator so
+                WHERE 
+                   so.operator = :operator
+            )      
             
     """)
     List<Shift> findShiftsByOperator(
-            @Param("operator") User operator
+            User operator
+    );
+    
+
+    /**
+     * Find shifts of an operator between a date range.
+     *
+     * @return shifts that match the above mentioned criteria, where 
+     *          a partial overlap exists
+     */
+    @Query("""
+        
+        SELECT 
+            s
+        FROM 
+            Shift s
+        WHERE 
+            s IN (
+                SELECT 
+                    so.shift
+                FROM 
+                    ShiftOperator so
+                WHERE 
+                   so.operator = :operator
+                   AND (
+                       :endDate >= s.startDate
+                       AND :startDate <= s.endDate     
+                   )
+            )      
+                
+            
+    """)
+    List<Shift> findShiftsByOperatorBetweenDates(
+            User operator,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+
+    /**
+     * Find shifts of a company between a date range.
+     *
+     * @return shifts that match the above mentioned criteria, where 
+     *          a partial overlap exists
+     */
+    @Query("""
+        
+        SELECT 
+            s 
+        FROM 
+            Shift s
+        WHERE 
+            s.checklist.company = :company
+            AND (
+               :endDate >= s.startDate
+               AND :startDate <= s.endDate     
+           )  
+            
+    """)
+    List<Shift> findShiftsByCompanyBetweenDates(
+            Company company,
+            LocalDate startDate,
+            LocalDate endDate
     );
     
     
+    
     /**
-     * Find operators by shift.
+     * Find operators that have been assigned to a shift.
      * 
-     * @param shift
-     * @return
+     * @return list of users
      */
     @Query("""
         
@@ -108,9 +162,12 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
             User u
         WHERE 
             u IN (
-                SELECT so.operator
-                FROM ShiftOperator so
-                WHERE so.shift = :shift
+                SELECT 
+                    so.operator
+                FROM 
+                    ShiftOperator so
+                WHERE 
+                    so.shift = :shift
             ) 
                 
     """)
@@ -119,46 +176,6 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
     );
     
 
-    @Query("""
-        SELECT s FROM Shift s
-        WHERE s.checklist.company = :company
-    """)
-    List<Shift> findShifts(
-            @Param("company") Company company
-    );
-    
 
-    @Query("""
-        SELECT s FROM Shift s
-        WHERE s.checklist.company = :company
-        AND s.startDate <= :to
-        AND (s.endDate IS NULL OR s.endDate >= :from)
-    """)
-    List<Shift> findShiftsBetween(
-            @Param("company") Company company,
-            @Param("from") LocalDate from,
-            @Param("to") LocalDate to
-    );
-
-    @Query("""
-        SELECT s FROM Shift s
-        WHERE s.checklist.company = :company
-        AND (s.endDate IS NULL OR s.endDate >= :from)
-    """)
-    List<Shift> findShiftsFrom(
-            @Param("company") Company company,
-            @Param("from") LocalDate from
-    );
-
-    @Query("""
-        SELECT s FROM Shift s
-        WHERE s.checklist.company = :company
-        AND s.startDate <= :to
-    """)
-    List<Shift> findShiftsUntil(
-            @Param("company") Company company,
-            @Param("to") LocalDate to
-    );
-    
     
 }

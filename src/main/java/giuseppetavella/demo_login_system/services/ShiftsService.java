@@ -48,6 +48,34 @@ public class ShiftsService {
     
     @Autowired
     private UsersService usersService;
+    
+    // we use this when the filter's start date is missing
+    // because all shift's start date will be greater than this date,
+    // they will be included, which is what we want, when the 
+    // filter's stard date is missing
+    private static final LocalDate DEFAULT_DISTANT_PAST_DATE = LocalDate.of(1000, 1, 1);
+    
+    // this must be STRICTLY greater than the 
+    // default distant future date for the shift's end date
+    // why? because when a end date is missing in the filter,
+    // we mean "don't filter the shift's end date" 
+    // which means "the filter's end date must be > the shift's default end date"
+    // because the shift's default distant future date is 3000-01-01,
+    // this date will be therefore 3000-01-02
+    private static final LocalDate DEFAULT_DISTANT_FUTURE_DATE = LocalDate.of(3000, 1, 2);
+    
+    // time 00:00
+    // we use this when the filter's start time is missing
+    private static final LocalTime MIDNIGHT = LocalTime.MIDNIGHT;
+    
+    // before midnight means 23:59
+    // we use this as the default end time when the filter's end time is missing 
+    // because before midnight will always be > the 
+    // shift's end time, that shift be selected
+    private static final LocalTime BEFORE_MIDNIGHT = LocalTime.MIDNIGHT.minusMinutes(1);
+    
+    
+    
 
     private static final Map<DayOfWeek, String> DAY_ABBR_IT = Map.of(
             DayOfWeek.MONDAY,    "LUN",
@@ -183,7 +211,8 @@ public class ShiftsService {
 
     public List<ShiftToSendDTO> findShiftsByOperatorDTO(User operator)
     {
-        return this.findShiftsByOperator(operator)
+        return this
+                .findShiftsByOperator(operator)
                 .stream()
                 .map(this::toShiftDTO)
                 .toList();
@@ -284,17 +313,28 @@ public class ShiftsService {
         return this.toShiftDTO(shiftFromDB);
         
     }
-    
+
+
+
+
     
     /**
-     * Find all shifts between two dates.
+     * Find shifts between dates.
      */
-    public List<Shift> findShiftsBetween(Company company, LocalDate from, LocalDate to) {
-        if (from == null && to == null) return shiftsRepository.findShifts(company);
-        if (from == null) return shiftsRepository.findShiftsUntil(company, to);
-        if (to == null)   return shiftsRepository.findShiftsFrom(company, from);
-        return shiftsRepository.findShiftsBetween(company, from, to);
+    public List<Shift> findShiftsBetween(Company company, 
+                                         LocalDate startDate, 
+                                         LocalDate endDate) 
+    {
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+        
+        return shiftsRepository.findShiftsByCompanyBetweenDates(
+                company,
+                newStartDate,
+                newEndDate
+        );
     }
+    
 
     public List<ShiftToSendDTO> findShiftsBetweenDTO(Company company, 
                                                      LocalDate startDate, 
@@ -313,7 +353,7 @@ public class ShiftsService {
      * 
      * @return
      */
-    public List<Shift> findShiftsByOperatorInDateBetweenTime(User operator,
+    public List<Shift> findShiftsByOperatorInDateBetweenTimes(User operator,
                                                             LocalDate inDate,
                                                             LocalTime startTime,
                                                             LocalTime endTime)
@@ -321,11 +361,18 @@ public class ShiftsService {
         // TODO: check that fromStartTime <= toStartTime
         //    with DataValidationHelper
         
-        return this.shiftsRepository.findShiftsByOperatorInDateBetweenTime(
+        if(inDate == null) {
+            throw new ShiftException("inDate cannot be null, but startTime and endTime can be null.");
+        }
+        
+        LocalTime newStartTime = this.getStartTimeOrDefault(startTime);
+        LocalTime newEndTime = this.getEndTimeOrDefault(endTime);
+        
+        return this.shiftsRepository.findShiftsByOperatorInDateBetweenTimes(
                 operator,
                 inDate,
-                startTime,
-                endTime
+                newStartTime,
+                newEndTime
         );
     }
 
@@ -334,13 +381,13 @@ public class ShiftsService {
      * Is the operator in a shift?
      * Does the operator have a shift assigned?
      */
-    public boolean isOperatorInShiftInDateBetweenTime(User operator,
+    public boolean isOperatorInShiftInDateBetweenTimes(User operator,
                                                        LocalDate inDate,
                                                        LocalTime startTime,
                                                        LocalTime endTime)
     {
         
-        List<Shift> currentShifts = this.findShiftsByOperatorInDateBetweenTime(
+        List<Shift> currentShifts = this.findShiftsByOperatorInDateBetweenTimes(
                 operator,
                 inDate, 
                 startTime,
@@ -353,7 +400,47 @@ public class ShiftsService {
         return !currentShifts.isEmpty();
         
     }
+
+
+    /**
+     * Use when a missing startDate is allowed.
+     */
+    public LocalDate getStartDateOrDefault(LocalDate startDate) {
+        if(startDate == null) {
+            return DEFAULT_DISTANT_PAST_DATE;
+        }
+        return startDate;
+    }
     
+    /**
+     * Use when a missing endDate is allowed.
+     */
+    public LocalDate getEndDateOrDefault(LocalDate endDate) {
+        if(endDate == null) {
+            return DEFAULT_DISTANT_FUTURE_DATE;
+        }
+        return endDate;
+    }
+
+    /**
+     * Use when a missing startTime is allowed.
+     */
+    public LocalTime getStartTimeOrDefault(LocalTime startTime) {
+        if(startTime == null) {
+            return MIDNIGHT;
+        }
+        return startTime;
+    }
+
+    /**
+     * Use when a missing endTime is allowed.
+     */
+    public LocalTime getEndTimeOrDefault(LocalTime endTime) {
+        if(endTime == null) {
+            return BEFORE_MIDNIGHT;
+        }
+        return endTime;
+    }
     
 
     private String formatDays(List<DayOfWeek> days) {
