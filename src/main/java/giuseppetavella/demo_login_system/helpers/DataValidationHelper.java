@@ -1,15 +1,27 @@
 package giuseppetavella.demo_login_system.helpers;
 
-public class DataValidationHelper {
+import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 
-    /**
-     * Require that:
-     * - end exists 
-     */
-    // public static void requireEndGTEStart
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class DataValidationHelper {
     
-    // TODO: expand TimeHelper to include time validation 
-//      of time and dates. then use them in this class,
-//     for example to validate arguments of service methods
-    
+    public static void requireValidRange(LocalDate start, LocalDate end) {
+        if (!TimeHelper.isValidRange(start, end)) {
+            throw new InvalidDataException("'startDate' cannot be after 'endDate'");
+        }
+    }
+
+    public static void requireValidRange(LocalTime start, LocalTime end) {
+        if (!TimeHelper.isValidRange(start, end)) {
+            throw new InvalidDataException("'startTime' cannot be after 'endTime'");
+        }
+    }
+
+    public static void requireValidRange(LocalDate startDate, LocalDate endDate,
+                                         LocalTime startTime, LocalTime endTime) {
+        requireValidRange(startDate, endDate);
+        requireValidRange(startTime, endTime);
+    }
 }

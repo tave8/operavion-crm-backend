@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.controllers;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.shifts.Shift;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewUserSentDTO;
@@ -60,6 +61,8 @@ public class ShiftsController {
                                   @RequestParam(value = "from", required = false) LocalDate startDate,
                                   @RequestParam(value = "to", required = false) LocalDate endDate) 
     {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
         
         Company company = currentUser.getCompany();
         

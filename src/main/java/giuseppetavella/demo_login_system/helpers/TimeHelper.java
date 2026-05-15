@@ -3,6 +3,8 @@ package giuseppetavella.demo_login_system.helpers;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 public class TimeHelper {
@@ -73,6 +75,22 @@ public class TimeHelper {
         boolean isFuture = inputTime.isAfter(now);
         
         return isNow || isFuture;
+    }
+
+
+    public static boolean isValidRange(LocalDate start, LocalDate end) {
+        if (start == null || end == null) return true;
+        return !start.isAfter(end);
+    }
+
+    public static boolean isValidRange(LocalTime start, LocalTime end) {
+        if (start == null || end == null) return true;
+        return !start.isAfter(end);
+    }
+
+    public static boolean isValidRange(LocalDate startDate, LocalDate endDate,
+                                       LocalTime startTime, LocalTime endTime) {
+        return isValidRange(startDate, endDate) && isValidRange(startTime, endTime);
     }
     
 }
