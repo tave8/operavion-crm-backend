@@ -36,7 +36,7 @@ public class ShiftToSendDTO {
         this.days = days;
         this.operators = operators;
         this.startDate = shift.getStartDate();
-        this.endDate = shift.getEndDate();
+        this.endDate = shift.getActualEndDate();
         this.startTime = shift.getStartTime();
         this.endTime = shift.getEndTime();
     }

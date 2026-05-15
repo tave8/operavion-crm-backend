@@ -29,8 +29,9 @@ public class Shift {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
-    // a shift can have no end date
-    @Column(name = "end_date")
+    // a shift can have no end date, but we internally
+    // don't store null; instead, we store a default distant future date
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
     
     @Column(name = "start_time", nullable = false)
@@ -79,6 +80,8 @@ public class Shift {
         this.clientAddress = clientAddress;
     }
 
+
+    
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -98,12 +101,22 @@ public class Shift {
     public LocalDate getStartDate() {
         return startDate;
     }
+    
+    
     public void setEndTime(LocalTime endTime) {
+        if(endTime == null) {
+            throw new ShiftException("While setting endTime, endTime cannot be null.");
+        }
+        
         // no validation needed — endTime is the upper bound
         this.endTime = endTime;
     }
 
     public void setStartTime(LocalTime startTime) {
+        if(startTime == null) {
+            throw new ShiftException("While setting startTime, startTime cannot be null.");
+        }
+        
         boolean endTimeIsSet = this.endTime != null;
         boolean startTimeIsAfterEndTime = endTimeIsSet && startTime.isAfter(this.endTime);
 
@@ -121,10 +134,25 @@ public class Shift {
         if (endDateIsBeforeStartDate) {
             throw new ShiftException("endDate must be after or equal to startDate");
         }
-        this.endDate = endDate;
+        
+        // the end date was null, which means the end date is indefinite,
+        // which means the value of end date is the default distant future date
+        // user and frontend should know nothing about this
+        if(endDate == null) {
+            this.endDate = this.getDefaultDistantFutureDate();
+        } 
+        // an end date was provided
+        else {
+            this.endDate = endDate;
+        }
+        
     }
 
     public void setStartDate(LocalDate startDate) {
+        if(startDate == null) {
+            throw new ShiftException("While setting startDate, startDate cannot be null.");
+        }
+        
         boolean endDateIsSet = this.endDate != null;
         boolean startDateIsNotNull = startDate != null;
         boolean startDateIsAfterEndDate = startDateIsNotNull && endDateIsSet && startDate.isAfter(this.endDate);
@@ -140,6 +168,68 @@ public class Shift {
     }
 
 
+
+    /**
+     * Return the actual end date if exists, otherwise null.
+     * The actual end date is any date that is not the default distant future date.
+     *
+     * The default distant future date is a default date, 
+     * that is the same on write and read, that gets internally 
+     * set so as to signify "the end date is indefined".
+     *
+     * @return
+     */
+    public LocalDate getActualEndDate() {
+        if(this.hasDefiniteEndDate()) {
+            return this.getEndDate();
+        }
+        return null;
+    }
+
+    /**
+     * Use this method when you need to know whether 
+     * this shift has an end date. You need to call this method
+     * to know, because the end date is not set to null in the DB.
+     * Instead, we use a default distant future date, which 
+     * must naturally be the same both on write and on read, 
+     * so that we can know whether or not a shift has an end date,
+     * without having a null in DB.
+     * 
+     * @return
+     */
+    public boolean hasDefiniteEndDate() {
+        // this shift is said to have an end date,
+        // if that end date is not the default distant future date
+        return !this.hasIndefiniteEndDate();
+    }
+
+    /**
+     * Is the end date of this shift the default distant future date?
+     * This mechanism is used to void having endDate of shifts as nulls.
+     *
+     * */
+     public boolean hasIndefiniteEndDate() {
+        LocalDate endDate = this.getEndDate();
+        LocalDate distantFutureDate = this.getDefaultDistantFutureDate();
+        return endDate.equals(distantFutureDate);
+    }
+    
+
+    /**
+     * This is the default distant future date that is stored 
+     * as end date, when the end date is indefinite, so we don't have
+     * to store nulls in DB.
+     * 
+     * We should be able not to care what date it is.
+     * For example it could be something like 3000-01-01
+     * (first january of year 3000)
+     * 
+     * @return
+     */
+    public LocalDate getDefaultDistantFutureDate() {
+        return LocalDate.of(3000, 1, 1);
+    }
+    
 
     @Override
     public String toString() {
