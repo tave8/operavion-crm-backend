@@ -190,22 +190,25 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
             User u
         WHERE 
             u.company = :company
-            AND u IN (
-                SELECT 
-                    so.operator
-                FROM 
-                    ShiftOperator so
-                WHERE 
-                    so.shift IN (
-                        SELECT 
-                            s
-                        FROM 
-                            Shift s
-                        WHERE 
-                            :endDate >= s.startDate
-                            AND :startDate <= s.endDate    
-                    )
-            ) 
+            AND 
+                u.role = 'OPERATOR'
+            AND 
+                u IN (
+                    SELECT 
+                        so.operator
+                    FROM 
+                        ShiftOperator so
+                    WHERE 
+                        so.shift IN (
+                            SELECT 
+                                s
+                            FROM 
+                                Shift s
+                            WHERE 
+                                :endDate >= s.startDate
+                                AND :startDate <= s.endDate    
+                        )
+                ) 
 
     """)
     List<User> findOperatorsWithShiftsBetween(
@@ -214,5 +217,49 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
             LocalDate endDate
     );
 
-    
+
+
+    /**
+     * Find operators (of a company) without shifts between a date range.
+     *
+     *
+     * @return list of users
+     */
+    @Query("""
+
+        SELECT 
+            DISTINCT u
+        FROM 
+            User u
+        WHERE 
+            u.company = :company
+            AND 
+                u.role = 'OPERATOR'
+            AND 
+                u NOT IN (
+                    SELECT 
+                        so.operator
+                    FROM 
+                        ShiftOperator so
+                    WHERE 
+                        so.shift IN (
+                            SELECT 
+                                s
+                            FROM 
+                                Shift s
+                            WHERE 
+                                :endDate >= s.startDate
+                                AND :startDate <= s.endDate    
+                        )
+                ) 
+
+    """)
+    List<User> findOperatorsWithoutShiftsBetween(
+            Company company,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+
+
 }

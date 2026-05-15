@@ -87,11 +87,11 @@ public class ShiftsController {
 
         Company company = currentUser.getCompany();
         
-        // if(hasShifts) {
+        if(hasShifts) {
             return this.shiftsService.findOperatorsWithShiftsBetweenDTO(company, startDate, endDate);
-        // }
+        }
         
-        // return this.shiftsService.findOperatorsWithoutShiftsBetweenDTO(company, startDate, endDate);
+        return this.shiftsService.findOperatorsWithoutShiftsBetweenDTO(company, startDate, endDate);
 
     }
     
