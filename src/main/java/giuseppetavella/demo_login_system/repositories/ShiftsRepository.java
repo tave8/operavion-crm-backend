@@ -184,7 +184,7 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
                 ) 
 
     """)
-    List<User> findOperatorsWithShiftsBetween(
+    List<User> findOperatorsWithShiftsBetweenDates(
             Company company,
             LocalDate startDate,
             LocalDate endDate
@@ -227,7 +227,7 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
                 ) 
 
     """)
-    List<User> findOperatorsWithoutShiftsBetween(
+    List<User> findOperatorsWithoutShiftsBetweenDates(
             Company company,
             LocalDate startDate,
             LocalDate endDate

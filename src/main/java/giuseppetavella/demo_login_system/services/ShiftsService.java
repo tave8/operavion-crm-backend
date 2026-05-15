@@ -271,7 +271,7 @@ public class ShiftsService {
 
 
 
-    public List<User> findOperatorsWithShiftsBetween(Company company,
+    public List<User> findOperatorsWithShiftsBetweenDates(Company company,
                                                      LocalDate startDate,
                                                      LocalDate endDate)
     {
@@ -279,7 +279,7 @@ public class ShiftsService {
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
         
-        return this.shiftsRepository.findOperatorsWithShiftsBetween(
+        return this.shiftsRepository.findOperatorsWithShiftsBetweenDates(
                 company,
                 newStartDate,
                 newEndDate
@@ -287,19 +287,19 @@ public class ShiftsService {
     }
     
 
-    public List<ProfileToSendDTO> findOperatorsWithShiftsBetweenDTO(Company company,
+    public List<ProfileToSendDTO> findOperatorsWithShiftsBetweenDatesDTO(Company company,
                                                                     LocalDate startDate,
                                                                     LocalDate endDate)
     {
         return this
-                .findOperatorsWithShiftsBetween(company, startDate, endDate)
+                .findOperatorsWithShiftsBetweenDates(company, startDate, endDate)
                 .stream()
                 .map(operator -> new ProfileToSendDTO(operator))
                 .toList();
     }
 
 
-    public List<User> findOperatorsWithoutShiftsBetween(Company company,
+    public List<User> findOperatorsWithoutShiftsBetweenDates(Company company,
                                                      LocalDate startDate,
                                                      LocalDate endDate)
     {
@@ -307,7 +307,7 @@ public class ShiftsService {
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
 
-        return this.shiftsRepository.findOperatorsWithoutShiftsBetween(
+        return this.shiftsRepository.findOperatorsWithoutShiftsBetweenDates(
                 company,
                 newStartDate,
                 newEndDate
@@ -315,12 +315,12 @@ public class ShiftsService {
     }
 
 
-    public List<ProfileToSendDTO> findOperatorsWithoutShiftsBetweenDTO(Company company,
+    public List<ProfileToSendDTO> findOperatorsWithoutShiftsBetweenDatesDTO(Company company,
                                                                     LocalDate startDate,
                                                                     LocalDate endDate)
     {
         return this
-                .findOperatorsWithoutShiftsBetween(company, startDate, endDate)
+                .findOperatorsWithoutShiftsBetweenDates(company, startDate, endDate)
                 .stream()
                 .map(operator -> new ProfileToSendDTO(operator))
                 .toList();
