@@ -57,33 +57,6 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
         LocalTime startTime,
         LocalTime endTime
     );
-
-    
-    /**
-     * Find shifts of an operator.
-     *
-     * @return list of shifts
-     */
-    @Query("""
-        
-        SELECT 
-            s
-        FROM 
-            Shift s
-        WHERE 
-            s IN (
-                SELECT 
-                    so.shift
-                FROM 
-                    ShiftOperator so
-                WHERE 
-                   so.operator = :operator
-            )      
-            
-    """)
-    List<Shift> findShiftsByOperator(
-            User operator
-    );
     
 
     /**

@@ -4,17 +4,16 @@ import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.ShiftsService;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,13 +43,16 @@ public class OperatorsController {
     
 
     /**
-     * Find shifts by operator.
+     * Find shifts by operator between dates.
      */
     @GetMapping("/{operatorId}/shifts")
     public List<ShiftToSendDTO> findShiftsByOperator(@AuthenticationPrincipal User currentUser,
-                                                     @PathVariable UUID operatorId)
+                                                     @PathVariable UUID operatorId,
+                                                     @RequestParam(value = "from", required = false) LocalDate startDate,
+                                                     @RequestParam(value = "to", required = false) LocalDate endDate)
     {
-          
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
         Company company = currentUser.getCompany();
         
         User operator = this.usersService.findById(operatorId);
@@ -59,7 +61,11 @@ public class OperatorsController {
         
         AuthorizationHelper.requireUserOperator(operator);
         
-        return this.shiftsService.findShiftsByOperatorDTO(operator);  
+        return this.shiftsService.findShiftsByOperatorBetweenDatesDTO(
+                operator,
+                startDate,
+                endDate
+        );  
     }
     
     

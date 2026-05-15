@@ -204,15 +204,27 @@ public class ShiftsService {
     }
     
 
-    public List<Shift> findShiftsByOperator(User operator)
+    public List<Shift> findShiftsByOperatorBetweenDates(User operator,
+                                                        LocalDate startDate,
+                                                        LocalDate endDate)
     {
-        return this.shiftsRepository.findShiftsByOperator(operator);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return this.shiftsRepository.findShiftsByOperatorBetweenDates(
+                operator,
+                newStartDate,
+                newEndDate
+        );
     }
 
-    public List<ShiftToSendDTO> findShiftsByOperatorDTO(User operator)
+    public List<ShiftToSendDTO> findShiftsByOperatorBetweenDatesDTO(User operator,
+                                                                    LocalDate startDate,
+                                                                    LocalDate endDate)
     {
         return this
-                .findShiftsByOperator(operator)
+                .findShiftsByOperatorBetweenDates(operator, startDate, endDate)
                 .stream()
                 .map(this::toShiftDTO)
                 .toList();
@@ -416,9 +428,7 @@ public class ShiftsService {
                                                             LocalTime startTime,
                                                             LocalTime endTime)
     {
-        // TODO: check that fromStartTime <= toStartTime
-        //    with DataValidationHelper
-        
+
         if(inDate == null) {
             throw new ShiftException("inDate cannot be null, but startTime and endTime can be null.");
         }
