@@ -256,6 +256,35 @@ public class ShiftsService {
                 .map(operator -> new ProfileToSendDTO(operator))
                 .toList();
     }
+
+
+
+    public List<User> findOperatorsWithShiftsBetween(Company company,
+                                                     LocalDate startDate,
+                                                     LocalDate endDate)
+    {
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+        
+        return this.shiftsRepository.findOperatorsWithShiftsBetween(
+                company,
+                newStartDate,
+                newEndDate
+        );
+    }
+    
+
+    public List<ProfileToSendDTO> findOperatorsWithShiftsBetweenDTO(Company company,
+                                                                    LocalDate startDate,
+                                                                    LocalDate endDate)
+    {
+        return this
+                .findOperatorsWithShiftsBetween(company, startDate, endDate)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
     
     
     /**

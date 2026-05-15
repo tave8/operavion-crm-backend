@@ -38,6 +38,12 @@
     POST /:clientAddressId/checklists/:checklistId          (add a checklist to this client address)
 
 
+/shifts/operators                    (find operators without shifts)
+    ?from
+    ?to
+    ?hasShifts=true|false
+
+
 /tasks
     GET  /                        (get tasks of my company)
     POST /                       (add a task of my company)

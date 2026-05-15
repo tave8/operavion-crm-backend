@@ -7,6 +7,7 @@ import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_request.NewUserSentDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.ShiftsService;
 import jakarta.validation.Payload;
@@ -70,6 +71,30 @@ public class ShiftsController {
         
     }
 
+    /**
+     * Find operators by filtering shifts.
+     *
+     * @return
+     */
+    @GetMapping("/operators")
+    public List<ProfileToSendDTO> findOperators(@AuthenticationPrincipal User currentUser,
+                                               @RequestParam(value = "from", required = false) LocalDate startDate,
+                                               @RequestParam(value = "to", required = false) LocalDate endDate,
+                                                @RequestParam(value = "hasShifts", defaultValue = "true") Boolean hasShifts)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        Company company = currentUser.getCompany();
+        
+        // if(hasShifts) {
+            return this.shiftsService.findOperatorsWithShiftsBetweenDTO(company, startDate, endDate);
+        // }
+        
+        // return this.shiftsService.findOperatorsWithoutShiftsBetweenDTO(company, startDate, endDate);
+
+    }
+    
 
     /**
      * Find shift.
