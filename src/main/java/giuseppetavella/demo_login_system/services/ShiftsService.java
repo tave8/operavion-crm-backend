@@ -9,6 +9,7 @@ import giuseppetavella.demo_login_system.entities.shifts.ShiftDay;
 import giuseppetavella.demo_login_system.entities.shifts.ShiftOperator;
 import giuseppetavella.demo_login_system.exceptions.ShiftException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_request.NewShiftSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.*;
 import giuseppetavella.demo_login_system.repositories.ShiftDaysRepository;
@@ -207,6 +208,10 @@ public class ShiftsService {
                                                         LocalDate endDate)
     {
 
+        AuthorizationHelper.requireUserOperator(operator);
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
 
@@ -242,10 +247,11 @@ public class ShiftsService {
     
     public List<ShiftDayToSendDTO> findShiftDaysByShiftDTO(Shift shift)
     {
-        return this.findShiftDaysByShift(shift)
-                    .stream()
-                    .map(ShiftDayToSendDTO::new)
-                    .toList();
+        return this
+                .findShiftDaysByShift(shift)
+                .stream()
+                .map(ShiftDayToSendDTO::new)
+                .toList();
     }
 
     /**
@@ -270,10 +276,12 @@ public class ShiftsService {
 
 
     public List<User> findOperatorsWithShiftsBetweenDates(Company company,
-                                                     LocalDate startDate,
-                                                     LocalDate endDate)
+                                                         LocalDate startDate,
+                                                         LocalDate endDate)
     {
 
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
         
@@ -298,9 +306,11 @@ public class ShiftsService {
 
 
     public List<User> findOperatorsWithoutShiftsBetweenDates(Company company,
-                                                     LocalDate startDate,
-                                                     LocalDate endDate)
+                                                             LocalDate startDate,
+                                                             LocalDate endDate)
     {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
 
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
@@ -332,6 +342,8 @@ public class ShiftsService {
                                                                  LocalDate endDate)
     {
 
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
 
@@ -365,13 +377,16 @@ public class ShiftsService {
                                                                       LocalTime startTime,
                                                                       LocalTime endTime)
     {
+
+        AuthorizationHelper.requireUserOperator(operator);
         
-        if(inDate == null) {
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
+        if(inDate == null) { 
             throw new ShiftException("When searching if operator is busy on a date, "
                                      +"the date cannot be null.");
         }
         
-        AuthorizationHelper.requireUserOperator(operator);
         
         // the week day of the input inDate
         // we extract it here because we don't want to mess with SQL or JPQL quirks
@@ -529,6 +544,8 @@ public class ShiftsService {
                                          LocalDate startDate, 
                                          LocalDate endDate) 
     {
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
         LocalDate newStartDate = this.getStartDateOrDefault(startDate);
         LocalDate newEndDate = this.getEndDateOrDefault(endDate);
         
@@ -563,6 +580,10 @@ public class ShiftsService {
                                                             LocalTime endTime)
     {
 
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
         if(inDate == null) {
             throw new ShiftException("inDate cannot be null, but startTime and endTime can be null.");
         }
