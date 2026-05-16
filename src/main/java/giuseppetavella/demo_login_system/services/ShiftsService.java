@@ -147,6 +147,8 @@ public class ShiftsService {
     /**
      * Assign an operator to a shift.
      * Of course, they must both exist.
+     * Main method for assigning an operator to a shift.
+     * Call this, as it does the necessary checks.
      * 
      * @param operator
      * @return
@@ -168,6 +170,12 @@ public class ShiftsService {
         AuthorizationHelper.requireSameCompany(company, operator.getCompany());
         
         AuthorizationHelper.requireUserOperator(operator);
+        
+        // is this operator available?
+        // this.getOperatorAvailability(
+        //         operator,
+        //         shift.get
+        // );
         
         ShiftOperator shiftOperator = new ShiftOperator(shift, operator);
         
@@ -366,6 +374,28 @@ public class ShiftsService {
                 .toList();
     }
 
+
+    /**
+     * Is the operator available at the given date,
+     * between the given time range?
+     * 
+     * @return
+     */
+    // public boolean isOperatorAvailable(User operator,
+    //                                    LocalDate inDate,
+    //                                    LocalTime startTime,
+    //                                    LocalTime endTime)
+    // {
+    //    
+    // }
+    //
+    //
+    // public boolean isOperatorAvailable(User operator,
+    //                                    LocalDate inDate)
+    // {
+    //    
+    // }
+    
     
     /**
      * Get the operator availability, in the given date, 
@@ -464,6 +494,18 @@ public class ShiftsService {
         
     }
 
+
+    public OperatorShiftAvailabilityToSendDTO getOperatorAvailability(User operator,
+                                                                      LocalDate inDate)
+    {
+        return this.getOperatorAvailability(
+                operator, 
+                inDate, 
+                null, 
+                null
+        );
+    }
+    
     
     /**
      * Does any of these shifts contains the input weekday?
