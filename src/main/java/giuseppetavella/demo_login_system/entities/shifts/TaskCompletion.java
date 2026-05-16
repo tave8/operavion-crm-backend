@@ -8,12 +8,12 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        name = "shift_operator_tasks_completion",
+        name = "tasks_completion",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"shift_operator_id", "checklist_entry_id"})
         }
 )
-public class ShiftOperatorTaskCompletion {
+public class TaskCompletion {
     
     @Id
     @GeneratedValue
@@ -33,22 +33,23 @@ public class ShiftOperatorTaskCompletion {
     @Column(name = "completed_at", nullable = false)
     private OffsetDateTime completedAt; 
     
-    protected ShiftOperatorTaskCompletion() {}
+    protected TaskCompletion() {}
     
-    public ShiftOperatorTaskCompletion(ShiftOperator shiftOperator,
-                                       ChecklistEntry checklistEntry) 
+    public TaskCompletion(ShiftOperator shiftOperator,
+                          ChecklistEntry checklistEntry) 
     {
         this.shiftOperator = shiftOperator;
         this.checklistEntry = checklistEntry;
         this.completed = true;
         this.completedAt = OffsetDateTime.now();
     }
+    
 
     public ChecklistEntry getChecklistEntry() {
         return checklistEntry;
     }
 
-    public Boolean getCompleted() {
+    public Boolean isCompleted() {
         return completed;
     }
 

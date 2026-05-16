@@ -91,7 +91,16 @@ public class ShiftsService {
             DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY
     );
 
-    
+
+    /**
+     * Find the shift-operator association,
+     * which means, the 
+     */
+    // public findShiftOperatorById()
+    // {
+    //    
+    // }
+    //
 
     /**
      * Shift -> Shift DTO

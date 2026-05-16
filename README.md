@@ -54,6 +54,11 @@
 /operators/:operatorId/shifts/conflicts           (get the operator's conflicts)
     
 
+
+/tasks-completion
+   
+
+
 /tasks
     GET  /                        (get tasks of my company)
     POST /                       (add a task of my company)
