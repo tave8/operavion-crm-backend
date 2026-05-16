@@ -27,6 +27,9 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
         WHERE 
             u.company = :company
             AND u.role = :role    
+            ORDER BY 
+                u.firstname ASC,
+                u.lastname ASC
         
     """)
     List<User> findUsersByRole(

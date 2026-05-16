@@ -5,6 +5,7 @@ import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.UserRole;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
+import giuseppetavella.demo_login_system.payloads.in_response.OperatorShiftConflictsToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.OperatorShiftAvailabilityToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -128,6 +130,49 @@ public class OperatorsController {
                 toTime
         );
         
+    }
+
+
+
+    /**
+     * Get the operator conflicts.
+     */
+    @GetMapping("/{operatorId}/shifts/conflicts")
+    public OperatorShiftConflictsToSendDTO findOperatorConflicts(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable UUID operatorId,
+            // required
+            @RequestParam(value = "from") LocalDate from,
+            @RequestParam(value = "to") LocalDate to,
+            @RequestParam(value = "days") List<DayOfWeek> days,
+            // optional
+            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
+            @RequestParam(value = "toTime", required = false) LocalTime toTime
+    )
+    {
+
+        
+        DataValidationHelper.requireValidRange(from, to);
+        
+        DataValidationHelper.requireValidRange(fromTime, toTime);
+
+        Company company = currentUser.getCompany();
+
+        User operator = this.usersService.findById(operatorId);
+
+        AuthorizationHelper.requireSameCompany(company, operator.getCompany());
+
+        AuthorizationHelper.requireUserOperator(operator);
+
+        return this.shiftsService.findOperatorConflicts(
+                operator,
+                from,
+                to,
+                fromTime,
+                toTime,
+                days
+        );
+
     }
 
 

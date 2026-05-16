@@ -51,6 +51,8 @@
 /operators/:operatorId/shifts/availability       (get the operator's availability)
     ?date
 
+/operators/:operatorId/shifts/conflicts           (get the operator's conflicts)
+    
 
 /tasks
     GET  /                        (get tasks of my company)
@@ -621,6 +623,15 @@ ClientAddress
     addressId    
 
 ```
+
+
+# Shift conflicts
+
+INPUT: startDate, endDate, startTime, endTime, days
+
+conflict exists if:
+
+
 
 
 

@@ -142,6 +142,14 @@ public class ShiftsService {
         );
         
     }
+    
+    public List<ShiftToSendDTO> toShiftDTOs(List<Shift> shifts)
+    {
+        return shifts
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();
+    }
 
 
     /**
@@ -230,6 +238,75 @@ public class ShiftsService {
         );
     }
 
+    
+    
+    public OperatorShiftConflictsToSendDTO findOperatorConflicts(User operator,
+                                                                 LocalDate startDate,
+                                                                 LocalDate endDate,
+                                                                 LocalTime startTime,
+                                                                 LocalTime endTime,
+                                                                 List<DayOfWeek> days)
+    {
+        
+        List<Shift> conflictingShifts = this.findShiftsWithConflicts(
+                operator,
+                startDate,
+                endDate,
+                startTime,
+                endTime,
+                days
+        );
+        
+        List<ShiftToSendDTO> conflictingShiftsDTO = this.toShiftDTOs(conflictingShifts);
+        
+        boolean hasConflicts = !conflictingShifts.isEmpty();
+        
+        return new OperatorShiftConflictsToSendDTO(
+                hasConflicts,
+                conflictingShiftsDTO,
+                startDate,
+                endDate,
+                startTime,
+                endTime
+        );
+        
+    }
+    
+    
+    public List<Shift> findShiftsWithConflicts(User operator,
+                                                LocalDate startDate,
+                                                LocalDate endDate,
+                                                LocalTime startTime,
+                                                LocalTime endTime,
+                                                List<DayOfWeek> days)
+    {
+        AuthorizationHelper.requireUserOperator(operator);
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        LocalTime newStartTime = this.getStartTimeOrDefault(startTime);
+        LocalTime newEndTime = this.getEndTimeOrDefault(endTime);
+        
+        return this
+                .shiftsRepository
+                .findShiftsWithConflicts(
+                       operator,
+                       newStartDate,
+                       newEndDate,
+                       newStartTime,
+                       newEndTime, 
+                       days
+                );
+        
+    }
+
+
+    
+    
     public List<ShiftToSendDTO> findShiftsByOperatorBetweenDatesDTO(User operator,
                                                                     LocalDate startDate,
                                                                     LocalDate endDate)
@@ -395,6 +472,9 @@ public class ShiftsService {
     // {
     //    
     // }
+    
+    
+    
     
     
     /**

@@ -97,6 +97,47 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
 
     /**
+     * 
+     * For an operator to have a conflict in shift:
+     * 
+     * The date range has an overlap
+     * AND these overlapping dates's days include the input days
+     * AND there's a time overlap
+     * 
+     */
+    @Query("""
+        SELECT s
+        FROM Shift s
+        WHERE s IN (
+            SELECT so.shift
+            FROM ShiftOperator so
+            WHERE so.operator = :operator
+            AND (
+                :endDate >= s.startDate
+                AND :startDate <= s.endDate
+            )
+            AND (
+                :endTime >= s.startTime
+                AND :startTime <= s.endTime
+            )
+            AND EXISTS (
+                SELECT sd FROM ShiftDay sd
+                WHERE sd.shift = so.shift
+                AND sd.day IN :days
+            )
+        )
+    """)
+    List<Shift> findShiftsWithConflicts(
+            @Param("operator") User operator,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
+            @Param("days") List<DayOfWeek> days
+    );
+    
+
+    /**
      * Find shifts of a company between a date range.
      *
      * @return shifts that match the above mentioned criteria, where 

@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.exceptions;
 
 import giuseppetavella.demo_login_system.payloads.in_response.ErrorsToSendDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -203,8 +204,9 @@ public class ErrorsHandler {
      */
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorsToSendDTO handleMissingRoute(NoResourceFoundException ex) {
-        String msg = "This resource does not exist, or this endpoint does not exist.";
+    public ErrorsToSendDTO handleMissingRoute(NoResourceFoundException ex, HttpServletRequest request) {
+        String msg = "This resource does not exist, or this endpoint does not exist. "
+                + "Endpoint called: " + request.getMethod() + " " + request.getRequestURI();
         return new ErrorsToSendDTO(msg);
     }
 
