@@ -433,19 +433,7 @@ public class ShiftsService {
         // busyiness is defined as the presence of 1+ matching shifts 
         // AND the weekday of the input date being present in any of the weekdays
         // of any of these matching shifts
-        boolean isBusy = shiftsDTO
-                                 .stream()
-                                 .anyMatch(shiftDTO -> {
-                                    // the match exists, and thus the input date's weekday exists,
-                                    // if this weekday is contained in any of the weekdays 
-                                    // of any of the matching shifts' weekdays 
-                                    return shiftDTO
-                                              .getDays()
-                                              .stream()
-                                              .map(sd -> sd.getDay())
-                                              .toList()
-                                              .contains(dayOfDate);
-                                 });
+        boolean isBusy = this.isDayIncludedInShifts(shiftsDTO, dayOfDate);
         
 
         /**
@@ -474,6 +462,32 @@ public class ShiftsService {
                 inDate
         );
         
+    }
+
+    
+    /**
+     * Does any of these shifts contains the input weekday?
+     * In other words: is it true that the input weekday is a day 
+     * included in any of these shifts?
+     * 
+     * @return
+     */
+    public boolean isDayIncludedInShifts(List<ShiftToSendDTO> shiftsDTO, 
+                                        DayOfWeek day)
+    {
+        return shiftsDTO
+                .stream()
+                .anyMatch(shiftDTO -> {
+                    // the match exists, and thus the input date's weekday exists,
+                    // if this weekday is contained in any of the weekdays 
+                    // of any of the matching shifts' weekdays 
+                    return shiftDTO
+                            .getDays()
+                            .stream()
+                            .map(sd -> sd.getDay())
+                            .toList()
+                            .contains(day);
+                });
     }
     
 
