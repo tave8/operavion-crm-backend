@@ -337,6 +337,19 @@ public class UsersService {
 
 
     /**
+     * Get admin of given company.
+     * @return
+     */
+    public User getAdminByCompany(Company company)
+    {
+        return this
+                .usersRepository
+                .findAdminByCompany(company)
+                .orElseThrow(() -> new NotFoundException("Admin of company with ID '"+company.getId()+"' was not found."));
+    }
+
+
+    /**
      * Reset password at first login.
      * The user must, of course, be logged in.
      * @return

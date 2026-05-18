@@ -4,6 +4,7 @@ import giuseppetavella.demo_login_system.job_library.JobExecutor;
 import giuseppetavella.demo_login_system.jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
 import giuseppetavella.demo_login_system.job_library.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.email_operator_tomorrow_shift.EmailOperatorTomorrowShift_JobExecutor;
+import giuseppetavella.demo_login_system.jobs.notify_admin_because_operator_has_no_shift.NotifyAdminBecauseOperatorHasNoShift_JobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class JobExecutors {
     
     @Autowired
     private EmailOperatorTomorrowShift_JobExecutor emailOperatorTomorrowShift_jobExecutor;
+    
+    @Autowired
+    private NotifyAdminBecauseOperatorHasNoShift_JobExecutor notifyAdminBecauseOperatorHasNoShift_jobExecutor;
 
     // add more job executors here...
 
@@ -70,7 +74,9 @@ public class JobExecutors {
 
                 JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, this.emailExpiringContracts_jobExecutor,
         
-                JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, this.emailOperatorTomorrowShift_jobExecutor
+                JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, this.emailOperatorTomorrowShift_jobExecutor,
+                
+                JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT, this.notifyAdminBecauseOperatorHasNoShift_jobExecutor
 
                 // add another mapping job name : job executor here...     
         );

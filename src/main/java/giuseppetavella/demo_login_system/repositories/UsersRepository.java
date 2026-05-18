@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -35,6 +36,26 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
     List<User> findUsersByRole(
             @Param("company") Company company,
             @Param("role") UserRole role
+    );
+
+
+    /**
+     * Find admin by company.
+     * @param company
+     * @return
+     */
+    @Query("""
+
+        SELECT u
+        FROM 
+            User u
+        WHERE 
+            u.company = :company
+            AND u.role = 'ADMIN'
+
+    """)
+    Optional<User> findAdminByCompany(
+            @Param("company") Company company
     );
 
     /**

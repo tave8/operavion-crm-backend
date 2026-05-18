@@ -190,8 +190,16 @@ public class User implements UserDetails {
     public Company getCompany() {
         return company;
     }
-    
 
+
+    /**
+     * Firstname + space + lastname
+     * @return
+     */
+    public String getFullname() {
+        return this.getFirstname() + " " + this.getLastname();
+    }
+    
     public void setFirstname(String firstname) throws InvalidDataException {
         if(firstname == null) {
             throw new InvalidDataException("Firstname cannot be null.");
