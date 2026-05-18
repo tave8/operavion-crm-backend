@@ -20,6 +20,14 @@ public interface EmailOperatorTomorrowShift_JpaRepository extends JpaRepository<
      * Get the next operator that:
      * - has not been processed today by this job 
      * 
+     * Operator was never processed by this job?
+     *      -> get it
+     * 
+     * Operator was processed by this job but not today?
+     *      -> get it
+     *      
+     * Operator was processed by this job today?
+     *      -> skip it
      */
     @Query(nativeQuery = true, value = """
             

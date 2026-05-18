@@ -55,18 +55,41 @@ public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
         
         
         // get the shifts of this user
-        // List<ShiftToSendDTO> shiftsDTO = this.shiftsService.findShiftsByOperatorBetweenDatesDTO(user, tomorrow, tomorrow);
-        //
-        // shiftsDTO.forEach(shiftDTO -> {
-        //     shiftDTO.
-        // });
+        List<ShiftToSendDTO> shiftsDTO = this.shiftsService.findShiftsByOperatorBetweenDatesDTO(user, tomorrow, tomorrow);
+
+        // if no shifts were found for this operator
+        if(shiftsDTO.isEmpty()) {
+
+            // add notification in DB
+
+            // Notification newNotification = new Notification(
+            //         user,
+            //         NotificationType.TOMORROW_SHIFT,
+            //         "Ecco il tuo turno di domani...",
+            //         "<added by background job>"
+            // );
+            //
+            // this.notificationsService.save(
+            //         newNotification
+            // );
+            
+            return;
+            
+        }
+        
+        // if a shift was found for this operator 
+        
+        // if it exists, get the first shift
+        ShiftToSendDTO shiftDTO = shiftsDTO.getFirst();
+        
+        // String clientName = shiftDTO.getClientAddress().getClientName();
         
         // add notification in DB
 
         Notification newNotification = new Notification(
                 user,
                 NotificationType.TOMORROW_SHIFT,
-                "Ecco il tuo turno di domani...",
+                "Il tuo turno per domani: " + shiftDTO.getName(),
                 "<added by background job>"
         );
         
@@ -74,11 +97,11 @@ public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
                 newNotification
         );
         
-        // send an email to the employee
+        // send an email to the operator
         // this.appEmailService.sendEmail(
         //         user.getEmail(),
-        //         "expiring employee",
-        //         "The employee " + user.getFirstname() + " is expiring. Here's their profile picture: " + user.getAvatarUrl()
+        //         "Il tuo turno per domani",
+        //         "Ecco il tuo turno per domani: " + shiftDTO.getName()
         // );
         
     }

@@ -8,9 +8,11 @@ import com.resend.services.emails.model.CreateEmailResponse;
 import giuseppetavella.demo_login_system.enums.internal.Language;
 import giuseppetavella.demo_login_system.exceptions.HtmlTemplateException;
 import giuseppetavella.demo_login_system.helpers.LanguageHelper;
+import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.services.file_generators.HtmlTemplateService;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,13 @@ public class EmailService {
                             String html,
                             List<EmailAttachment> attachments) throws EmailSendingException 
     {
+        
+        // check that the email is a valid email
+        StringHelper.requireValidEmailElseThrowWith(
+                recipient, 
+                "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
+        );
+        
         
         CreateEmailOptions params = this.buildEmailParams(
                 recipient, 

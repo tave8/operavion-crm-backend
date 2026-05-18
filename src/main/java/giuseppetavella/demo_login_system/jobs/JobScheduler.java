@@ -32,11 +32,11 @@ public class JobScheduler {
 
     }
 
-    // every minute
-    @Scheduled(cron = "0 * * * * *")
+    // every 10 seconds
+    @Scheduled(cron = "*/10 * * * * *")
     public void emailOperatorTomorrowShift() {
         
-        this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, false);
+        // this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, false);
         
     }
 

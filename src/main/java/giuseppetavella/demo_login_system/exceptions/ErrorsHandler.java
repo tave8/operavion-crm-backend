@@ -106,6 +106,8 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
+
+
     /**
      * Handles exceptions raised when current user of request
      * is not authorized to access an endpoint. We protect
@@ -132,6 +134,12 @@ public class ErrorsHandler {
     @ExceptionHandler(GeocodingAPIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleGeocodingAPIException(GeocodingAPIException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailSendingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleEmailSendingException(EmailSendingException ex) {
         return new ErrorsToSendDTO(ex.getMessage());
     }
     
