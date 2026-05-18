@@ -1,18 +1,18 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.job_library;
 
-import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextItemException;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionGetNextIncompleteExecutionException;
+import giuseppetavella.demo_login_system.job_library.enums.JobExecutionState;
+import giuseppetavella.demo_login_system.jobs.JobName;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobException;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionException;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionGetNextItemException;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionGetNextIncompleteExecutionException;
+import giuseppetavella.demo_login_system.jobs.JobExecutors;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**

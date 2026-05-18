@@ -1,7 +1,7 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
+package giuseppetavella.demo_login_system.jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.jobs.JobExecution;
+import giuseppetavella.demo_login_system.job_library.JobExecution;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

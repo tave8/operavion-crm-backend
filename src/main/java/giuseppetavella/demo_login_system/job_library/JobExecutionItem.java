@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.job_library;
 
 import java.util.UUID;
 

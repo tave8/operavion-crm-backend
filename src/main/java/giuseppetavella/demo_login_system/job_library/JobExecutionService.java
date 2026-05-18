@@ -1,16 +1,14 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.job_library;
 
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
-import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
+import giuseppetavella.demo_login_system.job_library.enums.JobExecutionState;
+import giuseppetavella.demo_login_system.jobs.JobName;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionException;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

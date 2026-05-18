@@ -1,26 +1,29 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
+package giuseppetavella.demo_login_system.jobs.email_operator_tomorrow_shift;
 
 import giuseppetavella.demo_login_system.entities.Notification;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.enums.NotificationType;
-import giuseppetavella.demo_login_system.jobs.JobExecutionItem;
-import giuseppetavella.demo_login_system.jobs.JobExecutionMetadata;
-import giuseppetavella.demo_login_system.jobs.JobExecutionService;
-import giuseppetavella.demo_login_system.jobs.JobExecutor;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.job_library.JobExecutionItem;
+import giuseppetavella.demo_login_system.job_library.JobExecutionMetadata;
+import giuseppetavella.demo_login_system.job_library.JobExecutor;
+import giuseppetavella.demo_login_system.jobs.JobName;
+import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.AppEmailService;
 import giuseppetavella.demo_login_system.services.NotificationsService;
+import giuseppetavella.demo_login_system.services.ShiftsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
+public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
     
     @Autowired
-    private EmailExpiringContracts_ItemRepository thisRepository;
+    private EmailOperatorTomorrowShift_ItemRepository thisRepository;
     
     @Autowired
     private AppEmailService appEmailService;
@@ -28,9 +31,12 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
     @Autowired
     private NotificationsService notificationsService;
     
+    @Autowired
+    private ShiftsService shiftsService;
     
-    public EmailExpiringContracts_JobExecutor() {
-        super(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, 2);
+    
+    public EmailOperatorTomorrowShift_JobExecutor() {
+        super(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT);
     }
     
     
@@ -44,12 +50,23 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         // send email, do business-specific logic
         User user = (User) itemToProcess.getItem();
         
+        // tomorrow
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        
+        
+        // get the shifts of this user
+        // List<ShiftToSendDTO> shiftsDTO = this.shiftsService.findShiftsByOperatorBetweenDatesDTO(user, tomorrow, tomorrow);
+        //
+        // shiftsDTO.forEach(shiftDTO -> {
+        //     shiftDTO.
+        // });
+        
         // add notification in DB
 
         Notification newNotification = new Notification(
                 user,
-                NotificationType.EXPIRING_EMPLOYEE_CONTRACT,
-                "this employee's contract is expiring",
+                NotificationType.TOMORROW_SHIFT,
+                "Ecco il tuo turno di domani...",
                 "<added by background job>"
         );
         
@@ -64,25 +81,6 @@ public class EmailExpiringContracts_JobExecutor extends JobExecutor<User> {
         //         "The employee " + user.getFirstname() + " is expiring. Here's their profile picture: " + user.getAvatarUrl()
         // );
         
-        
-        // try {
-        //     // Thread.sleep(2000);
-        //
-        // } catch (InterruptedException e) {
-        //     // throw new RuntimeException(e);
-        // }
-        
-         
-        
-        // this.appEmailService.sendMeInvoiceReport();
-        
-        // throw new RuntimeException("error during processing");
-        
-        // User user = (User) itemToProcess.getItem();
-        //
-        // System.out.println("processing item " + itemToProcess);
-        // //
-        // return new JobExecutionResult<User>(itemToProcess);
     }
 
     @Override

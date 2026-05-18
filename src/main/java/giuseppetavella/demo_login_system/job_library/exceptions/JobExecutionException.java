@@ -1,7 +1,6 @@
-package giuseppetavella.demo_login_system.jobs.exceptions;
+package giuseppetavella.demo_login_system.job_library.exceptions;
 
-import giuseppetavella.demo_login_system.jobs.JobExecution;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.JobName;
 
 public class JobExecutionException extends JobException {
     public JobExecutionException(String jobName, String details) {

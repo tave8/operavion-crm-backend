@@ -1,7 +1,7 @@
-package giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts;
+package giuseppetavella.demo_login_system.jobs.email_expiring_contracts;
 
 import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.jobs.JobExecutionItemRepository;
+import giuseppetavella.demo_login_system.job_library.JobExecutionItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

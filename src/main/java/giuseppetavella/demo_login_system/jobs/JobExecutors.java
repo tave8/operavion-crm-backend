@@ -1,8 +1,9 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.jobs.concrete_jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobException;
+import giuseppetavella.demo_login_system.job_library.JobExecutor;
+import giuseppetavella.demo_login_system.jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobException;
+import giuseppetavella.demo_login_system.jobs.email_operator_tomorrow_shift.EmailOperatorTomorrowShift_JobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,10 @@ public class JobExecutors {
     // ******************
 
     @Autowired
-    private EmailExpiringContracts_JobExecutor emailExpiringContracts_JobExecutor;
+    private EmailExpiringContracts_JobExecutor emailExpiringContracts_jobExecutor;
+    
+    @Autowired
+    private EmailOperatorTomorrowShift_JobExecutor emailOperatorTomorrowShift_jobExecutor;
 
     // add more job executors here...
 
@@ -64,10 +68,11 @@ public class JobExecutors {
         
         Map<JobName, JobExecutor<?>> jobExecutorMap = Map.of(
 
-                JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, this.emailExpiringContracts_JobExecutor
+                JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE, this.emailExpiringContracts_jobExecutor,
         
-                // add another mapping job name : job executor here...     
+                JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, this.emailOperatorTomorrowShift_jobExecutor
 
+                // add another mapping job name : job executor here...     
         );
 
         // if a job executor exists for the given job name

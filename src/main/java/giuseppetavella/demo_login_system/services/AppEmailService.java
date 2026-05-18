@@ -2,7 +2,7 @@ package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
-import giuseppetavella.demo_login_system.jobs.JobExecution;
+import giuseppetavella.demo_login_system.job_library.JobExecution;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
 import giuseppetavella.demo_login_system.services.base.EmailService;

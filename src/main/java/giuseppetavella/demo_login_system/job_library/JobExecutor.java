@@ -1,7 +1,7 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.job_library;
 
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
-import giuseppetavella.demo_login_system.jobs.exceptions.JobExecutionException;
+import giuseppetavella.demo_login_system.jobs.JobName;
+import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

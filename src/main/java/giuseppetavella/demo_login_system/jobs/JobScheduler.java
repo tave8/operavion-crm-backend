@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.jobs;
 
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.job_library.JobManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,14 @@ public class JobScheduler {
         
         // this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
 
+    }
+
+    // every minute
+    @Scheduled(cron = "0 * * * * *")
+    public void emailOperatorTomorrowShift() {
+        
+        this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, false);
+        
     }
 
 

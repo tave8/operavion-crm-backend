@@ -1,18 +1,10 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.jobs.JobExecution;
-import giuseppetavella.demo_login_system.jobs.JobExecutionService;
-import giuseppetavella.demo_login_system.jobs.JobManager;
-import giuseppetavella.demo_login_system.jobs.enums.JobExecutionState;
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
-import jakarta.persistence.Column;
+import giuseppetavella.demo_login_system.job_library.JobExecutionService;
+import giuseppetavella.demo_login_system.job_library.JobManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.OffsetDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class JobExecutionDemoRunner implements CommandLineRunner {

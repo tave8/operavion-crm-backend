@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs.enums;
+package giuseppetavella.demo_login_system.job_library.enums;
 
 public enum JobExecutionState {
     INCOMPLETE,

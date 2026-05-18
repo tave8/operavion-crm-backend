@@ -1,7 +1,7 @@
-package giuseppetavella.demo_login_system.jobs.exceptions;
+package giuseppetavella.demo_login_system.job_library.exceptions;
 
 
-import giuseppetavella.demo_login_system.jobs.enums.JobName;
+import giuseppetavella.demo_login_system.jobs.JobName;
 
 public class JobExecutionGetNextItemException extends JobExecutionException {
     

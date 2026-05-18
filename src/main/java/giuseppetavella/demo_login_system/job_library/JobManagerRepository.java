@@ -1,6 +1,5 @@
-package giuseppetavella.demo_login_system.jobs;
+package giuseppetavella.demo_login_system.job_library;
 
-import giuseppetavella.demo_login_system.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
