@@ -14,7 +14,7 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface EmailOperatorTomorrowShift_JpaRepository extends JpaRepository<JobExecution, Long> {
+public interface EmailOperatorTomorrowShift_Repository extends JpaRepository<JobExecution, Long> {
 
     /**
      * Get the next operator that:

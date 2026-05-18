@@ -23,7 +23,7 @@ import java.util.UUID;
 public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
     
     @Autowired
-    private EmailOperatorTomorrowShift_ItemRepository thisRepository;
+    private EmailOperatorTomorrowShift_Repository thisRepository;
     
     @Autowired
     private AppEmailService appEmailService;
