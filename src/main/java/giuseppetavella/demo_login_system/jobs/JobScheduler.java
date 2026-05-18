@@ -45,7 +45,7 @@ public class JobScheduler {
     @Scheduled(cron = "*/10 * * * * *")
     public void notifyAdminBecauseOperatorHasNoShift() {
 
-        this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
+        // this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
 
     }
 
