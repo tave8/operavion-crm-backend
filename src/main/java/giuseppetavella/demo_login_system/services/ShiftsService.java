@@ -511,15 +511,23 @@ public class ShiftsService {
         // we extract it here because we don't want to mess with SQL or JPQL quirks
         // we just get the week day here and pass it explicitly
         DayOfWeek dayOfDate = inDate.getDayOfWeek();
+
+        List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
+                operator,
+                inDate,
+                startTime,
+                endTime
+        );
+        
         
         // find the shifts with the given filters, as if you were 
         // normally searching for the shifts of this operator 
-        List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
-                operator, 
-                inDate, 
-                startTime, 
-                endTime
-        );
+        // List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
+        //         operator, 
+        //         inDate, 
+        //         startTime, 
+        //         endTime
+        // );
         
         
         // if there are no shifts matching the input filters, 

@@ -117,8 +117,8 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
                 AND :startDate <= s.endDate
             )
             AND (
-                :endTime >= s.startTime
-                AND :startTime <= s.endTime
+                :endTime > s.startTime
+                AND :startTime < s.endTime
             )
             AND EXISTS (
                 SELECT sd FROM ShiftDay sd
