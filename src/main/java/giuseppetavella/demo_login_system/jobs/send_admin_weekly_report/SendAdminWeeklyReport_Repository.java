@@ -1,4 +1,4 @@
-package giuseppetavella.demo_login_system.jobs.send_admin_weekly_report.notify_admin_because_operator_has_no_shift;
+package giuseppetavella.demo_login_system.jobs.send_admin_weekly_report;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.job_library.JobExecution;
@@ -42,9 +42,12 @@ public interface SendAdminWeeklyReport_Repository extends JpaRepository<JobExecu
             users u
         WHERE 
             u.role = 'ADMIN' 
-            
+            -- the admin must have verified their email  
+            AND u.verified_email = true  
+          
             AND NOT EXISTS (
-            
+                -- the logic inside here must be positive
+                -- it will then be negated with NOT EXISTS
                 SELECT 1
                 FROM 
                     job_executions j

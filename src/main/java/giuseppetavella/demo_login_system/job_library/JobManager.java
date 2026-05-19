@@ -438,7 +438,7 @@ public class JobManager {
                         JobExecutionState.ABANDONED,
                         "This job execution was abandoned because "
                                             +"its number of retries on incomplete state "
-                                            +"  exceeded its max number of retries."
+                                            +" exceeded its max number of retries."
                 );
                 
             }

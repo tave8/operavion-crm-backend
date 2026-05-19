@@ -38,31 +38,7 @@ public class EmailTestRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Company company = this.companiesService.findById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
-        
-        User admin = this.usersService.getAdminByCompany(company);
 
-        // 1. Your reference date (Thursday, May 21, 2026)
-        LocalDate referenceDate = LocalDate.now().plusDays(2);
-
-        // 2. Jump back exactly 1 full week into last week (Thursday, May 14, 2026)
-        LocalDate lastWeekTarget = referenceDate.minusWeeks(1);
-
-        // 3. Securely snap to that week's Monday and Friday
-        LocalDate lastMonday = lastWeekTarget.with(DayOfWeek.MONDAY); // Monday, May 11, 2026
-        LocalDate lastFriday = lastWeekTarget.with(DayOfWeek.FRIDAY); // Friday, May 15, 2026
-        Map<User, Integer> shiftsCountByOperator  = this.shiftsService.countShiftsByOperator(company, lastMonday, lastFriday);
-        //
-        // for(User user : userCountMap.keySet()) {
-        //     System.out.println("user: " + user.getFullname() + " | count: " + userCountMap.get(user));
-        // }
-        
-        this.appEmailService.sendAdminWeeklyReport(
-                admin.getEmail(), 
-                shiftsCountByOperator,
-                lastMonday,
-                lastFriday
-        );
 
         // try {
         //    

@@ -60,7 +60,7 @@ public class JobExecution {
     @Column(name = "retry_count", nullable = false)
     private Integer retryCount;
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
     
     protected JobExecution() {}

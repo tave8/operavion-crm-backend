@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.job_library.JobExecution;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -133,7 +135,7 @@ public class AppEmailService extends EmailService {
     }
     
 
-    public void sendAdminWeeklyReport(String adminEmail,
+    public void sendAdminWeeklyReport(User admin,
                                       Map<User, Integer> shiftsCountByOperator,
                                       LocalDate startDate,
                                       LocalDate endDate) 
@@ -168,19 +170,27 @@ public class AppEmailService extends EmailService {
         // build the hashmap that gets passed to the html template
         // that will be sent as email
         Map<String, Object> emailTemplateVars = Map.of(
-                // "firstname", "Giuseppe",
-                // "timeSent", OffsetDateTime.now()
+                "firstname", admin.getFirstname()
         );
         
         // the html template for the email, this will be filled
         String emailTemplate = "emails/admin_weekly_report";
         // the email subject
         String emailSubject = "Report turni settimanale";
+        
+        
+        // right before sending email, make sure you didn't forget
+        // any variable to pass to html template
+
+        DataValidationHelper.requireMapContainsOnlyKeys(
+                emailTemplateVars, 
+                List.of("firstname")
+        );
 
         this.sendEmailFromTemplate(
                 emailTemplate,
                 emailTemplateVars,
-                adminEmail,
+                admin.getEmail(), 
                 emailSubject,
                 attachment
         );
