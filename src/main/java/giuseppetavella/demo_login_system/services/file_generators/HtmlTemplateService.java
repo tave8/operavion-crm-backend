@@ -25,14 +25,15 @@ public class HtmlTemplateService {
      * 
      * @throws HtmlTemplateException if input template is not valid / does not exist
      */
-    public String fillTemplate(String template, Map<String, Object> vars) 
+    public String fillTemplate(String template, Map<String, ? extends Object> vars) 
     {
 
         Context context = new Context();
 
         // populate the template with the given vars
-        for(String var : vars.keySet()) {
-            context.setVariable(var, vars.get(var));
+        for(String key : vars.keySet()) {
+            Object value = vars.get(key);
+            context.setVariable(key, value);
         }
 
         try {

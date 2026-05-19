@@ -61,7 +61,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         // this.shiftsService.countShiftsByOperator();
         
         
-        this.appEmailService.sendAdminWeeklyReport(admin.getEmail());
+        // this.appEmailService.sendAdminWeeklyReport(admin.getEmail());
         
         
         // // tomorrow

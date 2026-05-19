@@ -6,6 +6,7 @@ import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.repositories.ShiftsRepository;
 import giuseppetavella.demo_login_system.services.ArticlesService;
 import giuseppetavella.demo_login_system.services.CompaniesService;
+import giuseppetavella.demo_login_system.services.ShiftsService;
 import giuseppetavella.demo_login_system.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +28,7 @@ public class DataRunner implements CommandLineRunner {
     private ArticlesService articlesService;
     
     @Autowired
-    private ShiftsRepository shiftsRepository;
+    private ShiftsService shiftsService;
     
     @Autowired
     private CompaniesService companiesService;
@@ -35,25 +36,8 @@ public class DataRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        Company company = this.companiesService.findById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
-
-        LocalDate today = LocalDate.now().minusYears(2);
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
         
-        List<Object[]> results = this.shiftsRepository.countShiftsByOperator(company, today, tomorrow);
 
-        // System.out.println(operatorsAndCount);
-
-        Map<User, Integer> userCountMap = results.stream()
-                .collect(Collectors.toMap(
-                        row -> (User) row[0],                 // Key: User entity
-                        row -> ((Long) row[1]).intValue(),    // Value: Count as Integer
-                        (existing, replacement) -> existing,  // Merge function (safeguard for duplicates)
-                        LinkedHashMap::new                    // Keeps the JPQL ORDER BY intact!
-                ));
-        for(User user : userCountMap.keySet()) {
-            System.out.println("user: " + user.getFullname() + " | count: " + userCountMap.get(user));
-        }
         //
         // System.out.println(userCountMap);
         

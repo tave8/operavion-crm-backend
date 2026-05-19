@@ -32,8 +32,10 @@ public class AppPdfService extends PdfService {
     //
     // }
 
-    public Pdf generateAdminWeeklyReport(Map<String, Object> vars) throws PdfGenerationException
+    public Pdf generateAdminWeeklyReport(Map<String, ? extends Object> vars) throws PdfGenerationException
     {
+        
+        //  this 
 
         return new Pdf(
                 this.templateToPdf("business/admin_weekly_report", vars)

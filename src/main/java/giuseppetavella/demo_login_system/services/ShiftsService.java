@@ -23,6 +23,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShiftsService {
@@ -760,24 +761,47 @@ public class ShiftsService {
      * 
      * @return
      */
-    // public Map<User, Integer> countShiftsByOperator(Company company,
-    //                                                 LocalDate startDate,
-    //                                                 LocalDate endDate)
-    // {
-    //
-    //     DataValidationHelper.requireValidRange(startDate, endDate);
-    //
-    //     LocalDate newStartDate = this.getStartDateOrDefault(startDate);
-    //     LocalDate newEndDate = this.getEndDateOrDefault(endDate);
-    //    
-    //     this.shiftsRepository.countShiftsByOperator(
-    //             company
-    //             // newStartDate,
-    //             // newEndDate
-    //     );
-    //    
-    //    
-    // }
+    public Map<User, Integer> countShiftsByOperator(Company company,
+                                                    LocalDate startDate,
+                                                    LocalDate endDate)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        List<Object[]> results = this.shiftsRepository.countShiftsByOperator(company, newStartDate, newEndDate);
+
+        Map<User, Integer> userCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        // 1. KEY MAPPER
+                        // Extracts the first element of the Object array from the JPQL result.
+                        // Since JPQL handles the ORM conversion, this can be safely cast directly to a User entity.
+                        row -> (User) row[0],
+
+                        // 2. VALUE MAPPER
+                        // Extracts the second element of the array (the query aggregate count).
+                        // JPQL's COUNT() function returns a Long, so we convert it to a primitive int.
+                        row -> ((Long) row[1]).intValue(),
+
+                        // 3. MERGE FUNCTION
+                        // This resolves conflicts if the stream processes two different elements that evaluate
+                        // to the exact same 'User' key. Here, '(existing, replacement) -> existing' tells 
+                        // Java to keep the very first entry it encountered and discard any subsequent duplicates.
+                        (existing, replacement) -> existing,
+
+                        // 4. MAP SUPPLIER
+                        // By default, Collectors.toMap instantiates a plain HashMap, which destroys sorting order.
+                        // Passing 'LinkedHashMap::new' forces the collector to construct a LinkedHashMap instead.
+                        // This maintains a doubly-linked list running through its entries, strictly preserving 
+                        // the insertion order originally established by your JPQL 'ORDER BY' clause.
+                        LinkedHashMap::new
+                ));
+        
+        return userCountMap;
+        
+    }
 
 
     /**

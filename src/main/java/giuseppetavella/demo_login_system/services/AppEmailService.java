@@ -5,6 +5,8 @@ import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.job_library.JobExecution;
 import giuseppetavella.demo_login_system.models.EmailAttachment;
 import giuseppetavella.demo_login_system.models.EmailAttachmentFromURL;
+import giuseppetavella.demo_login_system.models.Pdf;
+import giuseppetavella.demo_login_system.models.template_models.AdminWeeklyReportTemplateModel;
 import giuseppetavella.demo_login_system.services.base.EmailService;
 import giuseppetavella.demo_login_system.services.base.EmailVerificationService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -128,22 +130,31 @@ public class AppEmailService extends EmailService {
                 new EmailAttachmentFromURL(pdfUrl, "pdf_from_internet.pdf")
         );
     }
+    
 
-    public void sendAdminWeeklyReport(String adminEmail) {
-
+    public void sendAdminWeeklyReport(String adminEmail, 
+                                      Map<User, Integer> shiftsCountByOperator) 
+    {
+        
         // *****************
         // BUILD THE PDF
         // *****************
 
         // build the hashmap that gets passed to the html template
         // that will be turned into pdf
-        Map<String, Object> pdfVars = Map.of();
 
         // generate email attachment from pdf
-        EmailAttachment attachment = new EmailAttachment(
-                this.appPdfService.generateAdminWeeklyReport(pdfVars).toAttachment(),
-                "report_settimanale_turni.pdf"
+        
+        Map<String, Object> newPdfVars = Map.of(
+                "result", shiftsCountByOperator
         );
+        
+        // generate the pdf 
+        Pdf pdf = this.appPdfService.generateAdminWeeklyReport(newPdfVars);
+        String pdfAttachment = pdf.toAttachment();
+        String pdfAttachmentName = "report_settimanale_turni.pdf";
+        
+        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
 
         // *****************
         // BUILD THE EMAIL
@@ -151,20 +162,26 @@ public class AppEmailService extends EmailService {
 
         // build the hashmap that gets passed to the html template
         // that will be sent as email
-        Map<String, Object> vars = Map.of(
+        Map<String, Object> emailTemplateVars = Map.of(
                 "firstname", "Giuseppe",
                 "timeSent", OffsetDateTime.now()
         );
+        
+        // the html template for the email, this will be filled
+        String emailTemplate = "emails/admin_weekly_report";
+        // the email subject
+        String emailSubject = "Report turni settimanale";
 
         this.sendEmailFromTemplate(
-                "emails/admin_weekly_report",
-                vars,
+                emailTemplate,
+                emailTemplateVars,
                 adminEmail,
-                "Report turni settimanale",
+                emailSubject,
                 attachment
         );
 
     }
+    
     
     public void sendMeInvoiceReport() {
         

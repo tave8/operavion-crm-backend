@@ -45,7 +45,7 @@ public class PdfService {
     /**
      * template + vars -> PDF
      */
-    protected byte[] templateToPdf(String template, Map<String, Object> vars) throws PdfGenerationException
+    protected byte[] templateToPdf(String template, Map<String, ? extends Object> vars) throws PdfGenerationException
     {
         // template -> html 
         String html = this.htmlTemplateService.fillTemplate(template, vars);
