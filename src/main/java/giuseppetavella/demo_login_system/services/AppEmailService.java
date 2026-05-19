@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,8 +133,10 @@ public class AppEmailService extends EmailService {
     }
     
 
-    public void sendAdminWeeklyReport(String adminEmail, 
-                                      Map<User, Integer> shiftsCountByOperator) 
+    public void sendAdminWeeklyReport(String adminEmail,
+                                      Map<User, Integer> shiftsCountByOperator,
+                                      LocalDate startDate,
+                                      LocalDate endDate) 
     {
         
         // *****************
@@ -146,7 +149,9 @@ public class AppEmailService extends EmailService {
         // generate email attachment from pdf
         
         Map<String, Object> newPdfVars = Map.of(
-                "result", shiftsCountByOperator
+                "shiftsCountByOperator", shiftsCountByOperator,
+                "startDate", startDate, 
+                "endDate", endDate
         );
         
         // generate the pdf 
@@ -163,8 +168,8 @@ public class AppEmailService extends EmailService {
         // build the hashmap that gets passed to the html template
         // that will be sent as email
         Map<String, Object> emailTemplateVars = Map.of(
-                "firstname", "Giuseppe",
-                "timeSent", OffsetDateTime.now()
+                // "firstname", "Giuseppe",
+                // "timeSent", OffsetDateTime.now()
         );
         
         // the html template for the email, this will be filled

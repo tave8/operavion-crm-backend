@@ -1,10 +1,12 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.exceptions.PdfGenerationException;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.models.Pdf;
 import giuseppetavella.demo_login_system.services.base.PdfService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -34,8 +36,12 @@ public class AppPdfService extends PdfService {
 
     public Pdf generateAdminWeeklyReport(Map<String, ? extends Object> vars) throws PdfGenerationException
     {
-        
-        //  this 
+
+        // require that the vars passed have these keys
+        DataValidationHelper.requireMapContainsOnlyKeys(
+                vars, 
+                List.of("shiftsCountByOperator", "startDate", "endDate")
+        );
 
         return new Pdf(
                 this.templateToPdf("business/admin_weekly_report", vars)
