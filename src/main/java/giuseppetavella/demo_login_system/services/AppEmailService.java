@@ -128,6 +128,43 @@ public class AppEmailService extends EmailService {
                 new EmailAttachmentFromURL(pdfUrl, "pdf_from_internet.pdf")
         );
     }
+
+    public void sendAdminWeeklyReport() {
+
+        // *****************
+        // BUILD THE PDF
+        // *****************
+
+        // build the hashmap that gets passed to the html template
+        // that will be turned into pdf
+        Map<String, Object> pdfVars = Map.of();
+
+        // generate email attachment from pdf
+        EmailAttachment attachment = new EmailAttachment(
+                this.appPdfService.generateAdminWeeklyReport(pdfVars).toAttachment(),
+                "report_settimanale_turni.pdf"
+        );
+
+        // *****************
+        // BUILD THE EMAIL
+        // **************
+
+        // build the hashmap that gets passed to the html template
+        // that will be sent as email
+        Map<String, Object> vars = Map.of(
+                "firstname", "Giuseppe",
+                "timeSent", OffsetDateTime.now()
+        );
+
+        this.sendEmailFromTemplate(
+                "emails/admin_weekly_report",
+                vars,
+                "giuseppetavella8@gmail.com",
+                "Report turni settimanale",
+                attachment
+        );
+
+    }
     
     public void sendMeInvoiceReport() {
         

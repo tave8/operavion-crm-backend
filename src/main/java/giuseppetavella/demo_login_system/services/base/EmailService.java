@@ -57,12 +57,15 @@ public class EmailService {
                 "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
         );
         
+        // these are the API-specific attachments
+        // we translate from API-independent to API-specific
+        List<Attachment> attachmentsForAPI = this.toAPIAttachments(attachments);
         
         CreateEmailOptions params = this.buildEmailParams(
                 recipient, 
                 subject, 
-                html, 
-                this.toAPIAttachments(attachments)
+                html,
+                attachmentsForAPI
         );
         
         try {

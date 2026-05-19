@@ -31,6 +31,15 @@ public class AppPdfService extends PdfService {
     //     this.pdfToSaveLocal("business/invoice", vars, "/output", filename);
     //
     // }
+
+    public Pdf generateAdminWeeklyReport(Map<String, Object> vars) throws PdfGenerationException
+    {
+
+        return new Pdf(
+                this.templateToPdf("business/admin_weekly_report", vars)
+        );
+
+    }
     
 
     public Pdf generateInvoice(Map<String, Object> vars) throws PdfGenerationException
@@ -41,5 +50,7 @@ public class AppPdfService extends PdfService {
         );
 
     }
+    
+    
 
 }
