@@ -40,6 +40,21 @@ public class AuthorizationHelper {
         
     }
 
+    /**
+     * Require that the given user is an admin.
+     */
+    public static void requireUserAdmin(User candidateAdmin)
+    {
+
+        if(!candidateAdmin.getRole().equals(UserRole.ADMIN)) {
+            throw new UnauthorizedException(
+                    "The given user must be an admin. "
+                            +"Got " +  candidateAdmin.getRole()+ " instead."
+            );
+        }
+
+    }
+
     public static void requireSameCompany(Company company1, Company company2) throws UnauthorizedException,
             InvalidDataFormatException
     {

@@ -5,6 +5,7 @@ import giuseppetavella.demo_login_system.jobs.email_expiring_contracts.EmailExpi
 import giuseppetavella.demo_login_system.job_library.exceptions.JobException;
 import giuseppetavella.demo_login_system.jobs.email_operator_tomorrow_shift.EmailOperatorTomorrowShift_JobExecutor;
 import giuseppetavella.demo_login_system.jobs.notify_admin_because_operator_has_no_shift.NotifyAdminBecauseOperatorHasNoShift_JobExecutor;
+import giuseppetavella.demo_login_system.jobs.send_admin_weekly_report.notify_admin_because_operator_has_no_shift.SendAdminWeeklyReport_JobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class JobExecutors {
     
     @Autowired
     private NotifyAdminBecauseOperatorHasNoShift_JobExecutor notifyAdminBecauseOperatorHasNoShift_jobExecutor;
+    
+    @Autowired
+    private SendAdminWeeklyReport_JobExecutor sendAdminWeeklyReport_jobExecutor;
 
     // add more job executors here...
 
@@ -76,7 +80,9 @@ public class JobExecutors {
         
                 JobName.EMAIL_OPERATOR_TOMORROW_SHIFT, this.emailOperatorTomorrowShift_jobExecutor,
                 
-                JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT, this.notifyAdminBecauseOperatorHasNoShift_jobExecutor
+                JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT, this.notifyAdminBecauseOperatorHasNoShift_jobExecutor,
+                
+                JobName.SEND_ADMIN_WEEKLY_REPORT, this.sendAdminWeeklyReport_jobExecutor
 
                 // add another mapping job name : job executor here...     
         );

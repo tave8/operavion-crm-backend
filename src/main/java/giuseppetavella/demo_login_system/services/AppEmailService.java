@@ -129,7 +129,7 @@ public class AppEmailService extends EmailService {
         );
     }
 
-    public void sendAdminWeeklyReport() {
+    public void sendAdminWeeklyReport(String adminEmail) {
 
         // *****************
         // BUILD THE PDF
@@ -159,7 +159,7 @@ public class AppEmailService extends EmailService {
         this.sendEmailFromTemplate(
                 "emails/admin_weekly_report",
                 vars,
-                "giuseppetavella8@gmail.com",
+                adminEmail,
                 "Report turni settimanale",
                 attachment
         );

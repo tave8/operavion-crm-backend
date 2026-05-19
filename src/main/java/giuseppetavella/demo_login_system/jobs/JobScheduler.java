@@ -49,6 +49,17 @@ public class JobScheduler {
 
     }
 
+    // every 10 seconds
+    @Scheduled(cron = "*/10 * * * * *")
+    public void sendAdminWeeklyReport() {
+
+        this.jobManager.executeJob(JobName.SEND_ADMIN_WEEKLY_REPORT);
+        
+        // this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
+
+    }
+
+
 
 
 }
