@@ -324,6 +324,76 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
 
 
+
+
+    // SELECT
+    // u.id,
+    // u.firstname,
+    // u.lastname,
+    // COALESCE(COUNT(s.id), 0) AS total
+    // FROM
+    // users u
+    // LEFT JOIN
+    // shift_operators so
+    // ON so.operator_id = u.id
+    // LEFT JOIN
+    // shifts s
+    // ON s.id = so.shift_id
+    // AND :endDate >= s.start_date
+    // AND :startDate <= s.end_date
+    //         WHERE
+    // u.role = 'OPERATOR'
+    // AND u.company_id = :company
+    // GROUP BY
+    // u.id,
+    // u.firstname,
+    // u.lastname
+    // ORDER BY
+    // COUNT(s.id) DESC,
+    // u.firstname ASC,
+    // u.lastname ASC,
+    // u.id ASC
+
+    /**
+     * Count how many shifts each operator of the company has, 
+     * in this period.
+     * Those who have no shifts have their count = 0.
+     * 
+     * @param company
+     * @return
+     */
+    @Query("""
+
+        SELECT
+            u AS user,
+            COALESCE(COUNT(s.id), 0) AS total
+        FROM
+            User u
+        LEFT JOIN
+            ShiftOperator so ON so.operator = u
+        LEFT JOIN
+            Shift s ON s = so.shift
+            AND :endDate >= s.startDate
+            AND :startDate <= s.endDate
+        WHERE
+            u.role = 'OPERATOR'
+            AND u.company = :company
+        GROUP BY
+            u
+        ORDER BY
+            COUNT(s.id) DESC,
+            u.firstname ASC,
+            u.lastname ASC
+                    
+    """)
+    List<Object[]> countShiftsByOperator(
+            Company company,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    
+    
     /**
      * Is operator busy on given date and time range?
      * 

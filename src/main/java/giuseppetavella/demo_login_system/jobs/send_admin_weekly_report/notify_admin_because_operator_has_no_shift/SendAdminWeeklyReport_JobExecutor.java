@@ -57,6 +57,10 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         AuthorizationHelper.requireUserAdmin(admin);
         
         
+        
+        // this.shiftsService.countShiftsByOperator();
+        
+        
         this.appEmailService.sendAdminWeeklyReport(admin.getEmail());
         
         

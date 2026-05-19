@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.Company;
+import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import giuseppetavella.demo_login_system.payloads.in_request.SignupSentDTO;
@@ -21,6 +22,16 @@ public class CompaniesService {
      */
     public Company findById(UUID companyId) throws NotFoundException {
         return this.companyRepository.findById(companyId).orElseThrow(() -> new NotFoundException(companyId, "company"));
+    }
+
+    public Company findById(String companyId) throws NotFoundException {
+        try {
+            
+            return this.findById(UUID.fromString(companyId));
+            
+        } catch(IllegalArgumentException ex) {
+            throw new InvalidUUIDStringException(companyId);
+        }
     }
 
     public Company save(Company company) {

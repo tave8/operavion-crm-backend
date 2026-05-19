@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -312,6 +313,18 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

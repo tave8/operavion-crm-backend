@@ -752,6 +752,33 @@ public class ShiftsService {
         );
     }
 
+    
+    /**
+     * Count shifts by grouping them by all operators in the company.
+     * 
+     * operator : number of shifts in the given period
+     * 
+     * @return
+     */
+    // public Map<User, Integer> countShiftsByOperator(Company company,
+    //                                                 LocalDate startDate,
+    //                                                 LocalDate endDate)
+    // {
+    //
+    //     DataValidationHelper.requireValidRange(startDate, endDate);
+    //
+    //     LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+    //     LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+    //    
+    //     this.shiftsRepository.countShiftsByOperator(
+    //             company
+    //             // newStartDate,
+    //             // newEndDate
+    //     );
+    //    
+    //    
+    // }
+
 
     /**
      * Is the operator in a shift?
