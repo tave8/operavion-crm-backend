@@ -48,11 +48,12 @@ public class PayloadValidationHelper {
      * @throws UnknownFileTypeException if the file type is not internally mapped or recognized
      * @throws PayloadValidationException if the expected file type does not match the actual file type
      */
-    public static void requireFileType(MultipartFile file, 
-                                       String expectedFileExtWithoutDot) throws PayloadValidationException, 
+    public static void requireFileType(byte[] bytes, 
+                                       String expectedFileExtWithoutDot,
+                                       String originalFilename) throws PayloadValidationException, 
                                                                                 UnknownFileTypeException
     {
-        String actualFileType = FileHelper.getFileType(file);
+        String actualFileType = FileHelper.getFileType(bytes);
                 
         boolean hasSameType = actualFileType.equals(expectedFileExtWithoutDot.trim().toLowerCase());
         
@@ -60,10 +61,53 @@ public class PayloadValidationHelper {
             return;    
         }
         
-        throw new PayloadValidationException("The file with original name '" + file.getOriginalFilename() + "' " 
+        // original filename is used if possible, otherwise say that 
+        // filename cannot be determined
+        String finalFilename = originalFilename == null ? "<filename cannot be determined>" : originalFilename;
+        
+        throw new PayloadValidationException("The file with original name '" + finalFilename + "' " 
                                             + "does not match the required file type. Expected file type: '" 
                                             + expectedFileExtWithoutDot + "'. Got '" + actualFileType + "' instead.");
     }
+
+
+    public static void requireFileType(byte[] bytes,
+                                       String expectedFileExtWithoutDot) throws PayloadValidationException, UnknownFileTypeException
+    {
+
+        PayloadValidationHelper.requireFileType(
+                bytes,
+                expectedFileExtWithoutDot,
+                // because we've passed bytes, we don't know the original filename
+                null
+        );
+        
+    }
+    
+
+    public static void requireFileType(MultipartFile file,
+                                       String expectedFileExtWithoutDot) throws PayloadValidationException, UnknownFileTypeException
+    {
+        
+        PayloadValidationHelper.requireFileType(
+            FileHelper.getBytes(file),
+            expectedFileExtWithoutDot, 
+            file.getOriginalFilename()
+        );
+        
+    }
+
+
+    /**
+     * Require that this file is a pdf.
+     *
+     * @throws PayloadValidationException
+     */
+    public static void requiredPdf(byte[] bytes) throws PayloadValidationException, UnknownFileTypeException
+    {
+        PayloadValidationHelper.requireFileType(bytes, "pdf");
+    }
+
 
     /**
      * Require that this file is a pdf.
@@ -77,4 +121,6 @@ public class PayloadValidationHelper {
         PayloadValidationHelper.requireFileType(file, "pdf");
     }
 
+    
+    
 }

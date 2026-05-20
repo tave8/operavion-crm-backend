@@ -98,7 +98,10 @@ public class FileHelper {
     {
         String mimeType = TIKA.detect(bytes);
 
-        if (!MIME_TO_EXTENSION.containsKey(mimeType)) {
+        // recognized is a synonim for "supported or known"
+        boolean filenameIsInternallyRecognized = MIME_TO_EXTENSION.containsKey(mimeType);
+        
+        if (!filenameIsInternallyRecognized) {
             throw new UnknownFileTypeException(mimeType);
         }
 

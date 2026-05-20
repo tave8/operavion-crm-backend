@@ -2,6 +2,7 @@ package giuseppetavella.demo_login_system.services.base;
 
 import giuseppetavella.demo_login_system.exceptions.AIException;
 import giuseppetavella.demo_login_system.helpers.FileHelper;
+import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -83,6 +84,11 @@ public class AIService {
      */
     public String askWithPdf(byte[] pdfBytes, String prompt) throws AIException 
     {
+        
+        // require file to be a pdf
+        PayloadValidationHelper.requiredPdf(pdfBytes);
+        
+        
         try {
             String base64Pdf = FileHelper.toBase64(pdfBytes);
 
