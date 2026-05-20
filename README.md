@@ -36,6 +36,7 @@
     
 /client-addresses
     POST /:clientAddressId/checklists/:checklistId          (add a checklist to this client address)
+    POST /:clientAddressId/contract-expectations               (add contract expectations to client address)
 
 
 /shifts/operators                    (find operators without shifts)
@@ -115,8 +116,9 @@
 /ai
     /extract           
         POST /cv            (extract a CV)
-                    
- 
+        POST /contract-expectations      (extract expectations from contract)             
+        
+
     
 /articles
     GET /                  (get my articles)
