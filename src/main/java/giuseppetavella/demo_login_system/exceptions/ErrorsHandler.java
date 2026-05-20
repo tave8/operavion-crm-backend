@@ -79,7 +79,14 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
+    
+    @ExceptionHandler(ContractExpectationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsToSendDTO handleContractExpectation(ContractExpectationException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
 
+    
 
     @ExceptionHandler(NotificationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

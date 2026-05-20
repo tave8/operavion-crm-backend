@@ -17,18 +17,27 @@ public class ContractAnalysisWorker {
      */
     @Async
     public void extractContractExpectations(byte[] contractPdf, 
-                                            ClientAddress clientAddress)  {
-        
-        try {
-            
-            Thread.sleep(5000);
-            System.out.println("hello from worker thread");
-            System.out.println(clientAddress);
-            System.out.println(contractPdf);
-            
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+                                            ClientAddress clientAddress)  
+    {
+
+        // String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
+        //
+        // return new ExtractedContractExpectationsToSendDTO(
+        //         contractExpectationsFromAI
+        // );
+
+
+
+        // try {
+        //    
+        //     Thread.sleep(5000);
+        //     System.out.println("hello from worker thread");
+        //     System.out.println(clientAddress);
+        //     System.out.println(contractPdf);
+        //    
+        // } catch (InterruptedException e) {
+        //     throw new RuntimeException(e);
+        // }
         
     }
 

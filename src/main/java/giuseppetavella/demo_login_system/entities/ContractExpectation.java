@@ -37,11 +37,13 @@ public class ContractExpectation {
     
     protected ContractExpectation() {}
     
-    public ContractExpectation(ClientAddress clientAddress,
-                               String extractedText) 
+    public ContractExpectation(ClientAddress clientAddress) 
     {
         this.clientAddress = clientAddress;
-        this.setExtractedText(extractedText);
+        // when we first instantiate a contraxt expectation,
+        // there's no extracted text, because the operation
+        // occurs in the background
+        this.setExtractedText("");
         // on instantiation, the contract cannot  be processed
         this.state = ContractExpectationState.PENDING;
         this.processedAt = OffsetDateTime.now();

@@ -4,15 +4,10 @@ import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddressChecklist;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.helpers.*;
-import giuseppetavella.demo_login_system.payloads.in_response.ChecklistToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressChecklistToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
-import giuseppetavella.demo_login_system.services.ChecklistsService;
-import giuseppetavella.demo_login_system.services.ClientAddressChecklistsService;
-import giuseppetavella.demo_login_system.services.ClientAddressesService;
-import giuseppetavella.demo_login_system.services.ShiftsService;
+import giuseppetavella.demo_login_system.payloads.in_response.*;
+import giuseppetavella.demo_login_system.services.*;
 import giuseppetavella.demo_login_system.workers.ContractAnalysisWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +35,9 @@ public class ClientAddressesController {
     
     @Autowired
     private ClientAddressesService clientAddressesService;
+    
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
     
     @Autowired
     private ContractAnalysisWorker contractAnalysisWorker;
@@ -124,9 +122,9 @@ public class ClientAddressesController {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     // status code: 202
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String extractContractExpectations(@AuthenticationPrincipal User currentUser,
-                                              @PathVariable UUID clientAddressId,
-                                              @RequestParam("file") MultipartFile contractFile)
+    public BackgroundJobAcceptedDTO extractContractExpectations(@AuthenticationPrincipal User currentUser,
+                                                                @PathVariable UUID clientAddressId,
+                                                                @RequestParam("file") MultipartFile contractFile)
     {
         
         // the contract must be a pdf
@@ -140,20 +138,28 @@ public class ClientAddressesController {
         // require that the client address sent must belong the the current user
         AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
         
+        // check if this client address already has
+        // a contract expectation associated to it
+        boolean clientAddressAlreadyHasContractExpectation = this.contractExpectationsService.existsByClientAddress(clientAddress);
 
+        if(clientAddressAlreadyHasContractExpectation) {
+            throw new ContractExpectationException("This client address already "
+                                                    +"has a contract expectation associated to it.");
+        }
+        
+        // if all good, create pending entry for this job
+        this.contractExpectationsService.addContractExpectation(clientAddress);
+        
+        // get bytes from contract pdf
         byte[] contractPdf = FileHelper.getBytes(contractFile);
 
         // async worker
         this.contractAnalysisWorker.extractContractExpectations(contractPdf, clientAddress);
 
-        return "ok";
-
-        // String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
-        //
-        // return new ExtractedContractExpectationsToSendDTO(
-        //         contractExpectationsFromAI
-        // );
-
+        return new BackgroundJobAcceptedDTO(
+                "Background job was accepted and is being processed."
+        );
+        
     }
 
 
