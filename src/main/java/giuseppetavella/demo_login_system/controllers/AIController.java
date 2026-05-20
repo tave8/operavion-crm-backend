@@ -1,19 +1,19 @@
 package giuseppetavella.demo_login_system.controllers;
 
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.helpers.FileHelper;
 import giuseppetavella.demo_login_system.models.CvData;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
 import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ExtractedContractExpectationsToSendDTO;
 import giuseppetavella.demo_login_system.services.AppAIService;
 import giuseppetavella.demo_login_system.services.base.EmailService;
+import giuseppetavella.demo_login_system.workers.ContractAnalysisWorker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -27,30 +27,7 @@ public class AIController {
     @Autowired
     private EmailService emailService;
     
-    
 
-
-    /**
-     * Extract contract expectations from a legal contract.
-     * 
-     * @param contractFile
-     * @return
-     */
-    @PostMapping("/extract/contract-expectations")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ExtractedContractExpectationsToSendDTO extractContractExpectations(@AuthenticationPrincipal User currentUser,
-                                                                    @RequestParam("file") MultipartFile contractFile)
-    {
-
-        PayloadValidationHelper.requiredPdf(contractFile);
-        
-        String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
-        
-        return new ExtractedContractExpectationsToSendDTO(
-                contractExpectationsFromAI
-        );
-
-    }
 
 
 

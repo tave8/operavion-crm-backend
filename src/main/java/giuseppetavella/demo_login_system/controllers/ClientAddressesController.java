@@ -4,9 +4,7 @@ import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddressChecklist;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
-import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
-import giuseppetavella.demo_login_system.helpers.StringHelper;
+import giuseppetavella.demo_login_system.helpers.*;
 import giuseppetavella.demo_login_system.payloads.in_response.ChecklistToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressChecklistToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ProfileToSendDTO;
@@ -15,11 +13,13 @@ import giuseppetavella.demo_login_system.services.ChecklistsService;
 import giuseppetavella.demo_login_system.services.ClientAddressChecklistsService;
 import giuseppetavella.demo_login_system.services.ClientAddressesService;
 import giuseppetavella.demo_login_system.services.ShiftsService;
+import giuseppetavella.demo_login_system.workers.ContractAnalysisWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +40,10 @@ public class ClientAddressesController {
     
     @Autowired
     private ClientAddressesService clientAddressesService;
+    
+    @Autowired
+    private ContractAnalysisWorker contractAnalysisWorker;
+
 
 
     /**
@@ -106,6 +110,50 @@ public class ClientAddressesController {
                 endDate
         );
         
+    }
+
+
+
+    /**
+     * Extract contract expectations from a legal contract.
+     *
+     * @param contractFile
+     * @return
+     */
+    @PostMapping("/{clientAddressId}/contract-expectations")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    // status code: 202
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public String extractContractExpectations(@AuthenticationPrincipal User currentUser,
+                                              @PathVariable UUID clientAddressId,
+                                              @RequestParam("file") MultipartFile contractFile)
+    {
+        
+        // the contract must be a pdf
+        PayloadValidationHelper.requiredPdf(contractFile);
+
+        // find client address     
+        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+
+        Company company = currentUser.getCompany();
+        
+        // require that the client address sent must belong the the current user
+        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+        
+
+        byte[] contractPdf = FileHelper.getBytes(contractFile);
+
+        // async worker
+        this.contractAnalysisWorker.extractContractExpectations(contractPdf, clientAddress);
+
+        return "ok";
+
+        // String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
+        //
+        // return new ExtractedContractExpectationsToSendDTO(
+        //         contractExpectationsFromAI
+        // );
+
     }
 
 
