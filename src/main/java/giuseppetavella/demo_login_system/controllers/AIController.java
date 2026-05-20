@@ -49,17 +49,6 @@ public class AIController {
         return new ExtractedContractExpectationsToSendDTO(
                 contractExpectationsFromAI
         );
-        
-        // return "endpoint works";
-
-        // // this.emailService.sendEmail(
-        // //         "giuseppetavella8@gmail.com",
-        // //         "Your file",
-        // //         "<b>hi</b>",
-        // //         new EmailAttachment(file, "uploaded_file.pdf")
-        // // );
-        //
-        // return this.appAIService.extractCv(file);
 
     }
 
