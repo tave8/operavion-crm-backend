@@ -3,6 +3,8 @@ package giuseppetavella.demo_login_system.controllers;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.models.CvData;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
+import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationToSendDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ExtractedContractExpectationsToSendDTO;
 import giuseppetavella.demo_login_system.services.AppAIService;
 import giuseppetavella.demo_login_system.services.base.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +33,22 @@ public class AIController {
     /**
      * Extract contract expectations from a legal contract.
      * 
-     * @param file
+     * @param contractFile
      * @return
      */
     @PostMapping("/extract/contract-expectations")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public String extractContractExpectations(@AuthenticationPrincipal User currentUser,
-                                              @RequestParam("file") MultipartFile file)
+    public ExtractedContractExpectationsToSendDTO extractContractExpectations(@AuthenticationPrincipal User currentUser,
+                                                                    @RequestParam("file") MultipartFile contractFile)
     {
 
-        PayloadValidationHelper.requiredPdf(file);
+        PayloadValidationHelper.requiredPdf(contractFile);
         
-        return this.appAIService.extractContractExpectations(file);
+        String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
+        
+        return new ExtractedContractExpectationsToSendDTO(
+                contractExpectationsFromAI
+        );
         
         // return "endpoint works";
 
