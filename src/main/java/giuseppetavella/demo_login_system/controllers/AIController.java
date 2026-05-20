@@ -42,9 +42,9 @@ public class AIController {
 
         PayloadValidationHelper.requiredPdf(file);
         
+        return this.appAIService.extractContractExpectations(file);
         
-        
-        return "endpoint works";
+        // return "endpoint works";
 
         // // this.emailService.sendEmail(
         // //         "giuseppetavella8@gmail.com",

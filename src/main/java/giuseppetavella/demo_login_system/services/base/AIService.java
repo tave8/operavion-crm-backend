@@ -62,7 +62,7 @@ public class AIService {
                 String responseBody = response.body().string();
 
                 if (!response.isSuccessful()) {
-                    throw new AIException("Anthropic API error: " + responseBody);
+                    throw new AIException("While calling Anthropic API, got non-ok status code. Response body: " + responseBody);
                 }
 
                 Map<String, Object> parsed = mapper.readValue(responseBody, Map.class);
