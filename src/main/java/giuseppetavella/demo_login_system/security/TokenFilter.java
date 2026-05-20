@@ -214,7 +214,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
         } catch(UnauthorizedException ex) {
             this.sendUnauthorizedErrorResponse(response,"Access token is expired, malformed or has been tampered with. "
-                                                                 +"The user should try to do a new login, and see if that solves the problem.");
+                                                                 +"The user should try to login again, and see if that solves the problem.");
             return;
         }
 
