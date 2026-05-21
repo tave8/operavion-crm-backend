@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.services;
 import giuseppetavella.demo_login_system.entities.ContractExpectation;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
+import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
 import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.payloads.in_request.NewContractExpectationSentDTO;
@@ -40,6 +41,36 @@ public class ContractExpectationsService {
         ContractExpectation contractExpectation = new ContractExpectation(clientAddress);
         
         return this.repo.save(contractExpectation);    
+    }
+
+
+    /**
+     * Save contract expectation as failed.
+     * 
+     * @return
+     */
+    public ContractExpectation failed(ContractExpectation contractExpectation)
+    {
+        
+        contractExpectation.setState(ContractExpectationState.FAILED);
+        return this.save(contractExpectation);
+        
+    }
+    
+
+    /**
+     * Save contract expectation as success, with extracted text.
+     *
+     * @return
+     */
+    public ContractExpectation success(ContractExpectation contractExpectation,
+                                        String extractedText)
+    {
+
+        contractExpectation.setState(ContractExpectationState.SUCCESS);
+        contractExpectation.setExtractedText(extractedText);
+        return this.save(contractExpectation);
+
     }
 
     

@@ -84,8 +84,9 @@ public class TokenFilter extends OncePerRequestFilter {
 
         AntPathMatcher matcher = new AntPathMatcher();
         String path = request.getServletPath();
-        
+
         boolean isRoot = matcher.match("/", path);
+        boolean isExtractFile = matcher.match("/extract-file", path);
         boolean isFavicon = matcher.match("/favicon.ico", path);
         
         boolean isAuthPath = matcher.match("/auth/**", path);
@@ -101,7 +102,7 @@ public class TokenFilter extends OncePerRequestFilter {
         //     return;
         // }
         //
-        if(isFileUpload) {
+        if(isFileUpload || isExtractFile) {
             filterChain.doFilter(request, response);
             return;
         }

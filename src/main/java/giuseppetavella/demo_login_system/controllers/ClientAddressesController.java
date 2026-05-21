@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.controllers;
 
+import giuseppetavella.demo_login_system.entities.ContractExpectation;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddressChecklist;
 import giuseppetavella.demo_login_system.entities.Company;
@@ -138,23 +139,19 @@ public class ClientAddressesController {
         // require that the client address sent must belong the the current user
         AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
         
-        // check if this client address already has
-        // a contract expectation associated to it
-        boolean clientAddressAlreadyHasContractExpectation = this.contractExpectationsService.existsByClientAddress(clientAddress);
-
-        if(clientAddressAlreadyHasContractExpectation) {
-            throw new ContractExpectationException("This client address already "
-                                                    +"has a contract expectation associated to it.");
-        }
-        
-        // if all good, create pending entry for this job
+        // create pending entry for this job
+        // also checks that client address does not have already
+        // a contract expectation
         this.contractExpectationsService.addContractExpectation(clientAddress);
         
         // get bytes from contract pdf
         byte[] contractPdf = FileHelper.getBytes(contractFile);
 
         // async worker
-        this.contractAnalysisWorker.extractContractExpectations(contractPdf, clientAddress);
+        this.contractAnalysisWorker.extractContractExpectations(
+                contractPdf, 
+                clientAddress
+        );
 
         return new BackgroundJobAcceptedDTO(
                 "Background job was accepted and is being processed."

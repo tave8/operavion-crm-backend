@@ -1,11 +1,23 @@
 package giuseppetavella.demo_login_system.workers;
 
+import giuseppetavella.demo_login_system.entities.ContractExpectation;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
+import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
+import giuseppetavella.demo_login_system.services.AppAIService;
+import giuseppetavella.demo_login_system.services.ContractExpectationsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ContractAnalysisWorker {
+    
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
+    
+    @Autowired
+    private AppAIService appAIService;
+    
 
     /**
      * Extract contract expectations from a contract
@@ -19,25 +31,37 @@ public class ContractAnalysisWorker {
     public void extractContractExpectations(byte[] contractPdf, 
                                             ClientAddress clientAddress)  
     {
+        
+        try {
 
-        // String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractFile);
-        //
-        // return new ExtractedContractExpectationsToSendDTO(
-        //         contractExpectationsFromAI
-        // );
+            System.out.println("started extracting contract");
+            // extract text
+            String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractPdf);
 
+            System.out.println("finished extracting contract");
+            
+            ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
+            
+            // save contract expectation as success, with extracted text 
+            this.contractExpectationsService.success(contractExpectation, contractExpectationsFromAI);
+            
+            
+        }
+        
+        catch(Exception ex) {
 
+            // there was an error
+            // send email with error to developer
 
-        // try {
-        //    
-        //     Thread.sleep(5000);
-        //     System.out.println("hello from worker thread");
-        //     System.out.println(clientAddress);
-        //     System.out.println(contractPdf);
-        //    
-        // } catch (InterruptedException e) {
-        //     throw new RuntimeException(e);
-        // }
+            System.out.println("error while extracting contract");
+            
+            ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
+            
+            this.contractExpectationsService.failed(contractExpectation);
+            
+        }
+
+        
         
     }
 
