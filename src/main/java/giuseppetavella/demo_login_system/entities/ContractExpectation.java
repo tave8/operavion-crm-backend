@@ -55,7 +55,7 @@ public class ContractExpectation {
      * <pre>
      * no state      ->  PENDING
      * PENDING       ->  SUCCESS | FAILED
-     * SUCCESS       ->  (end)
+     * SUCCESS       ->  
      * FAILED        ->  PENDING
      * </pre>
      */
@@ -69,7 +69,7 @@ public class ContractExpectation {
         // first states
         List<ContractExpectationState> firstStates = List.of(ContractExpectationState.PENDING);
         
-        // state map
+        // state map (if current state exists)
         Map<ContractExpectationState, List<ContractExpectationState>> stateMap = Map.of(
                 ContractExpectationState.PENDING, List.of(ContractExpectationState.SUCCESS, ContractExpectationState.FAILED),
                 ContractExpectationState.SUCCESS, List.of(),

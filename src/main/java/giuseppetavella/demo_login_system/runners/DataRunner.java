@@ -39,8 +39,8 @@ public class DataRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         
 
-        // ContractExpectationState currentState = ContractExpectationState.SUCCESS;
-        // ContractExpectationState desiredState = null;
+        // ContractExpectationState currentState = null;
+        // ContractExpectationState desiredState = ContractExpectationState.PENDING;
         //
         // boolean noStateYet = currentState == null;
         //
@@ -67,7 +67,7 @@ public class DataRunner implements CommandLineRunner {
         // );
         //
         // System.out.println("test passed");
-        
+
         
 
         //

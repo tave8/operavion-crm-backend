@@ -1,6 +1,12 @@
 package giuseppetavella.demo_login_system.exceptions;
 
 public class InvalidStateTransitionException extends InvalidDataException {
+    
+    public InvalidStateTransitionException(String msg)
+    {
+        super("Invalid state transition. DETAILS: " + msg);
+    }
+    
     public InvalidStateTransitionException(String currentState, 
                                            String desiredState,
                                            String entity) 

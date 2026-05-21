@@ -133,7 +133,7 @@ public class DataValidationHelper {
                                                    String entity) throws InvalidStateTransitionException
     {
         
-        boolean isValidTransition = DataValidationHelper.isValidStateTransition(
+        boolean isValidTransition = StateTransitionHelper.isValidStateTransition(
                 currentState,
                 desiredState,
                 firstStates,
@@ -166,111 +166,17 @@ public class DataValidationHelper {
                                                                        String entity) throws InvalidStateTransitionException
     {
 
-        boolean isValidTransition = DataValidationHelper.isValidStateTransition(
-                enumClass,
-                currentState,
-                desiredState,
-                firstStates,
-                stateMap,
-                noStateYet
+        DataValidationHelper.requireValidStateTransition(
+            currentState == null ? null : currentState.name(),
+            desiredState == null ? null : desiredState.name(),
+            EnumHelper.stringify(enumClass, firstStates),
+            EnumHelper.stringify(enumClass, stateMap),
+            noStateYet,
+            entity
         );
 
-        if(!isValidTransition) {
-            throw new InvalidStateTransitionException(
-                    currentState == null ? null : currentState.name(), 
-                    desiredState == null ? null : desiredState.name(), 
-                    entity
-            );
-        }
-
     }
 
-    /**
-     * Is the state transition valid?
-     *
-     */
-    public static boolean isValidStateTransition(String currentState, 
-                                                 String desiredState,
-                                                 List<String> firstStates,
-                                                 Map<String, List<String>> stateMap,
-                                                 boolean noStateYet)
-    {
-
-        // TODO: make this reusable
-        if(desiredState == null) {
-            throw new InvalidStateTransitionException(
-                    currentState,
-                    null,
-                    "(unknown entity)"
-            );
-        }
-
-        // if there's no state yet
-        if(noStateYet) {
-
-            return firstStates.contains(desiredState);
-
-        }
-
-        // TODO: make this reusable
-        if(currentState == null) {
-            throw new InvalidStateTransitionException(
-                    null,
-                    null,
-                    "(unknown entity)"
-            );
-        }
-
-        // if there's a current state
-        return stateMap.get(currentState).contains(desiredState);
-        
-    }
-
-
-    /**
-     * Is the state transition valid?
-     *
-     * TODO: use the same function. now there's code duplication in 
-     * overloaded functions, between the "string" and "enum" variants
-     */
-    public static <T extends Enum<T>> boolean isValidStateTransition(Class<T> enumClass,
-                                                                     T currentState,
-                                                                     T desiredState,
-                                                                     List<T> firstStates,
-                                                                     Map<T, List<T>> stateMap,
-                                                                     boolean noStateYet)
-    {
-
-        // TODO: make this reusable
-        if(desiredState == null) {
-            throw new InvalidStateTransitionException(
-                    currentState == null ? null : currentState.name(), 
-                    null, 
-                    "(unknown entity)"
-            );
-        }
-        
-        // if there's no state yet
-        if(noStateYet) {
-
-            return firstStates.contains(desiredState);
-
-        }
-
-        // TODO: make this reusable
-        if(currentState == null) {
-            throw new InvalidStateTransitionException(
-                    null,
-                    null,
-                    "(unknown entity)"
-            );
-        }
-
-        // if there's a current state
-        return stateMap.get(currentState).contains(desiredState);
-
-    }
-    
     
 
 }
