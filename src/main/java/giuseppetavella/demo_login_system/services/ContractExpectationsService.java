@@ -6,7 +6,6 @@ import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
 import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
-import giuseppetavella.demo_login_system.payloads.in_request.NewContractExpectationSentDTO;
 import giuseppetavella.demo_login_system.repositories.ContractExpectationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,7 +114,7 @@ public class ContractExpectationsService {
     {
 
         contractExpectation.setState(ContractExpectationState.SUCCESS);
-        contractExpectation.setExtractedText(extractedText);
+        contractExpectation.setExpectations(extractedText);
         return this.save(contractExpectation);
 
     }

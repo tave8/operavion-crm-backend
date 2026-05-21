@@ -15,14 +15,14 @@ public class ContractExpectationDTO {
     private final UUID id;
     private final UUID clientAddressId;
     private final ContractExpectationState state;
-    private final String extractedText;
+    private final String expectations;
     private final OffsetDateTime processedAt;
     
     public ContractExpectationDTO(ContractExpectation contractExpectation) {
         this.id = contractExpectation.getId();
         this.clientAddressId = contractExpectation.getClientAddress().getId();
         this.state = contractExpectation.getState();
-        this.extractedText = contractExpectation.getExtractedText();
+        this.expectations = contractExpectation.getExpectations();
         this.processedAt = contractExpectation.getProcessedAt();
     }
 
@@ -34,8 +34,8 @@ public class ContractExpectationDTO {
         return clientAddressId;
     }
 
-    public String getExtractedText() {
-        return extractedText;
+    public String getExpectations() {
+        return expectations;
     }
 
     public UUID getId() {

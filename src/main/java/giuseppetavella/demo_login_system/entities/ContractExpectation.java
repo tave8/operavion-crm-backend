@@ -29,8 +29,8 @@ public class ContractExpectation {
     @Enumerated(EnumType.STRING)
     private ContractExpectationState state;
     
-    @Column(name = "extracted_text", nullable = false, columnDefinition = "TEXT")
-    private String extractedText;
+    @Column(name = "expectations", nullable = false, columnDefinition = "TEXT")
+    private String expectations;
     
     @Column(name = "processed_at", nullable = false)
     private OffsetDateTime processedAt;
@@ -43,7 +43,7 @@ public class ContractExpectation {
         // when we first instantiate a contraxt expectation,
         // there's no extracted text, because the operation
         // occurs in the background
-        this.setExtractedText("");
+        this.setExpectations("");
         // on instantiation, the contract cannot  be processed
         this.state = ContractExpectationState.PENDING;
         this.processedAt = OffsetDateTime.now();
@@ -106,12 +106,12 @@ public class ContractExpectation {
     }
     
 
-    public String getExtractedText() {
-        return extractedText;
+    public String getExpectations() {
+        return expectations;
     }
 
-    public void setExtractedText(String extractedText) {
-        this.extractedText = extractedText;
+    public void setExpectations(String expectations) {
+        this.expectations = expectations;
     }
 
     public UUID getId() {
@@ -128,7 +128,6 @@ public class ContractExpectation {
         return "ContractExpectation{" +
                 "clientAddress=" + clientAddress +
                 ", id=" + id +
-                ", extractedText='" + extractedText + '\'' +
                 ", processedAt=" + processedAt +
                 '}';
     }

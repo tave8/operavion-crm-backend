@@ -7,6 +7,7 @@ import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.helpers.*;
+import giuseppetavella.demo_login_system.payloads.in_request.UpdatedContractExpectationSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.*;
 import giuseppetavella.demo_login_system.services.*;
 import giuseppetavella.demo_login_system.workers.ContractAnalysisWorker;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -160,6 +163,44 @@ public class ClientAddressesController {
         
     }
 
+
+    /**
+     * Update contract expectation of this client address.
+     *
+     */
+    @PatchMapping("/{clientAddressId}/contract-expectations")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ContractExpectationToSendDTO extractContractExpectations(@AuthenticationPrincipal User currentUser,
+                                                                    @PathVariable UUID clientAddressId,
+                                                                    @RequestBody @Validated UpdatedContractExpectationSentDTO body,
+                                                                    BindingResult validation)
+    {
+        
+        PayloadValidationHelper.requireNoErrors(validation);
+
+        // find client address     
+        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+
+        Company company = currentUser.getCompany();
+
+        // require that the client address sent must belong the the current user
+        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+
+        // contract expectation must exist
+        ContractExpectation contractExpectationFromDB = this.contractExpectationsService.getByClientAddress(clientAddress);
+        
+        // update the extracted text of this contract expectation 
+        contractExpectationFromDB.setExpectations(body.updatedExpectations());
+        
+        this.contractExpectationsService.save(contractExpectationFromDB);
+
+        return new ContractExpectationToSendDTO(
+                new ContractExpectationDTO(contractExpectationFromDB)
+        );
+
+    }
+
+    
     /**
      * Find contract expectations for this client address,
      * if there's one.
