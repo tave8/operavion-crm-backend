@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -159,5 +160,40 @@ public class ClientAddressesController {
         
     }
 
+    /**
+     * Find contract expectations for this client address,
+     * if there's one.
+     * 
+     * @return
+     */
+    @GetMapping("/{clientAddressId}/contract-expectations")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ContractExpectationToSendDTO findContractExpectations(@AuthenticationPrincipal User currentUser,
+                                                                 @PathVariable UUID clientAddressId)
+    {
+
+        // find client address     
+        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+
+        Company company = currentUser.getCompany();
+
+        // require that the client address sent must belong the the current user
+        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+        
+        Optional<ContractExpectation> maybeContractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
+        
+        // contract expectation does not exist
+        if(maybeContractExpectation.isEmpty()) {
+            return new ContractExpectationToSendDTO();
+        }
+    
+        // contract expectation exists
+        ContractExpectation contractExpectation = maybeContractExpectation.get();
+        
+        return new ContractExpectationToSendDTO(
+                new ContractExpectationDTO(contractExpectation)
+        );
+        
+    }
 
 }

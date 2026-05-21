@@ -51,7 +51,7 @@ public class ContractAnalysisWorker {
 
         // potential error: no contract expectation was found
         // for this client address
-        ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
+        ContractExpectation contractExpectation = this.contractExpectationsService.getByClientAddress(clientAddress);
         
         try {
 

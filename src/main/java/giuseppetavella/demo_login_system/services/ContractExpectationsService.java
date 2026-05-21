@@ -132,14 +132,25 @@ public class ContractExpectationsService {
 
     /**
      * Find the contract expectation of a client address.
+     * Can also not exist.
      */
-    public ContractExpectation findByClientAddress(ClientAddress clientAddress) throws NotFoundException {
+    public Optional<ContractExpectation> findByClientAddress(ClientAddress clientAddress) throws NotFoundException {
+        return repo
+                .findByClientAddress(clientAddress);
+    }
+
+
+    /**
+     * Find the contract expectation of a client address.
+     * Must exist.
+     */
+    public ContractExpectation getByClientAddress(ClientAddress clientAddress) throws NotFoundException {
         return repo
                 .findByClientAddress(clientAddress)
                 .orElseThrow(() -> new NotFoundException("Could not find a contract expectation "
-                                                        +"from client address with ID '" + clientAddress.getId()+"'"));
+                        +"from client address with ID '" + clientAddress.getId()+"'"));
     }
-
+    
 
     /**
      * The contract expectation with this ID exists?
