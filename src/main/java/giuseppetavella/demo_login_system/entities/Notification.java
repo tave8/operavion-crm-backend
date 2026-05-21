@@ -48,8 +48,10 @@ public class Notification {
     
     protected Notification() {}
     
-    public Notification(User user, NotificationType type, 
-                        String title, String body, 
+    public Notification(User user, 
+                        NotificationType type, 
+                        String title, 
+                        String body, 
                         NotificationData notificationData, 
                         OffsetDateTime expiresAt) 
     {
@@ -66,23 +68,29 @@ public class Notification {
     }
     
     
-    public Notification(User user, NotificationType type,
-                        String title, String body,
+    public Notification(User user, 
+                        NotificationType type,
+                        String title, 
+                        String body,
                         NotificationData notificationData) 
     {   
         this(user, type, title, body, notificationData, null);
     }
 
 
-    public Notification(User user, NotificationType type,
-                        String title, String body,
+    public Notification(User user, 
+                        NotificationType type,
+                        String title, 
+                        String body,
                         OffsetDateTime expiresAt) 
     {
         this(user, type, title, body, new NotificationData(), expiresAt);
     }
 
-    public Notification(User user, NotificationType type,
-                        String title, String body)
+    public Notification(User user, 
+                        NotificationType type,
+                        String title, 
+                        String body)
     {
         this(user, type, title, body, new NotificationData(), null);
     }

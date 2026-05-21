@@ -11,6 +11,7 @@ import giuseppetavella.demo_login_system.repositories.ContractExpectationsReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,26 +22,72 @@ public class ContractExpectationsService {
     
     
     /**
-     * Check that a contract expectations does not exist first,
-     * and if not, add it.
+     * <pre>
+     *     
+     * Contract expectation for this client address not exists?
+     *    add it
+     *    
+     * Contract expectation for this client address exists AND is failed? 
+     *   don't add it, user can retry
      * 
-     * Save a new contract expectation.
-     * Because we assume the extraction occurs in the background,
-     * we don't have the extracted text yet, only the client address
-     * to which this extract belongs.
+     * Contract expectation for this client address exists AND is pending or success?
+     *   cannot add it, throw error
+     *   
+     *</pre>
      */
-    public ContractExpectation addContractExpectation(ClientAddress clientAddress) 
+    public void addContractExpectationIfNotExists(ClientAddress clientAddress) 
     {
-        // contract expectation must be unique per client address
-        if(this.existsByClientAddress(clientAddress)) {
-            throw new ContractExpectationException("Duplicate contract expectation. While adding a new contract expectation "
-                                                    +"for client address with ID '" + clientAddress.getId()+ "', "
-                                                    +"this client address already has a contract expectation.");
+        
+        Optional<ContractExpectation> maybeContractExpectation =  this.repo.findByClientAddress(clientAddress);
+        
+        // if contract expectation does not exist, add it
+        if(maybeContractExpectation.isEmpty()) {
+            
+            ContractExpectation contractExpectation = new ContractExpectation(clientAddress);
+            
+            this.repo.save(contractExpectation);
+            
+            return;
         }
         
-        ContractExpectation contractExpectation = new ContractExpectation(clientAddress);
+        // because contract expectation exists, 
+        // we must check its state
         
-        return this.repo.save(contractExpectation);    
+        ContractExpectation contractExpectationFromDB = maybeContractExpectation.get();
+        
+        // if existing contract expectation is success or pending,
+        // we cannot add a new one
+        boolean isSuccessful = contractExpectationFromDB.getState().equals(ContractExpectationState.SUCCESS);
+        boolean isPending = contractExpectationFromDB.getState().equals(ContractExpectationState.PENDING);
+        boolean isFailed = contractExpectationFromDB.getState().equals(ContractExpectationState.FAILED);
+        
+        if(isSuccessful || isPending) 
+        {
+            
+            throw new ContractExpectationException(
+                    "While adding a new contract expectation, cannot add a new contract expectation. "
+                    +"Reason: For client address with ID '" + clientAddress.getId()+ "', " 
+                    +"there exists a contract expectation with state "+contractExpectationFromDB.getState()+"."
+            );
+            
+        }
+        
+        // if existing contract expectation has failed state, 
+        // we do not add it, and we allow to retry processing.
+        // so we reset state to pending
+        if(isFailed) {
+            
+            // because the contract expectation is failed, 
+            // we now retry processing it
+            contractExpectationFromDB.setState(ContractExpectationState.PENDING);
+            this.save(contractExpectationFromDB);
+            
+            return;
+        }
+        
+        
+        throw new ContractExpectationException("Code path was not defined. INTERNAL ERROR.");
+        
     }
 
 
@@ -119,6 +166,8 @@ public class ContractExpectationsService {
         }
         return this.repo.existsByClientAddress(clientAddress);
     }
+    
+    
     
     /**
      * Save contract expectation.

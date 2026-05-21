@@ -96,6 +96,15 @@ public class FileHelper {
      */
     public static String getFileType(byte[] bytes) throws UnknownFileTypeException
     {
+
+        // if bytes are empty, there's no point getting file extension
+        if(bytes.length == 0) {
+
+            throw new UnknownFileTypeException("No bytes found in this file, it means the file is empty. "
+                                                +"So cannot determine its extension.");
+
+        }
+        
         String mimeType = TIKA.detect(bytes);
 
         // recognized is a synonim for "supported or known"

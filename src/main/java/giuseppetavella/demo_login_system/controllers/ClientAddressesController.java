@@ -142,7 +142,7 @@ public class ClientAddressesController {
         // create pending entry for this job
         // also checks that client address does not have already
         // a contract expectation
-        this.contractExpectationsService.addContractExpectation(clientAddress);
+        this.contractExpectationsService.addContractExpectationIfNotExists(clientAddress);
         
         // get bytes from contract pdf
         byte[] contractPdf = FileHelper.getBytes(contractFile);

@@ -77,7 +77,8 @@ public class ContractExpectation {
         Map<ContractExpectationState, List<ContractExpectationState>> states = Map.of(
                 ContractExpectationState.PENDING, List.of(ContractExpectationState.SUCCESS, ContractExpectationState.FAILED),
                 ContractExpectationState.SUCCESS, List.of(),
-                ContractExpectationState.FAILED, List.of()
+                // if processing failed, we can still re-process it
+                ContractExpectationState.FAILED, List.of(ContractExpectationState.PENDING)
         );
 
         // if the desired state is not in the list of possible states,

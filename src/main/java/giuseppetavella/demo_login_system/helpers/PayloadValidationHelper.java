@@ -53,6 +53,7 @@ public class PayloadValidationHelper {
                                        String originalFilename) throws PayloadValidationException, 
                                                                                 UnknownFileTypeException
     {
+        
         String actualFileType = FileHelper.getFileType(bytes);
                 
         boolean hasSameType = actualFileType.equals(expectedFileExtWithoutDot.trim().toLowerCase());

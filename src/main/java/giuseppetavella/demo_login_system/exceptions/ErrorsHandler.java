@@ -93,6 +93,7 @@ public class ErrorsHandler {
     public ErrorsToSendDTO handleNotificationException(NotificationException ex) {
         return new ErrorsToSendDTO(ex.getMessage());
     }
+    
 
 
     @ExceptionHandler(UnknownFileTypeException.class)
