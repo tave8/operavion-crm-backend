@@ -49,6 +49,9 @@ public class ShiftsService {
     @Autowired
     private UsersService usersService;
     
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
+    
     // we use this when the filter's start date is missing
     // because all shift's start date will be greater than this date,
     // they will be included, which is what we want, when the 
@@ -123,8 +126,10 @@ public class ShiftsService {
         List<ProfileToSendDTO> operatorsToSendDTO = this.findOperatorsByShiftDTO(shift);
         
         // instantiate DTO's
+
+        ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddress);
         
-        ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddress);
+        ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddress, contractExpectationToSendDTO);
 
         ChecklistToSendDTO checklistToSendDTO = new ChecklistToSendDTO(checklist, entriesDTO);
 

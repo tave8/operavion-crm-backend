@@ -6,6 +6,8 @@ import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
 import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
+import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationToSendDTO;
 import giuseppetavella.demo_login_system.repositories.ContractExpectationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -138,6 +140,24 @@ public class ContractExpectationsService {
                 .findByClientAddress(clientAddress);
     }
 
+    public ContractExpectationToSendDTO findByClientAddressDTO(ClientAddress clientAddress) throws NotFoundException {
+
+        Optional<ContractExpectation> maybeContractExpectation = this.findByClientAddress(clientAddress);
+
+        // contract expectation does not exist
+        if(maybeContractExpectation.isEmpty()) {
+            return new ContractExpectationToSendDTO();
+        }
+
+        // contract expectation exists
+        ContractExpectation contractExpectation = maybeContractExpectation.get();
+
+        return new ContractExpectationToSendDTO(
+                new ContractExpectationDTO(contractExpectation)
+        );
+
+    }
+    
 
     /**
      * Find the contract expectation of a client address.

@@ -22,18 +22,17 @@ public class ContractExpectationToSendDTO {
     private final boolean pending;
     private final boolean success;
     private final boolean failed;
-    private final ContractExpectationDTO contractExpectation;
+    private final ContractExpectationDTO detail;
     
     public ContractExpectationToSendDTO(ContractExpectationDTO contractExpectation) 
     {
+        this.detail = contractExpectation;
         this.exists = contractExpectation != null;
-        this.contractExpectation = contractExpectation;
         // we set these fields based on whether the contract expectation exists
         // and its state
         this.pending = contractExpectation != null && contractExpectation.getState().equals(ContractExpectationState.PENDING);
         this.success = contractExpectation != null && contractExpectation.getState().equals(ContractExpectationState.SUCCESS);
         this.failed = contractExpectation != null && contractExpectation.getState().equals(ContractExpectationState.FAILED);
-        
         
     }
 
@@ -46,8 +45,8 @@ public class ContractExpectationToSendDTO {
         this(null);
     }
 
-    public ContractExpectationDTO getContractExpectation() {
-        return contractExpectation;
+    public ContractExpectationDTO getDetail() {
+        return detail;
     }
 
     public boolean isFailed() {

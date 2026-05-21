@@ -9,8 +9,10 @@ import giuseppetavella.demo_login_system.payloads.in_request.NewClientAddressSen
 import giuseppetavella.demo_login_system.payloads.in_request.NewClientSentDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressToSendDTO;
 import giuseppetavella.demo_login_system.payloads.in_response.ClientToSendDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationToSendDTO;
 import giuseppetavella.demo_login_system.services.ClientAddressesService;
 import giuseppetavella.demo_login_system.services.ClientsService;
+import giuseppetavella.demo_login_system.services.ContractExpectationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,7 +35,9 @@ public class ClientsController {
     @Autowired
     private ClientAddressesService clientAddressesService;
     
-
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
+    
     /*
     * Get clients.
     * */
@@ -147,7 +151,9 @@ public class ClientsController {
         
         ClientAddress clientAddressFromDB = this.clientAddressesService.addAddressToClient(clientId, address, body.addressName(), currentUser);
 
-        return new ClientAddressToSendDTO(clientAddressFromDB);
+        ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddressFromDB);
+        
+        return new ClientAddressToSendDTO(clientAddressFromDB, contractExpectationToSendDTO);
 
 
     }
@@ -189,7 +195,13 @@ public class ClientsController {
                 sortBy
         );
 
-        return clientsAddressesPage.map(clientAddress -> new ClientAddressToSendDTO(clientAddress));
+        return clientsAddressesPage.map(clientAddress -> {
+            
+            ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddress);
+            
+            return new ClientAddressToSendDTO(clientAddress, contractExpectationToSendDTO);
+            
+        });
 
 
     }
@@ -232,7 +244,11 @@ public class ClientsController {
                 sortOrder
         );
 
-        return clientsAddressesPage.map(clientAddress -> new ClientAddressToSendDTO(clientAddress));
+        return clientsAddressesPage.map(clientAddress -> {
+            ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddress);
+            
+            return new ClientAddressToSendDTO(clientAddress, contractExpectationToSendDTO);
+        });
 
 
     }

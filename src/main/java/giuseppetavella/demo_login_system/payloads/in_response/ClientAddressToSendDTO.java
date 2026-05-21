@@ -13,8 +13,11 @@ public class ClientAddressToSendDTO {
     private final String addressDisplayName;
     private final double addressLat;
     private final double addressLon;
+    private final ContractExpectationToSendDTO contractExpectation;
 
-    public ClientAddressToSendDTO(ClientAddress clientAddress) {
+    public ClientAddressToSendDTO(ClientAddress clientAddress, 
+                                  ContractExpectationToSendDTO contractExpectation) 
+    {
         this.id = clientAddress.getId();
         this.addressId = clientAddress.getAddress().getId();
         this.clientId = clientAddress.getClient().getId();
@@ -23,10 +26,15 @@ public class ClientAddressToSendDTO {
         this.addressDisplayName = clientAddress.getAddress().getDisplayName();
         this.addressLat = clientAddress.getAddress().getLat();
         this.addressLon = clientAddress.getAddress().getLon();
+        this.contractExpectation = contractExpectation;
     }
 
     public UUID getAddressId() {
         return addressId;
+    }
+
+    public ContractExpectationToSendDTO getContractExpectation() {
+        return contractExpectation;
     }
 
     public String getAddressDisplayName() {
