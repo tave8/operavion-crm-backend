@@ -1,6 +1,9 @@
 package giuseppetavella.demo_login_system.helpers;
 
+import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
+import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
+import giuseppetavella.demo_login_system.exceptions.InvalidStateTransitionException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -116,5 +119,158 @@ public class DataValidationHelper {
         }
         
     }
+
+    /**
+     * Require a valid state transition.
+     * 
+     * @throws InvalidStateTransitionException
+     */
+    public static void requireValidStateTransition(String currentState,
+                                                   String desiredState,
+                                                   List<String> firstStates,
+                                                   Map<String, List<String>> stateMap,
+                                                   boolean noStateYet,
+                                                   String entity) throws InvalidStateTransitionException
+    {
+        
+        boolean isValidTransition = DataValidationHelper.isValidStateTransition(
+                currentState,
+                desiredState,
+                firstStates,
+                stateMap,
+                noStateYet
+        );
+        
+        if(!isValidTransition) {
+            throw new InvalidStateTransitionException(
+                    currentState, 
+                    desiredState, 
+                    entity
+            );  
+        }
+        
+    }
+
+
+    /**
+     * Require a valid state transition.
+     *
+     * @throws InvalidStateTransitionException
+     */
+    public static <T extends Enum<T>> void requireValidStateTransition(Class<T> enumClass,
+                                                                       T currentState,
+                                                                       T desiredState,
+                                                                       List<T> firstStates,
+                                                                       Map<T, List<T>> stateMap,
+                                                                       boolean noStateYet,
+                                                                       String entity) throws InvalidStateTransitionException
+    {
+
+        boolean isValidTransition = DataValidationHelper.isValidStateTransition(
+                enumClass,
+                currentState,
+                desiredState,
+                firstStates,
+                stateMap,
+                noStateYet
+        );
+
+        if(!isValidTransition) {
+            throw new InvalidStateTransitionException(
+                    currentState == null ? null : currentState.name(), 
+                    desiredState == null ? null : desiredState.name(), 
+                    entity
+            );
+        }
+
+    }
+
+    /**
+     * Is the state transition valid?
+     *
+     */
+    public static boolean isValidStateTransition(String currentState, 
+                                                 String desiredState,
+                                                 List<String> firstStates,
+                                                 Map<String, List<String>> stateMap,
+                                                 boolean noStateYet)
+    {
+
+        // TODO: make this reusable
+        if(desiredState == null) {
+            throw new InvalidStateTransitionException(
+                    currentState,
+                    null,
+                    "(unknown entity)"
+            );
+        }
+
+        // if there's no state yet
+        if(noStateYet) {
+
+            return firstStates.contains(desiredState);
+
+        }
+
+        // TODO: make this reusable
+        if(currentState == null) {
+            throw new InvalidStateTransitionException(
+                    null,
+                    null,
+                    "(unknown entity)"
+            );
+        }
+
+        // if there's a current state
+        return stateMap.get(currentState).contains(desiredState);
+        
+    }
+
+
+    /**
+     * Is the state transition valid?
+     *
+     * TODO: use the same function. now there's code duplication in 
+     * overloaded functions, between the "string" and "enum" variants
+     */
+    public static <T extends Enum<T>> boolean isValidStateTransition(Class<T> enumClass,
+                                                                     T currentState,
+                                                                     T desiredState,
+                                                                     List<T> firstStates,
+                                                                     Map<T, List<T>> stateMap,
+                                                                     boolean noStateYet)
+    {
+
+        // TODO: make this reusable
+        if(desiredState == null) {
+            throw new InvalidStateTransitionException(
+                    currentState == null ? null : currentState.name(), 
+                    null, 
+                    "(unknown entity)"
+            );
+        }
+        
+        // if there's no state yet
+        if(noStateYet) {
+
+            return firstStates.contains(desiredState);
+
+        }
+
+        // TODO: make this reusable
+        if(currentState == null) {
+            throw new InvalidStateTransitionException(
+                    null,
+                    null,
+                    "(unknown entity)"
+            );
+        }
+
+        // if there's a current state
+        return stateMap.get(currentState).contains(desiredState);
+
+    }
+    
+    
 
 }

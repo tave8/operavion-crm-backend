@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.entities;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
 import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
+import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.job_library.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.job_library.exceptions.JobExecutionException;
 import jakarta.persistence.*;
@@ -49,50 +50,45 @@ public class ContractExpectation {
         this.processedAt = OffsetDateTime.now();
     }
 
+
+    /**
+     * <pre>
+     * no state      ->  PENDING
+     * PENDING       ->  SUCCESS | FAILED
+     * SUCCESS       ->  (end)
+     * FAILED        ->  PENDING
+     * </pre>
+     */
     public void setState(ContractExpectationState desiredState) {
 
-        ContractExpectationState currState = this.getState();
+        ContractExpectationState currentState = this.getState();
 
-        boolean isFirstState = currState == null;
-
-        // if this is the first state assigned, it can only be pending
-        if(isFirstState) {
-
-            boolean isNewStatePending = desiredState.equals(ContractExpectationState.PENDING);
-
-            if(isNewStatePending) {
-                this.state = desiredState;
-                return;
-            }
-
-            throw new ContractExpectationException(
-                    "The first state of a job contract expectations "
-                            +"can only be PENDING, got '" + desiredState + "' instead. "
-            );
-
-        }
-
-
-        // map: current state -> next possible states
-        Map<ContractExpectationState, List<ContractExpectationState>> states = Map.of(
+        // instance has no state yet if current state is null
+        boolean noStateYet = currentState == null;
+        
+        // first states
+        List<ContractExpectationState> firstStates = List.of(ContractExpectationState.PENDING);
+        
+        // state map
+        Map<ContractExpectationState, List<ContractExpectationState>> stateMap = Map.of(
                 ContractExpectationState.PENDING, List.of(ContractExpectationState.SUCCESS, ContractExpectationState.FAILED),
                 ContractExpectationState.SUCCESS, List.of(),
                 // if processing failed, we can still re-process it
                 ContractExpectationState.FAILED, List.of(ContractExpectationState.PENDING)
         );
 
-        // if the desired state is not in the list of possible states,
-        // it means you cannot set this desired state 
-        // to be the new state
-        boolean canSetNewState = states.get(currState).contains(desiredState);
+        // check if valid state transition
+        DataValidationHelper.requireValidStateTransition(
+                ContractExpectationState.class,
+                currentState,
+                desiredState,
+                firstStates,
+                stateMap,
+                noStateYet,
+                "contract expectation"
+        );
 
-        if(!canSetNewState) {
-            throw new ContractExpectationException(
-                    "Cannot set new state, because you cannot transition "
-                            +"from current state " + currState + " to desired state " + desiredState + ". "
-            );
-        }
-
+        
         this.state = desiredState;
         
     }
