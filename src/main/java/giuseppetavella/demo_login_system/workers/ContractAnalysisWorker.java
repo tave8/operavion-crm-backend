@@ -43,92 +43,88 @@ public class ContractAnalysisWorker {
     public void extractContractExpectations(byte[] contractPdf, 
                                             ClientAddress clientAddress)  
     {
+        
+        // find the admin of this client address
+        Company company = clientAddress.getClient().getCompany();
+        
+        User admin = this.usersService.getAdminByCompany(company);
 
-
-        // ***************************
-        // EXTRACT PDF 
-        // ***************************
+        // potential error: no contract expectation was found
+        // for this client address
+        ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
         
         try {
 
-            System.out.println("started extracting contract");
-            // extract text
-            String contractExpectationsFromAI = this.appAIService.extractContractExpectations(contractPdf);
-
-            System.out.println("finished extracting contract");
-
-            ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
+            // process contract with AI
+            String extractedText = this.appAIService.extractContractExpectations(contractPdf);
 
             // save contract expectation as success, with extracted text 
-            this.contractExpectationsService.success(contractExpectation, contractExpectationsFromAI); 
+            this.contractExpectationsService.success(
+                    contractExpectation, 
+                    extractedText
+            );
+
+            // note: this could throw error, but for simplicity,
+            // i handle it in one try-block
+            this.notifySuccess(admin, clientAddress);
             
         }
         catch(Exception ex) {
-
-            // there was an error
-            // send email with error to developer
-
-            System.out.println("error while extracting contract");
-
-            ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
-
+            
+            // set contract expectation associated 
+            // to the client address as failed
             this.contractExpectationsService.failed(contractExpectation);
             
-            // ***************************
-            // NOTIFY ADMIN: PROCESSING FAILED, YOU CAN RETRY
-            // ***************************
+            //  notify admin: processing failed, you can retry
+            this.notifyFailure(admin, clientAddress); 
             
-            // find the admin of this client address
-            Company company = clientAddress.getClient().getCompany();
-
-            User admin = this.usersService.getAdminByCompany(company);
-
-            Notification newNotification = new Notification(
-                    admin,
-                    NotificationType.CONTRACT_PROCESSING_FAILED,
-                    "Errore processamento contratto",
-                    "C'è stato un errore durante il processamento "
-                            +"del contratto di " + clientAddress.getClient().getLegalName() + ". Riprova."
-            );
-
-            // add a notification so admin sees processing is done    
-            this.notificationsService.save(newNotification);
-
         }
-
-
-        // ***************************
-        // NOTIFY ADMIN: PROCESSING WAS SUCCESS, YOU CAN REVIEW 
-        // ***************************
         
-        try {
-            
-            // find the admin of this client address
-            Company company = clientAddress.getClient().getCompany();
-    
-            User admin = this.usersService.getAdminByCompany(company);
-    
-            Notification newNotification = new Notification(
-                    admin,
-                    NotificationType.CONTRACT_PROCESSING_SUCCESS,
-                    "Contratto processato",
-                    "Il contratto di " + clientAddress.getClient().getLegalName() + " è stato processato. Puoi revisionarlo."
-            );
-    
-            // add a notification so admin sees processing is done    
-            this.notificationsService.save(newNotification);
-    
-        }
-        catch (Exception ex) {
-
-            System.out.println("error while adding notification");
-
-            // ContractExpectation contractExpectation = this.contractExpectationsService.findByClientAddress(clientAddress);
-
-            // this.contractExpectationsService.failed(contractExpectation);
-            
-        }
         
     }
+
+
+    /**
+     * Notify admin of contract processing failure.
+     */
+    private void notifyFailure(User admin, 
+                               ClientAddress clientAddress)
+    {
+     
+        String clientName = clientAddress.getClient().getLegalName();
+        
+        Notification newNotification = new Notification(
+                admin,
+                NotificationType.CONTRACT_PROCESSING_FAILED,
+                "Errore processamento contratto",
+                "C'è stato un errore durante il processamento "
+                        +"del contratto di " + clientName + ". Riprova."
+        );
+
+        // add a notification so admin sees processing is done    
+        this.notificationsService.save(newNotification);
+    }
+
+
+    /**
+     * Notify admin of contracting processing success.
+     */
+    private void notifySuccess(User admin,
+                               ClientAddress clientAddress)
+    {
+
+        String clientName = clientAddress.getClient().getLegalName();
+
+        Notification newNotification = new Notification(
+                admin,
+                NotificationType.CONTRACT_PROCESSING_SUCCESS,
+                "Contratto processato",
+                "Il contratto di " + clientName + " è stato processato. Puoi revisionarlo."
+        );
+
+        // add a notification so admin sees processing is done    
+        this.notificationsService.save(newNotification);
+    }
+
 
 }
