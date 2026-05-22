@@ -1,13 +1,18 @@
 package giuseppetavella.demo_login_system.runners;
 
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
 import giuseppetavella.demo_login_system.services.AppAIService;
 import giuseppetavella.demo_login_system.services.AppPdfService;
+import giuseppetavella.demo_login_system.services.ClientAddressesService;
 import giuseppetavella.demo_login_system.services.ShiftsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class AIDemoRunner implements CommandLineRunner {
@@ -21,12 +26,32 @@ public class AIDemoRunner implements CommandLineRunner {
     @Autowired
     private ShiftsService shiftsService;
     
+    @Autowired
+    private ClientAddressesService clientAddressesService;
+    
     private final ObjectMapper mapper = new ObjectMapper();
     
     @Override
     public void run(String... args) throws Exception {
         
         // TODO: find shifts by client address between date range
+        
+        ClientAddress clientAddress = clientAddressesService.findById("03dd36c2-68f2-41ac-859d-47e8ba9923bc");
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now();
+        
+        List<ShiftToSendDTO> shiftsDTO = shiftsService.findShiftsByClientAddressBetweenDatesDTO(
+                clientAddress,
+                startDate,
+                endDate
+        );
+
+        // System.out.println(shiftsDTO);
+        
+        String shiftsInfo = shiftsService.stringifyShifts(shiftsDTO);
+
+        System.out.println(shiftsInfo);
         
         // List<ShiftToSendDTO> shiftsDTO = shiftsService.findShiftsBy
         
