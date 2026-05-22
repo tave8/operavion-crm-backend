@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.runners;
 
+import giuseppetavella.demo_login_system.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.demo_login_system.entities.Company;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.clients.Client;
@@ -45,23 +46,25 @@ public class EmailTestRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        User admin = this.usersService.findById("d561f16f-095d-4ad3-8f2c-4f0ad3429efc");
-
-        ClientAddress clientAddress1 = this.clientAddressesService.findById("7ff21f6c-5b9f-4238-9dea-8acc53930ae7");
-        
-        Map<ClientAddress, String> discrepancyByClientAddress = Map.of(
-                clientAddress1, "some discrepancy found..."
-        );
-        
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = LocalDate.now();
-        
-        this.appEmailService.sendAdminDiscrepancies(
-                admin,
-                discrepancyByClientAddress,
-                startDate,
-                endDate
-        );
+        // User admin = this.usersService.findById("d561f16f-095d-4ad3-8f2c-4f0ad3429efc");
+        //
+        // ClientAddress clientAddress1 = this.clientAddressesService.findById("7ff21f6c-5b9f-4238-9dea-8acc53930ae7");
+        // ClientAddress clientAddress2 = this.clientAddressesService.findById("7bd1abda-6c83-40cb-96cf-cf4c7fc144aa");
+        //
+        // List<ClientAddressDiscrepancyDTO> discrepancies = List.of(
+        //         new ClientAddressDiscrepancyDTO(clientAddress1, "mancano 2 turni"),
+        //         new ClientAddressDiscrepancyDTO(clientAddress2, "ci sono troppo persone, potresti bilanciare i turni")
+        // );
+        //
+        // LocalDate startDate = LocalDate.now();
+        // LocalDate endDate = LocalDate.now();
+        //
+        // this.appEmailService.sendAdminDiscrepancies(
+        //         admin,
+        //         discrepancies,
+        //         startDate,
+        //         endDate
+        // );
 
         
         // try {

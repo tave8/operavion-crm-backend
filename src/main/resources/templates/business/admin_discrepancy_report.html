@@ -56,7 +56,8 @@
         /* Minimal Fixed Footer */
         .footer {
             position: fixed;
-            bottom: -5mm;
+            /* Changed to 0 to keep it securely inside the 20mm page margin */
+            bottom: 0px; 
             left: 0;
             right: 0;
             text-align: center;
@@ -69,27 +70,35 @@
 </head>
 <body>
 
+<!-- FIX 1: Moving fixed elements to the absolute top of the body resolves the missing footer bug -->
+<div class="footer">
+    <span><a href="https://www.zerochiamate.com">zerochiamate.com</a></span>
+</div>
+
 <!-- Centered Page Title Section -->
 <div class="header">
     <h1 th:text="|Report discrepanze, Settimana ${startDate} - ${endDate}|"></h1>
 </div>
 
-<!-- Data Table -->
-<table>
-    <thead>
-    <tr>
-        <th>Operatore</th>
-        <th>Num. Turni</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>...</tr>
-    </tbody>
-</table>
+<!-- Discrepancy List -->
+<!-- Discrepancy List -->
+<div style="margin-top: 20px;">
+    <!-- Single loop directly over your list of DTOs -->
+    <div th:each="item : ${discrepancies}" style="margin-bottom: 25px; page-break-inside: avoid;">
 
-<!-- Strict XHTML Footer -->
-<div class="footer">
-    <span>zerochiamate.com</span>
+        <!-- Client & Address Line -->
+        <div style="font-weight: bold; font-size: 14px; color: #111111;">
+            <span th:text="${item.clientName} ?: 'Cliente Sconosciuto'">Nome Cliente</span>
+            <span th:if="${item.addressName}" th:text="| - ${item.addressName}|" style="font-weight: normal; color: #666666; font-size: 13px;"> - Nome Sede</span>
+        </div>
+
+        <!-- Discrepancy Text Line -->
+        <div style="margin-top: 4px; color: #444444;"
+             th:text="${item.discrepancy}">
+            Dettaglio Discrepanza
+        </div>
+
+    </div>
 </div>
 
 </body>

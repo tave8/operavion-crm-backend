@@ -42,7 +42,7 @@ public class HtmlTemplateService {
 
         } catch(TemplateInputException ex) {
 
-            throw new HtmlTemplateException("This template does not seem to exist. DETAILS: " + ex.getMessage());
+            throw new HtmlTemplateException("Input template was '"+template+"'. DETAILS: " + ex.getMessage());
 
         } catch(TemplateEngineException ex) {
 

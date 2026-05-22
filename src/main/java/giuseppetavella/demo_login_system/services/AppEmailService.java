@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.services;
 
+import giuseppetavella.demo_login_system.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
@@ -206,7 +207,7 @@ public class AppEmailService extends EmailService {
      * 
      */
     public void sendAdminDiscrepancies(User admin,
-                                      Map<ClientAddress, String> discrepancyByClientAddress,
+                                      List<ClientAddressDiscrepancyDTO> discrepancies,
                                       LocalDate startDate,
                                       LocalDate endDate)
     {
@@ -221,10 +222,11 @@ public class AppEmailService extends EmailService {
         // generate email attachment from pdf
 
         Map<String, Object> newPdfVars = Map.of(
-                "discrepancyByClientAddress", discrepancyByClientAddress,
+                "discrepancies", discrepancies,
                 "startDate", startDate,
                 "endDate", endDate
         );
+        
 
         // generate the pdf 
         Pdf pdf = this.appPdfService.generateAdminDiscrepancyReport(newPdfVars);

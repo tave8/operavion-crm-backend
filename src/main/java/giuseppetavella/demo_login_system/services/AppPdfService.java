@@ -55,7 +55,7 @@ public class AppPdfService extends PdfService {
         // require that the vars passed have these keys
         DataValidationHelper.requireMapContainsOnlyKeys(
                 vars,
-                List.of("discrepancyByClientAddress", "startDate", "endDate")
+                List.of("discrepancies", "startDate", "endDate")
         );
 
         return new Pdf(
