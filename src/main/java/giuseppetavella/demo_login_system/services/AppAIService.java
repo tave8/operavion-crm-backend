@@ -23,6 +23,42 @@ public class AppAIService extends AIService {
     
     private final ObjectMapper mapper = new ObjectMapper();
 
+
+    /**
+     * Find discrepancies between a legal contract 
+     * and the actual data of the admin's account.
+     */
+    public String findDiscrepancies(String contractExpectations,
+                                    String actualShifts) 
+    {
+    
+        String prompt = "You are a compliance auditing assistant. Compare the service rules defined in "
+                        +"a commercial CONTRACT of a cleaning company against the ACTUAL_SHIFTS executed for "
+                        +"ONE specific client address of that cleaning company.\n" +
+                        "\n" +
+                        "### CONTRACT SUMMARY (expectation)\n" +
+                        contractExpectations +
+                        "### ACTUAL_SHIFTS (reality)\n" +
+                        actualShifts +
+                        "### WHAT TO LOOK FOR (ANALYSIS RULES)\n" +
+                        "Analyze the shifts against the contract and flag only these 3 specific operational breaches:\n" +
+                        "1. Missing days. The contract specifies a day or frequency, but no shift was recorded on that day.\n" +
+                        "2. Short duration. A shift was performed, but the total time worked is shorter than what the contract dictates.\n" +
+                        "3. Wrong timing. A shift was performed, but the hours fall outside the specific time window requested (e.g., working during the day when the contract specifies evening hours).\n" +
+                        "\n" +
+                        "### OUTPUT FORMAT\n" +
+                        "Return ONLY a plain text string in Italian listing the discrepancies found. \n" +
+                        "- If there are multiple discrepancies, separate them with a simple bullet point or line break.\n" +
+                        "- Be specific about days, expected times, and actual times.\n" +
+                        "- If everything matches perfectly and there are no breaches, reply exactly with: \"Nessuna discrepanza riscontrata.\"\n" +
+                        "- CRITICAL: The output will be read directly by the company's owner, so avoid any introductory phrases or pleasantries. Just output the raw text.";
+        
+        
+        return this.ask(prompt);
+    }
+    
+    
+
     /**
      * Extract expectations from legal contract.
      */

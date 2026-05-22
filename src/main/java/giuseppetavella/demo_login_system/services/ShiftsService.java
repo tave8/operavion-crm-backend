@@ -835,6 +835,34 @@ public class ShiftsService {
 
 
     /**
+     * Stringify a list of shifts.
+     * This might be fed into a AI prompt.
+     */
+    public String stringifyShifts(List<ShiftToSendDTO> shifts)
+    {
+        
+        StringBuilder s = new StringBuilder();
+        
+        shifts.forEach(shift -> {
+            
+            String days = shift
+                            .getDays()
+                            .stream()
+                            .map(day -> day.getDay().name())
+                            .collect(Collectors.joining(","));
+            
+            s.append(days).append("\n")
+              .append(shift.getStartDate()).append(" - ").append(shift.getEndDate())
+              .append(shift.getStartTime()).append(" - ").append(shift.getEndTime())
+              .append("--------");
+            
+        });
+        
+        return s.toString();
+    }
+
+
+    /**
      * Use when a missing startDate is allowed.
      */
     public LocalDate getStartDateOrDefault(LocalDate startDate) {
