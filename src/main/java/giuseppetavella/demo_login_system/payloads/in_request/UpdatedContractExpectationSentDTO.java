@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdatedContractExpectationSentDTO(
         
-        @NotNull(message = "Missing 'updatedExpectations' field.")
-        String updatedExpectations
+        @NotNull(message = "Missing 'expectations' field.")
+        String expectations
         
 ) {
 }

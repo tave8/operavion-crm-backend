@@ -60,6 +60,17 @@ public class JobScheduler {
     }
 
 
+    // every 10 seconds
+    @Scheduled(cron = "*/10 * * * * *")
+    public void sendAdminDiscrepancies() {
+
+        // this.jobManager.executeJob(JobName.SEND_ADMIN_DISCREPANCIES);
+
+        // this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
+
+    }
+
+
 
 
 }

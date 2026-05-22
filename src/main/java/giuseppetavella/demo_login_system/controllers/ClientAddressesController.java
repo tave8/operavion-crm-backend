@@ -215,7 +215,7 @@ public class ClientAddressesController {
         ContractExpectation contractExpectationFromDB = this.contractExpectationsService.getByClientAddress(clientAddress);
         
         // update the extracted text of this contract expectation 
-        contractExpectationFromDB.setExpectations(body.updatedExpectations());
+        contractExpectationFromDB.setExpectations(body.expectations());
         
         this.contractExpectationsService.save(contractExpectationFromDB);
 
