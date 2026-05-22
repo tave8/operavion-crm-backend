@@ -48,6 +48,31 @@ public class ClientAddressesController {
     private ContractAnalysisWorker contractAnalysisWorker;
 
 
+    /**
+     * Find the client address by ID.
+     */
+    @GetMapping("/{clientAddressId}")
+    public ClientAddressToSendDTO getById(@AuthenticationPrincipal User currentUser,
+                                          @PathVariable UUID clientAddressId)
+    {
+
+        // find client address     
+        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+
+        Company company = currentUser.getCompany();
+
+        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+
+        ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddress);
+        
+        return new ClientAddressToSendDTO(
+                clientAddress,
+                contractExpectationToSendDTO
+        );
+        
+    }
+    
+    
 
     /**
      * Add a checklist to this client address.
