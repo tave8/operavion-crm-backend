@@ -7,6 +7,8 @@ import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
+import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressToSendDTO;
+import giuseppetavella.demo_login_system.payloads.in_response.ContractExpectationToSendDTO;
 import giuseppetavella.demo_login_system.repositories.ClientAddressesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,8 +32,27 @@ public class ClientAddressesService {
     
     @Autowired
     private AddressesService addressesService;
+    
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
 
+    /**
+     * Client address -> client address DTO
+     * 
+     * @param clientAddress
+     * @return
+     */
+    public ClientAddressToSendDTO toClientAddressDTO(ClientAddress clientAddress)
+    {
+        ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService
+                .findByClientAddressDTO(clientAddress);
 
+        return new ClientAddressToSendDTO(
+                clientAddress,
+                contractExpectationToSendDTO
+        );
+
+    }
 
     /**
      * Find client address by ID.
@@ -54,6 +75,18 @@ public class ClientAddressesService {
             throw new InvalidUUIDStringException(clientAddressId);
         }
     }
+
+    public ClientAddress findByIdDTO(String clientAddressId) throws NotFoundException {
+        try {
+
+            return this.findById(UUID.fromString(clientAddressId));
+
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidUUIDStringException(clientAddressId);
+        }
+    }
+    
+
     
     /**
      * Add a client-address association.
