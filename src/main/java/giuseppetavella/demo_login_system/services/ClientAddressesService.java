@@ -3,6 +3,7 @@ package giuseppetavella.demo_login_system.services;
 import giuseppetavella.demo_login_system.entities.*;
 import giuseppetavella.demo_login_system.entities.clients.Client;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
+import giuseppetavella.demo_login_system.exceptions.InvalidUUIDStringException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.StringHelper;
@@ -41,7 +42,19 @@ public class ClientAddressesService {
                 .orElseThrow(() -> new NotFoundException(clientAddressId, "client address"));
     }
 
-
+    /**
+     * Find client address by ID.
+     */
+    public ClientAddress findById(String clientAddressId) throws NotFoundException {
+        try {
+            
+            return this.findById(UUID.fromString(clientAddressId));
+            
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidUUIDStringException(clientAddressId);
+        }
+    }
+    
     /**
      * Add a client-address association.
      */

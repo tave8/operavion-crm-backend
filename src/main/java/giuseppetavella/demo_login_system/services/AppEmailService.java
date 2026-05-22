@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.services;
 
 import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
 import giuseppetavella.demo_login_system.job_library.JobExecution;
@@ -196,8 +197,78 @@ public class AppEmailService extends EmailService {
         );
 
     }
-    
-    
+
+
+    /**
+     * Send the email that informs the admin of 
+     * discrepancies (expectation vs reality) 
+     * for each client address of their company.
+     * 
+     */
+    public void sendAdminDiscrepancies(User admin,
+                                      Map<ClientAddress, String> discrepancyByClientAddress,
+                                      LocalDate startDate,
+                                      LocalDate endDate)
+    {
+
+        // *****************
+        // BUILD THE PDF
+        // *****************
+
+        // build the hashmap that gets passed to the html template
+        // that will be turned into pdf
+
+        // generate email attachment from pdf
+
+        Map<String, Object> newPdfVars = Map.of(
+                "discrepancyByClientAddress", discrepancyByClientAddress,
+                "startDate", startDate,
+                "endDate", endDate
+        );
+
+        // generate the pdf 
+        Pdf pdf = this.appPdfService.generateAdminDiscrepancyReport(newPdfVars);
+        String pdfAttachment = pdf.toAttachment();
+        String pdfAttachmentName = "report_discrepanze.pdf";
+
+        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
+
+        // *****************
+        // BUILD THE EMAIL
+        // **************
+
+        // build the hashmap that gets passed to the html template
+        // that will be sent as email
+        Map<String, Object> emailTemplateVars = Map.of(
+                "firstname", admin.getFirstname()
+        );
+
+        // the html template for the email, this will be filled
+        String emailTemplate = "emails/admin_discrepancy_report";
+        // the email subject
+        String emailSubject = "Report discrepanze settimanale";
+
+
+        // right before sending email, make sure you didn't forget
+        // any variable to pass to html template
+
+        DataValidationHelper.requireMapContainsOnlyKeys(
+                emailTemplateVars,
+                List.of("firstname")
+        );
+
+        this.sendEmailFromTemplate(
+                emailTemplate,
+                emailTemplateVars,
+                admin.getEmail(),
+                emailSubject,
+                attachment
+        );
+
+    }
+
+
+
     public void sendMeInvoiceReport() {
         
         // *****************

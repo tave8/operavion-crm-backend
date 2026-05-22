@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Report</title>
+    <style>
+        /* PDF Page Setup with tight padding */
+        @page {
+            size: A4;
+            margin: 15mm 15mm 20mm 15mm;
+        }
+        
+        body { 
+            font-family: sans-serif; 
+            margin: 0;
+            padding: 0;
+            color: #333333;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        /* Centered Header */
+        .header {
+            text-align: center;
+            margin-bottom: 25mm;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            color: #111111;
+        }
+        
+        /* Compact Table Layout */
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+        }
+        
+        th, td { 
+            border: 1px solid #e0e0e0; 
+            padding: 8px 12px; 
+            text-align: left; 
+        }
+        
+        th { 
+            background-color: #f8f9fa; 
+            font-weight: bold;
+            color: #444444;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        /* Minimal Fixed Footer */
+        .footer {
+            position: fixed;
+            bottom: -5mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            color: #888888;
+            border-top: 1px solid #eeeeee;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Centered Page Title Section -->
+<div class="header">
+    <h1 th:text="|Report discrepanze, Settimana ${startDate} - ${endDate}|"></h1>
+</div>
+
+<!-- Data Table -->
+<table>
+    <thead>
+    <tr>
+        <th>Operatore</th>
+        <th>Num. Turni</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>...</tr>
+    </tbody>
+</table>
+
+<!-- Strict XHTML Footer -->
+<div class="footer">
+    <span>zerochiamate.com</span>
+</div>
+
+</body>
+</html>

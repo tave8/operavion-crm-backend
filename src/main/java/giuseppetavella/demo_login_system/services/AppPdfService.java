@@ -48,7 +48,23 @@ public class AppPdfService extends PdfService {
         );
 
     }
-    
+
+    public Pdf generateAdminDiscrepancyReport(Map<String, ? extends Object> vars) throws PdfGenerationException
+    {
+
+        // require that the vars passed have these keys
+        DataValidationHelper.requireMapContainsOnlyKeys(
+                vars,
+                List.of("discrepancyByClientAddress", "startDate", "endDate")
+        );
+
+        return new Pdf(
+                this.templateToPdf("business/admin_discrepancy_report", vars)
+        );
+
+    }
+
+
 
     public Pdf generateInvoice(Map<String, Object> vars) throws PdfGenerationException
     {
