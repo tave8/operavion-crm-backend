@@ -1,0 +1,1000 @@
+package giuseppetavella.zero_chiamate.domain.entities.shifts;
+
+import giuseppetavella.zero_chiamate.domain.entities.checklist_entries.dto.to_send.ChecklistEntryToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.checklists.dto.to_send.ChecklistToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
+import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.to_send.ClientAddressToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.contract_expectations.dto.to_send.ContractExpectationToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.shift_days.dto.to_send.ShiftDayToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.OperatorShiftAvailabilityToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.OperatorShiftConflictsToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
+import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
+import giuseppetavella.zero_chiamate.domain.entities.users.User;
+import giuseppetavella.zero_chiamate.domain.entities.checklists.Checklist;
+import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddress;
+import giuseppetavella.zero_chiamate.domain.entities.shift_days.ShiftDay;
+import giuseppetavella.zero_chiamate.domain.entities.shift_operators.ShiftOperator;
+import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
+import giuseppetavella.zero_chiamate.exceptions.ShiftException;
+import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
+import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.sent.NewShiftSentDTO;
+import giuseppetavella.zero_chiamate.domain.entities.shift_days.ShiftDaysRepository;
+import giuseppetavella.zero_chiamate.domain.entities.shift_operators.ShiftOperatorsRepository;
+import giuseppetavella.zero_chiamate.domain.entities.checklist_entries.ChecklistEntriesService;
+import giuseppetavella.zero_chiamate.domain.entities.checklists.ChecklistsService;
+import giuseppetavella.zero_chiamate.domain.entities.contract_expectations.ContractExpectationsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class ShiftsService {
+
+    @Autowired
+    private ShiftsRepository shiftsRepository;
+    
+    @Autowired
+    private ShiftDaysRepository shiftDaysRepository;
+    
+    @Autowired
+    private ShiftOperatorsRepository shiftOperatorsRepository;
+    
+    @Autowired
+    private ClientAddressesService clientAddressesService;
+    
+    @Autowired
+    private ChecklistsService checklistsService;
+    
+    @Autowired
+    private ChecklistEntriesService checklistEntriesService;
+    
+    @Autowired
+    private UsersService usersService;
+    
+    @Autowired
+    private ContractExpectationsService contractExpectationsService;
+    
+    // we use this when the filter's start date is missing
+    // because all shift's start date will be greater than this date,
+    // they will be included, which is what we want, when the 
+    // filter's stard date is missing
+    private static final LocalDate DEFAULT_DISTANT_PAST_DATE = LocalDate.of(1000, 1, 1);
+    
+    // this must be STRICTLY greater than the 
+    // default distant future date for the shift's end date
+    // why? because when a end date is missing in the filter,
+    // we mean "don't filter the shift's end date" 
+    // which means "the filter's end date must be > the shift's default end date"
+    // because the shift's default distant future date is 3000-01-01,
+    // this date will be therefore 3000-01-02
+    private static final LocalDate DEFAULT_DISTANT_FUTURE_DATE = LocalDate.of(3000, 1, 2);
+    
+    // time 00:00
+    // we use this when the filter's start time is missing
+    private static final LocalTime MIDNIGHT = LocalTime.MIDNIGHT;
+    
+    // before midnight means 23:59
+    // we use this as the default end time when the filter's end time is missing 
+    // because before midnight will always be > the 
+    // shift's end time, that shift be selected
+    private static final LocalTime BEFORE_MIDNIGHT = LocalTime.MIDNIGHT.minusMinutes(1);
+    
+    
+    
+
+    private static final Map<DayOfWeek, String> DAY_ABBR_IT = Map.of(
+            DayOfWeek.MONDAY,    "LUN",
+            DayOfWeek.TUESDAY,   "MAR",
+            DayOfWeek.WEDNESDAY, "MER",
+            DayOfWeek.THURSDAY,  "GIO",
+            DayOfWeek.FRIDAY,    "VEN",
+            DayOfWeek.SATURDAY,  "SAB",
+            DayOfWeek.SUNDAY,    "DOM"
+    );
+
+    private static final List<DayOfWeek> DAY_ORDER = List.of(
+            DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY
+    );
+
+
+    /**
+     * Find the shift-operator association,
+     * which means, the 
+     */
+    // public findShiftOperatorById()
+    // {
+    //    
+    // }
+    //
+
+    /**
+     * Shift -> Shift DTO
+     * 
+     * @return
+     */
+    public ShiftToSendDTO toShiftDTO(Shift shift) 
+    {
+
+        Checklist checklist = shift.getChecklist();
+        ClientAddress clientAddress = shift.getClientAddress();
+        
+        // find data
+        
+        List<ChecklistEntryToSendDTO> entriesDTO = this.checklistEntriesService.getEntriesByChecklistAsDTO(checklist);
+
+        List<ShiftDayToSendDTO> shiftDaysToSendDTO = this.findShiftDaysByShiftDTO(shift);
+        
+        List<ProfileToSendDTO> operatorsToSendDTO = this.findOperatorsByShiftDTO(shift);
+        
+        // instantiate DTO's
+
+        ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(clientAddress);
+        
+        ClientAddressToSendDTO clientAddressToSendDTO = new ClientAddressToSendDTO(clientAddress, contractExpectationToSendDTO);
+
+        ChecklistToSendDTO checklistToSendDTO = new ChecklistToSendDTO(checklist, entriesDTO);
+
+        /**
+         * A pre-defined shift name.
+         * in a format like "client - checklist - days - time"
+         * (not generated by user)
+         *
+         */
+        String clientName = shift.getClientAddress().getClient().getLegalName();
+        String clientAddressName = shift.getClientAddress().getAddressName();
+        String timeRange = shift.getStartTime() + "-" + shift.getEndTime();
+        List<DayOfWeek> daysOfWeek = shiftDaysToSendDTO.stream().map(shiftDay -> shiftDay.getDay()).toList();
+        String daysStr = this.formatDays(daysOfWeek);
+        
+        String shiftName = clientName + " - " + clientAddressName + " - " + daysStr + " - " + timeRange;
+        
+        return new ShiftToSendDTO(
+                shift,
+                shiftDaysToSendDTO,
+                clientAddressToSendDTO,
+                checklistToSendDTO,
+                shiftName,
+                operatorsToSendDTO
+        );
+        
+    }
+    
+    public List<ShiftToSendDTO> toShiftDTOs(List<Shift> shifts)
+    {
+        return shifts
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();
+    }
+
+
+    /**
+     * Assign an operator to a shift.
+     * Of course, they must both exist.
+     * Main method for assigning an operator to a shift.
+     * Call this, as it does the necessary checks.
+     * 
+     * @param operator
+     * @return
+     */
+    public ShiftOperator assignOperatorToShift(Company company,
+                                               User operator, 
+                                               Shift shift)
+    {
+        
+        if(operator.getId() == null) {
+            throw new ShiftException("While assigning operator to shift, "
+                                        +"operator's ID is null. The operator must be coming from DB.");
+        }
+        if(shift.getId()  == null) {
+            throw new ShiftException("While assigning operator to shift, "
+                                    +"shift's ID is null. The shift must be coming from DB.");
+        }
+        
+        AuthorizationHelper.requireSameCompany(company, operator.getCompany());
+        
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        // is this operator available?
+        // this.getOperatorAvailability(
+        //         operator,
+        //         shift.get
+        // );
+        
+        ShiftOperator shiftOperator = new ShiftOperator(shift, operator);
+        
+        return this.shiftOperatorsRepository.save(shiftOperator);
+        
+    }
+
+
+    public ShiftOperator assignOperatorToShift(Company company, 
+                                               UUID operatorId,
+                                               Shift shift)
+    {
+        User operator = this.usersService.findById(operatorId);
+        
+        return this.assignOperatorToShift(company, operator, shift);
+
+    }
+
+
+    public List<ShiftOperator> assignOperatorsToShift(Company company,
+                                                      List<UUID> operatorIds,
+                                                      Shift shift)
+    {
+        
+        List<ShiftOperator> shiftOperators = new ArrayList<>();
+
+        for(UUID operatorId : operatorIds) {
+            ShiftOperator shiftOperator = this.assignOperatorToShift(company, operatorId, shift);
+            shiftOperators.add(shiftOperator);
+        }
+        
+        return shiftOperators;
+    }
+    
+    
+    public List<Shift> findShiftsByClientAddressBetweenDates(ClientAddress clientAddress,
+                                                             LocalDate startDate,
+                                                             LocalDate endDate)
+    {
+        
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return shiftsRepository.findShiftsByClientAddressBetweenDates(
+                clientAddress,
+                newStartDate,
+                newEndDate
+        );
+        
+    }
+
+
+    public List<ShiftToSendDTO> findShiftsByClientAddressBetweenDatesDTO(ClientAddress clientAddress,
+                                                                         LocalDate startDate,
+                                                                         LocalDate endDate)
+    {
+        
+        return toShiftDTOs(
+                findShiftsByClientAddressBetweenDates(clientAddress, startDate, endDate)
+        );
+        
+    }
+    
+    
+
+    public List<Shift> findShiftsByOperatorBetweenDates(User operator,
+                                                        LocalDate startDate,
+                                                        LocalDate endDate)
+    {
+
+        AuthorizationHelper.requireUserOperator(operator);
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return this.shiftsRepository.findShiftsByOperatorBetweenDates(
+                operator,
+                newStartDate,
+                newEndDate
+        );
+    }
+
+    
+    
+    public OperatorShiftConflictsToSendDTO findOperatorConflicts(User operator,
+                                                                 LocalDate startDate,
+                                                                 LocalDate endDate,
+                                                                 LocalTime startTime,
+                                                                 LocalTime endTime,
+                                                                 List<DayOfWeek> days)
+    {
+        
+        List<Shift> conflictingShifts = this.findShiftsWithConflicts(
+                operator,
+                startDate,
+                endDate,
+                startTime,
+                endTime,
+                days
+        );
+        
+        List<ShiftToSendDTO> conflictingShiftsDTO = this.toShiftDTOs(conflictingShifts);
+        
+        boolean hasConflicts = !conflictingShifts.isEmpty();
+        
+        return new OperatorShiftConflictsToSendDTO(
+                hasConflicts,
+                conflictingShiftsDTO,
+                startDate,
+                endDate,
+                startTime,
+                endTime
+        );
+        
+    }
+    
+    
+    public List<Shift> findShiftsWithConflicts(User operator,
+                                                LocalDate startDate,
+                                                LocalDate endDate,
+                                                LocalTime startTime,
+                                                LocalTime endTime,
+                                                List<DayOfWeek> days)
+    {
+        AuthorizationHelper.requireUserOperator(operator);
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        LocalTime newStartTime = this.getStartTimeOrDefault(startTime);
+        LocalTime newEndTime = this.getEndTimeOrDefault(endTime);
+        
+        return this
+                .shiftsRepository
+                .findShiftsWithConflicts(
+                       operator,
+                       newStartDate,
+                       newEndDate,
+                       newStartTime,
+                       newEndTime, 
+                       days
+                );
+        
+    }
+
+
+    
+    
+    public List<ShiftToSendDTO> findShiftsByOperatorBetweenDatesDTO(User operator,
+                                                                    LocalDate startDate,
+                                                                    LocalDate endDate)
+    {
+        return this
+                .findShiftsByOperatorBetweenDates(operator, startDate, endDate)
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();
+    }
+    
+    
+    /**
+     * Find the shift days of the shift.
+     * 
+     * @param shift
+     * @return
+     */
+    public List<ShiftDay> findShiftDaysByShift(Shift shift)
+    {
+        return this.shiftDaysRepository.findByShift(shift);
+    }
+    
+    public List<ShiftDayToSendDTO> findShiftDaysByShiftDTO(Shift shift)
+    {
+        return this
+                .findShiftDaysByShift(shift)
+                .stream()
+                .map(ShiftDayToSendDTO::new)
+                .toList();
+    }
+
+    /**
+     * Find operators by shift.
+     * 
+     * @param shift
+     * @return
+     */
+    public List<User> findOperatorsByShift(Shift shift)
+    {
+        return this.shiftsRepository.findOperatorsByShift(shift);
+    }
+
+    public List<ProfileToSendDTO> findOperatorsByShiftDTO(Shift shift)
+    {
+        return this.findOperatorsByShift(shift)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
+
+
+
+    public List<User> findOperatorsWithShiftsBetweenDates(Company company,
+                                                         LocalDate startDate,
+                                                         LocalDate endDate)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+        
+        return this.shiftsRepository.findOperatorsWithShiftsBetweenDates(
+                company,
+                newStartDate,
+                newEndDate
+        );
+    }
+    
+
+    public List<ProfileToSendDTO> findOperatorsWithShiftsBetweenDatesDTO(Company company,
+                                                                    LocalDate startDate,
+                                                                    LocalDate endDate)
+    {
+        return this
+                .findOperatorsWithShiftsBetweenDates(company, startDate, endDate)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
+
+
+    public List<User> findOperatorsWithoutShiftsBetweenDates(Company company,
+                                                             LocalDate startDate,
+                                                             LocalDate endDate)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return this.shiftsRepository.findOperatorsWithoutShiftsBetweenDates(
+                company,
+                newStartDate,
+                newEndDate
+        );
+    }
+
+
+    public List<ProfileToSendDTO> findOperatorsWithoutShiftsBetweenDatesDTO(Company company,
+                                                                    LocalDate startDate,
+                                                                    LocalDate endDate)
+    {
+        return this
+                .findOperatorsWithoutShiftsBetweenDates(company, startDate, endDate)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
+
+    
+
+
+    public List<User> findOperatorsByClientAddressBetweenDates(ClientAddress clientAddress,
+                                                                 LocalDate startDate,
+                                                                 LocalDate endDate)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return this.shiftsRepository.findOperatorsByClientAddressBetweenDates(
+                clientAddress,
+                newStartDate,
+                newEndDate
+        );
+    }
+
+
+    public List<ProfileToSendDTO> findOperatorsByClientAddressBetweenDatesDTO(ClientAddress clientAddress,
+                                                                              LocalDate startDate,
+                                                                              LocalDate endDate)
+    {
+        return this
+                .findOperatorsByClientAddressBetweenDates(clientAddress, startDate, endDate)
+                .stream()
+                .map(operator -> new ProfileToSendDTO(operator))
+                .toList();
+    }
+
+
+    /**
+     * Is the operator available at the given date,
+     * between the given time range?
+     * 
+     * @return
+     */
+    // public boolean isOperatorAvailable(User operator,
+    //                                    LocalDate inDate,
+    //                                    LocalTime startTime,
+    //                                    LocalTime endTime)
+    // {
+    //    
+    // }
+    //
+    //
+    // public boolean isOperatorAvailable(User operator,
+    //                                    LocalDate inDate)
+    // {
+    //    
+    // }
+    
+    
+    
+    
+    
+    /**
+     * Get the operator availability, in the given date, 
+     * between a time range.
+     * 
+     */
+    public OperatorShiftAvailabilityToSendDTO getOperatorAvailability(User operator,
+                                                                      LocalDate inDate,
+                                                                      LocalTime startTime,
+                                                                      LocalTime endTime)
+    {
+
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
+        if(inDate == null) { 
+            throw new ShiftException("When searching if operator is busy on a date, "
+                                     +"the date cannot be null.");
+        }
+        
+        
+        // the week day of the input inDate
+        // we extract it here because we don't want to mess with SQL or JPQL quirks
+        // we just get the week day here and pass it explicitly
+        DayOfWeek dayOfDate = inDate.getDayOfWeek();
+
+        List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
+                operator,
+                inDate,
+                startTime,
+                endTime
+        );
+        
+        
+        // find the shifts with the given filters, as if you were 
+        // normally searching for the shifts of this operator 
+        // List<Shift> shifts = this.findShiftsByOperatorInDateBetweenTimes(
+        //         operator, 
+        //         inDate, 
+        //         startTime, 
+        //         endTime
+        // );
+        
+        
+        // if there are no shifts matching the input filters, 
+        // then the operator is not busy, thus it's available
+        if(shifts.isEmpty()) {
+            
+            return new OperatorShiftAvailabilityToSendDTO(
+                    true,
+                    List.of(),
+                    inDate
+            );
+            
+        }
+        
+        // if at least a matching shift exists, we check
+        // whether the weekday of the input date matches 
+        // the weekday of ANY of the weekdays in ANY of the matching shifts  
+        
+        
+        // we get all info about each shift, by turning it into a DTO
+        // this will give us the checklist, the client address, 
+        // days, operators etc. for each shift
+        // we need the days
+        List<ShiftToSendDTO> shiftsDTO = shifts
+                                            .stream()
+                                            .map(this::toShiftDTO)
+                                            .toList(); 
+        
+        
+        // busyiness is defined as the presence of 1+ matching shifts 
+        // AND the weekday of the input date being present in any of the weekdays
+        // of any of these matching shifts
+        boolean isBusy = this.isDayIncludedInShifts(shiftsDTO, dayOfDate);
+        
+
+        /**
+         * We choose not to send shifts, if the operator is busy.
+         * Even though busy might mean "busy because of date & time overlap"
+         * or "days of shift include input date".
+         * Thus, we only show shifts, if the operator is truly busy.
+         */
+
+        if(isBusy) {
+            return new OperatorShiftAvailabilityToSendDTO(
+                    false,
+                    // we send shifts only if operator is busy
+                    shiftsDTO,
+                    inDate
+            );
+        }
+        
+        return new OperatorShiftAvailabilityToSendDTO(
+                true,
+                // if operator is available, we don't send shifts,
+                // so we don't differentiate the reasons "busy because of date & time overlap"
+                // or "busy because operator has a shift at this day, but the shift's days do not include"
+                // the input date"
+                List.of(),
+                inDate
+        );
+        
+    }
+
+
+    public OperatorShiftAvailabilityToSendDTO getOperatorAvailability(User operator,
+                                                                      LocalDate inDate)
+    {
+        return this.getOperatorAvailability(
+                operator, 
+                inDate, 
+                null, 
+                null
+        );
+    }
+    
+    
+    /**
+     * Does any of these shifts contains the input weekday?
+     * In other words: is it true that the input weekday is a day 
+     * included in any of these shifts?
+     * 
+     * @return
+     */
+    public boolean isDayIncludedInShifts(List<ShiftToSendDTO> shiftsDTO, 
+                                        DayOfWeek day)
+    {
+        return shiftsDTO
+                .stream()
+                .anyMatch(shiftDTO -> {
+                    // the match exists, and thus the input date's weekday exists,
+                    // if this weekday is contained in any of the weekdays 
+                    // of any of the matching shifts' weekdays 
+                    return shiftDTO
+                            .getDays()
+                            .stream()
+                            .map(sd -> sd.getDay())
+                            .toList()
+                            .contains(day);
+                });
+    }
+    
+
+    /**
+     * Add a shift.
+     * 
+     * @param company
+     * @param body
+     * @return
+     */
+    @Transactional
+    public ShiftToSendDTO addShift(Company company, NewShiftSentDTO body) 
+    {
+        
+        ClientAddress clientAddressFromDB = this.clientAddressesService.findById(body.clientAddressId());
+        
+        Checklist checklistFromDB = this.checklistsService.findById(body.checklistId());
+        
+        // check that client address and checklist belong to the same company 
+        // that is trying to add the shift
+        AuthorizationHelper.requireSameCompany(company, clientAddressFromDB.getClient().getCompany());
+        
+        AuthorizationHelper.requireSameCompany(company, checklistFromDB.getCompany());
+        
+       
+        Shift newShift = new Shift(
+                clientAddressFromDB,
+                checklistFromDB,
+                body.startDate(),
+                body.endDate(),
+                body.startTime(),
+                body.endTime()
+        );
+        
+        // save the shift in DB
+        Shift shiftFromDB = this.shiftsRepository.save(newShift);
+        
+        // save the 
+        List<ShiftOperator> shiftOperators = this.assignOperatorsToShift(
+                company,
+                body.operatorIds(),
+                shiftFromDB
+        );
+        
+        // save the days of the shift in DB
+        
+        // but first, map the days to a ShiftDay non-managed instance
+        List<ShiftDay> shiftDays = body.days()
+                                    .stream()
+                                    .map(day -> new ShiftDay(shiftFromDB, day))
+                                    .toList();
+        
+        // save shift days
+        this.shiftDaysRepository.saveAll(shiftDays);
+        
+        return this.toShiftDTO(shiftFromDB);
+        
+    }
+
+
+
+
+    
+    /**
+     * Find shifts between dates.
+     */
+    public List<Shift> findShiftsBetween(Company company, 
+                                         LocalDate startDate, 
+                                         LocalDate endDate) 
+    {
+        DataValidationHelper.requireValidRange(startDate, endDate);
+        
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+        
+        return shiftsRepository.findShiftsByCompanyBetweenDates(
+                company,
+                newStartDate,
+                newEndDate
+        );
+    }
+    
+
+    public List<ShiftToSendDTO> findShiftsBetweenDTO(Company company, 
+                                                     LocalDate startDate, 
+                                                     LocalDate endDate) 
+    {
+        return this
+                .findShiftsBetween(company, startDate, endDate)
+                .stream()
+                .map(this::toShiftDTO)
+                .toList();   
+    }
+
+    
+    /**
+     * Find the shifts of an operator, in a date, in a time range.
+     * 
+     * @return
+     */
+    public List<Shift> findShiftsByOperatorInDateBetweenTimes(User operator,
+                                                            LocalDate inDate,
+                                                            LocalTime startTime,
+                                                            LocalTime endTime)
+    {
+
+        AuthorizationHelper.requireUserOperator(operator);
+        
+        DataValidationHelper.requireValidRange(startTime, endTime);
+        
+        if(inDate == null) {
+            throw new ShiftException("inDate cannot be null, but startTime and endTime can be null.");
+        }
+        
+        LocalTime newStartTime = this.getStartTimeOrDefault(startTime);
+        LocalTime newEndTime = this.getEndTimeOrDefault(endTime);
+        
+        return this.shiftsRepository.findShiftsByOperatorInDateBetweenTimes(
+                operator,
+                inDate,
+                newStartTime,
+                newEndTime
+        );
+    }
+
+    
+    /**
+     * Count shifts by grouping them by all operators in the company.
+     * 
+     * operator : number of shifts in the given period
+     * 
+     * @return
+     */
+    public Map<User, Integer> countShiftsByOperator(Company company,
+                                                    LocalDate startDate,
+                                                    LocalDate endDate)
+    {
+
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        List<Object[]> results = this.shiftsRepository.countShiftsByOperator(company, newStartDate, newEndDate);
+
+        Map<User, Integer> userCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        // 1. KEY MAPPER
+                        // Extracts the first element of the Object array from the JPQL result.
+                        // Since JPQL handles the ORM conversion, this can be safely cast directly to a User entity.
+                        row -> (User) row[0],
+
+                        // 2. VALUE MAPPER
+                        // Extracts the second element of the array (the query aggregate count).
+                        // JPQL's COUNT() function returns a Long, so we convert it to a primitive int.
+                        row -> ((Long) row[1]).intValue(),
+
+                        // 3. MERGE FUNCTION
+                        // This resolves conflicts if the stream processes two different elements that evaluate
+                        // to the exact same 'User' key. Here, '(existing, replacement) -> existing' tells 
+                        // Java to keep the very first entry it encountered and discard any subsequent duplicates.
+                        (existing, replacement) -> existing,
+
+                        // 4. MAP SUPPLIER
+                        // By default, Collectors.toMap instantiates a plain HashMap, which destroys sorting order.
+                        // Passing 'LinkedHashMap::new' forces the collector to construct a LinkedHashMap instead.
+                        // This maintains a doubly-linked list running through its entries, strictly preserving 
+                        // the insertion order originally established by your JPQL 'ORDER BY' clause.
+                        LinkedHashMap::new
+                ));
+        
+        return userCountMap;
+        
+    }
+
+
+    /**
+     * Is the operator in a shift?
+     * Does the operator have a shift assigned?
+     */
+    public boolean isOperatorInShiftInDateBetweenTimes(User operator,
+                                                       LocalDate inDate,
+                                                       LocalTime startTime,
+                                                       LocalTime endTime)
+    {
+        
+        List<Shift> currentShifts = this.findShiftsByOperatorInDateBetweenTimes(
+                operator,
+                inDate, 
+                startTime,
+                endTime
+        );
+        
+        // the operator is said to be in a shift, if there
+        // exists at least a shift for that date, 
+        // in the given time range
+        return !currentShifts.isEmpty();
+        
+    }
+
+
+    /**
+     * Stringify a list of shifts.
+     * This might be fed into a AI prompt.
+     * 
+     * Shifts string will look like this:
+     * <pre>
+     *     
+     * --------
+     * WEDNESDAY
+     * 2026-05-12 - null
+     * 06:00 - 06:00
+     * --------
+     * WEDNESDAY,THURSDAY,FRIDAY,SATURDAY
+     * 2026-05-19 - null
+     * 06:00 - 06:00
+     * --------
+     *     
+     * </pre>
+     */
+    public String stringifyShifts(List<ShiftToSendDTO> shifts)
+    {
+        
+        StringBuilder s = new StringBuilder();
+        // start 
+        s.append("--------").append("\n");
+        
+        shifts.forEach(shift -> {
+            
+            String days = shift
+                            .getDays()
+                            .stream()
+                            .map(day -> day.getDay().name())
+                            .collect(Collectors.joining(","));
+            
+            s.append(days).append("\n")
+              .append(shift.getStartDate()).append(" - ").append(shift.getEndDate()).append("\n")
+              .append(shift.getStartTime()).append(" - ").append(shift.getEndTime()).append("\n")
+              .append("--------").append("\n");
+            
+        });
+        
+        return s.toString();
+    }
+
+
+    /**
+     * Use when a missing startDate is allowed.
+     */
+    public LocalDate getStartDateOrDefault(LocalDate startDate) {
+        if(startDate == null) {
+            return DEFAULT_DISTANT_PAST_DATE;
+        }
+        return startDate;
+    }
+    
+    /**
+     * Use when a missing endDate is allowed.
+     */
+    public LocalDate getEndDateOrDefault(LocalDate endDate) {
+        if(endDate == null) {
+            return DEFAULT_DISTANT_FUTURE_DATE;
+        }
+        return endDate;
+    }
+
+    /**
+     * Use when a missing startTime is allowed.
+     */
+    public LocalTime getStartTimeOrDefault(LocalTime startTime) {
+        if(startTime == null) {
+            return MIDNIGHT;
+        }
+        return startTime;
+    }
+
+    /**
+     * Use when a missing endTime is allowed.
+     */
+    public LocalTime getEndTimeOrDefault(LocalTime endTime) {
+        if(endTime == null) {
+            return BEFORE_MIDNIGHT;
+        }
+        return endTime;
+    }
+    
+
+    private String formatDays(List<DayOfWeek> days) {
+
+        // sort by week order
+        List<DayOfWeek> sorted = days.stream()
+                .sorted(Comparator.comparingInt(DAY_ORDER::indexOf))
+                .toList();
+
+        List<String> groups = new ArrayList<>();
+        int i = 0;
+
+        while (i < sorted.size()) {
+            int start = i;
+
+            // find end of consecutive sequence
+            while (i + 1 < sorted.size() &&
+                    DAY_ORDER.indexOf(sorted.get(i + 1)) == DAY_ORDER.indexOf(sorted.get(i)) + 1) {
+                i++;
+            }
+
+            if (start == i) {
+                // single day
+                groups.add(DAY_ABBR_IT.get(sorted.get(start)));
+            } else {
+                // consecutive range
+                groups.add(DAY_ABBR_IT.get(sorted.get(start)) + "-" + DAY_ABBR_IT.get(sorted.get(i)));
+            }
+
+            i++;
+        }
+
+        return String.join(", ", groups);
+    }
+    
+    
+}

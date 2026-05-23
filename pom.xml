@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>giuseppetavella</groupId>
-	<artifactId>operavion-crm-backend</artifactId>
+	<artifactId>zerochiamate-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>

@@ -1,0 +1,10 @@
+package giuseppetavella.zero_chiamate.domain.entities.notifications;
+
+public enum NotificationType {
+    EXPIRING_EMPLOYEE_CONTRACT,
+    TOMORROW_SHIFT,
+    OPERATOR_HAS_NO_SHIFT,
+    CONTRACT_PROCESSING_SUCCESS,
+    CONTRACT_PROCESSING_FAILED,
+    DISCREPANCY_REPORT_GENERATION_SUCCESS
+}
