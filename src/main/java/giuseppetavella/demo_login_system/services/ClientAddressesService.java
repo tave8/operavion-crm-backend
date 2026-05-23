@@ -55,6 +55,26 @@ public class ClientAddressesService {
     }
 
     /**
+     * Client addresses -> client address DTOs
+     *
+     * @return
+     */
+    public List<ClientAddressToSendDTO> toClientAddressDTOs(List<ClientAddress> clientAddresses)
+    {
+        
+        return clientAddresses
+                .stream()
+                .map(ca -> {
+                    ContractExpectationToSendDTO contractExpectationToSendDTO = this.contractExpectationsService.findByClientAddressDTO(ca);
+                    return new ClientAddressToSendDTO(
+                            ca,
+                            contractExpectationToSendDTO
+                    );
+                }).toList();
+
+    }
+
+    /**
      * Find client address by ID.
      */
     public ClientAddress findById(UUID clientAddressId) throws NotFoundException {
@@ -117,6 +137,20 @@ public class ClientAddressesService {
         return clientAddressFromDB;
         
     }
+
+
+    /**
+     * Find all client address of company.
+     * 
+     * @return
+     */
+    public List<ClientAddressToSendDTO> findAllClientAddressesByCompany(Company company)
+    {
+        return toClientAddressDTOs(
+                clientAddressesRepository.findAllClientAddressesByCompany(company)
+        );
+    }
+    
 
     /**
      * Get client addresses of company.

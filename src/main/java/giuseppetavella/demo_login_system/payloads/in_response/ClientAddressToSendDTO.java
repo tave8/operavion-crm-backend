@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.payloads.in_response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
 
 import java.util.UUID;
@@ -14,6 +15,11 @@ public class ClientAddressToSendDTO {
     private final double addressLat;
     private final double addressLon;
     private final ContractExpectationToSendDTO contractExpectation;
+    
+    // this field will be ignored both on read and on write,
+    // but i need it internally in memory
+    @JsonIgnore
+    private final ClientAddress clientAddress;
 
     public ClientAddressToSendDTO(ClientAddress clientAddress, 
                                   ContractExpectationToSendDTO contractExpectation) 
@@ -27,6 +33,10 @@ public class ClientAddressToSendDTO {
         this.addressLat = clientAddress.getAddress().getLat();
         this.addressLon = clientAddress.getAddress().getLon();
         this.contractExpectation = contractExpectation;
+        
+        // note: this attribute will be ignored both on read and write,
+        // it is used only for internal purposes
+        this.clientAddress = clientAddress;
     }
 
     public UUID getAddressId() {
@@ -63,5 +73,9 @@ public class ClientAddressToSendDTO {
 
     public UUID getClientId() {
         return clientId;
+    }
+
+    public ClientAddress getClientAddress() {
+        return clientAddress;
     }
 }

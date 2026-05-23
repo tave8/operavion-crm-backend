@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -41,7 +42,26 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
     );
 
 
+    /**
+     * 
+     * @param company
+     * @return
+     */
+    @Query("""
+        
+        SELECT
+            ca
+        FROM
+            ClientAddress ca
+        WHERE
+            ca.client.company = :company
+                
+    """)
+    List<ClientAddress> findAllClientAddressesByCompany(
+        Company company      
+    );
 
+    
     /**
      * Find addresses of the given client.
      * 

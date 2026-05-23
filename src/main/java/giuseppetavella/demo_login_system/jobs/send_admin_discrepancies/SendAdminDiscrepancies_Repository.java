@@ -24,7 +24,7 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
      * STATEMENT                    |    IS NEXT ITEM?
      * -----------------------------------------------
      * admin was never processed          YES
-     * by this job
+     * by this job 
      * ------------------------------------------------
      * admin has been processed           NO
      * by this job this week 

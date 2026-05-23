@@ -64,6 +64,8 @@ public class JobScheduler {
     @Scheduled(cron = "*/10 * * * * *")
     public void sendAdminDiscrepancies() {
 
+        // System.out.println("JOB SEND ADMIN DISCREPANCIES WAS CALLED");
+        
         // this.jobManager.executeJob(JobName.SEND_ADMIN_DISCREPANCIES);
 
         // this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);

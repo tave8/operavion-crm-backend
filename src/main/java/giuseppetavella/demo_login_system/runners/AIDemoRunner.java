@@ -69,6 +69,10 @@ public class AIDemoRunner implements CommandLineRunner {
         // }
         
         
+        
+        
+        
+        
         // List<ShiftToSendDTO> shiftsDTO = shiftsService.findShiftsBy
         
         // String contractExpectations = "Lunedì, Mercoledì, Venerdì, fascia oraria 18:30-21:30 (uffici svuotati) | Dal Lunedì al Venerdì, cadenza giornaliera, sanificazione servizi igienici e aree comuni | Aprile e Ottobre, cadenza semestrale, lavaggio moquette e sedute in tessuto (preavviso 10 giorni) | Frequenza quadrimestrale, lavaggio vetrate interne ed esterne ad alta quota\n";
