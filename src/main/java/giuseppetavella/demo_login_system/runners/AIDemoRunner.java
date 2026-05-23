@@ -1,25 +1,19 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
-import giuseppetavella.demo_login_system.payloads.in_response.ClientAddressToSendDTO;
-import giuseppetavella.demo_login_system.payloads.in_response.ShiftToSendDTO;
-import giuseppetavella.demo_login_system.services.AppAIService;
-import giuseppetavella.demo_login_system.services.AppPdfService;
-import giuseppetavella.demo_login_system.services.ClientAddressesService;
-import giuseppetavella.demo_login_system.services.ShiftsService;
+import giuseppetavella.demo_login_system.integrations.AppAnthropicAPIService;
+import giuseppetavella.demo_login_system.infrastructure.pdf.AppPdfService;
+import giuseppetavella.demo_login_system.domain.entities.client_addresses.ClientAddressesService;
+import giuseppetavella.demo_login_system.domain.entities.shifts.ShiftsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Component
 public class AIDemoRunner implements CommandLineRunner {
     
     @Autowired
-    private AppAIService appAIService;
+    private AppAnthropicAPIService appAIService;
     
     @Autowired
     private AppPdfService appPdfGenerationService;

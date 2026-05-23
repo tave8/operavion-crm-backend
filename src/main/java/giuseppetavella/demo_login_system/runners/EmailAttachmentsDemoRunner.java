@@ -1,8 +1,8 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.services.AppEmailService;
-import giuseppetavella.demo_login_system.services.AppPdfService;
-import giuseppetavella.demo_login_system.services.base.EmailService;
+import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
+import giuseppetavella.demo_login_system.infrastructure.pdf.AppPdfService;
+import giuseppetavella.demo_login_system.infrastructure.email.BaseEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 public class EmailAttachmentsDemoRunner implements CommandLineRunner {
 
     @Autowired
-    private EmailService emailService;
+    private BaseEmailService baseEmailService;
 
     @Autowired
-    private AppEmailService appEmailService;
+    private EmailService appEmailService;
 
     @Autowired
     private AppPdfService appPdfGenerationService;

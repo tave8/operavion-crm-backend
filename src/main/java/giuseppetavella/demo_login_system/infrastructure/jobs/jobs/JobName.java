@@ -1,0 +1,15 @@
+package giuseppetavella.demo_login_system.infrastructure.jobs.jobs;
+
+/**
+ * All possible jobs.
+ */
+public enum JobName {
+    SEND_EMAIL_TO_USERS_WHO_SIGNEDUP_TODAY,
+    SEND_ME_INVOICE_REPORT,
+    EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE,
+    CREATE_ME_ARTICLES,
+    EMAIL_OPERATOR_TOMORROW_SHIFT,
+    NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT,
+    SEND_ADMIN_WEEKLY_REPORT,
+    SEND_ADMIN_DISCREPANCIES
+}

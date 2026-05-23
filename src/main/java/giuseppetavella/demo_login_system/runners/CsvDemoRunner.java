@@ -1,6 +1,7 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.services.*;
+import giuseppetavella.demo_login_system.infrastructure.csv.AppCsvService;
+import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ public class CsvDemoRunner implements CommandLineRunner {
     private AppCsvService appCsvGenerationService;
     
     @Autowired
-    private AppEmailService appEmailService;
+    private EmailService appEmailService;
     
 
     @Override

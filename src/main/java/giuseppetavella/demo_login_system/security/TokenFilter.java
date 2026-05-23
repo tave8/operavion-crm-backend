@@ -1,10 +1,10 @@
 package giuseppetavella.demo_login_system.security;
 
-import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
-import giuseppetavella.demo_login_system.payloads.in_response.ErrorsToSendDTO;
-import giuseppetavella.demo_login_system.services.UsersService;
+import giuseppetavella.demo_login_system.exceptions.ErrorsToSendDTO;
+import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

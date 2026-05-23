@@ -1,7 +1,5 @@
 package giuseppetavella.demo_login_system.helpers;
 
-import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
-import giuseppetavella.demo_login_system.exceptions.ContractExpectationException;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 import giuseppetavella.demo_login_system.exceptions.InvalidStateTransitionException;
 

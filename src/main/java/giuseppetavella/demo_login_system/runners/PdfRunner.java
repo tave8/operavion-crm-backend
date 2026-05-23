@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.services.base.PdfService;
+import giuseppetavella.demo_login_system.infrastructure.pdf.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

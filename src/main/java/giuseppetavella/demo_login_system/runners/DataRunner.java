@@ -1,24 +1,12 @@
 package giuseppetavella.demo_login_system.runners;
 
 
-import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.enums.internal.ContractExpectationState;
-import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
-import giuseppetavella.demo_login_system.repositories.ShiftsRepository;
-import giuseppetavella.demo_login_system.services.ArticlesService;
-import giuseppetavella.demo_login_system.services.CompaniesService;
-import giuseppetavella.demo_login_system.services.ShiftsService;
-import giuseppetavella.demo_login_system.services.UsersService;
+import giuseppetavella.demo_login_system.domain.entities.companies.CompaniesService;
+import giuseppetavella.demo_login_system.domain.entities.shifts.ShiftsService;
+import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class DataRunner implements CommandLineRunner {
@@ -26,8 +14,6 @@ public class DataRunner implements CommandLineRunner {
     @Autowired
     private UsersService usersService;
     
-    @Autowired
-    private ArticlesService articlesService;
     
     @Autowired
     private ShiftsService shiftsService;

@@ -1,19 +1,16 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.services.CompaniesService;
-import giuseppetavella.demo_login_system.services.SeedDataService;
+import giuseppetavella.demo_login_system.domain.entities.companies.CompaniesService;
+import giuseppetavella.demo_login_system.domain.business.auth.SeedDataOnSignupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class SeedDataDemoRunner implements CommandLineRunner {
     
     @Autowired
-    private SeedDataService seedDataService;
+    private SeedDataOnSignupService seedDataOnSignupService;
     
     @Autowired
     private CompaniesService companiesService;

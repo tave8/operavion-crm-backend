@@ -1,32 +1,24 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.dto.ClientAddressDiscrepancyDTO;
-import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.entities.clients.Client;
-import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
-import giuseppetavella.demo_login_system.models.template_models.AdminWeeklyReportTemplateModel;
-import giuseppetavella.demo_login_system.services.*;
-import giuseppetavella.demo_login_system.services.base.EmailService;
+import giuseppetavella.demo_login_system.domain.entities.client_addresses.ClientAddressesService;
+import giuseppetavella.demo_login_system.domain.entities.companies.CompaniesService;
+import giuseppetavella.demo_login_system.domain.entities.shifts.ShiftsService;
+import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
+import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
+import giuseppetavella.demo_login_system.infrastructure.pdf.AppPdfService;
+import giuseppetavella.demo_login_system.infrastructure.email.BaseEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class EmailTestRunner implements CommandLineRunner {
     
     @Autowired
-    private EmailService emailService;
+    private BaseEmailService baseEmailService;
     
     @Autowired
-    private AppEmailService appEmailService;
+    private EmailService appEmailService;
     
     @Autowired
     private AppPdfService appPdfGenerationService;

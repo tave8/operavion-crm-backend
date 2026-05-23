@@ -1,7 +1,7 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.job_library.JobExecutionService;
-import giuseppetavella.demo_login_system.job_library.JobManager;
+import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutionService;
+import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,5 @@
 package giuseppetavella.demo_login_system.exceptions;
 
-import giuseppetavella.demo_login_system.payloads.in_response.ErrorsToSendDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;

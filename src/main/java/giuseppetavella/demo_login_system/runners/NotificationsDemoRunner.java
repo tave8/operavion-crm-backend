@@ -1,10 +1,7 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.entities.Notification;
-import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.enums.NotificationType;
-import giuseppetavella.demo_login_system.services.NotificationsService;
-import giuseppetavella.demo_login_system.services.UsersService;
+import giuseppetavella.demo_login_system.domain.entities.notifications.NotificationsService;
+import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.helpers;
 
-import giuseppetavella.demo_login_system.enums.internal.Language;
+import giuseppetavella.demo_login_system.infrastructure.Language;
 
 public class LanguageHelper {
 

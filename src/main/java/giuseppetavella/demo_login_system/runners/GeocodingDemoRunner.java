@@ -1,23 +1,19 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.api_payloads.in_response.GeoapifyJsonSentDTO;
-import giuseppetavella.demo_login_system.services.AppGeocodingService;
-import giuseppetavella.demo_login_system.services.base.GeocodingService;
+import giuseppetavella.demo_login_system.infrastructure.geocoding.GeocodingService;
+import giuseppetavella.demo_login_system.integrations.geoapify.GeoapifyAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 public class GeocodingDemoRunner implements CommandLineRunner {
     
     @Autowired
-    private AppGeocodingService appGeocodingService;
+    private GeocodingService appGeocodingService;
     
     @Autowired
-    private GeocodingService geocodingService;
+    private GeoapifyAPIService geoapifyAPIService;
     
     @Override
     public void run(String... args) throws Exception {

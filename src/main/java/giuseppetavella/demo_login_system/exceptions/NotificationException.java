@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.exceptions;
 
-import giuseppetavella.demo_login_system.entities.Notification;
+import giuseppetavella.demo_login_system.domain.entities.notifications.Notification;
 
 public class NotificationException extends RuntimeException {
     public NotificationException(String details) {

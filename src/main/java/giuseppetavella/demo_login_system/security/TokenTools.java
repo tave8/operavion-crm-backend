@@ -1,6 +1,6 @@
 package giuseppetavella.demo_login_system.security;
 
-import giuseppetavella.demo_login_system.entities.User;
+import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

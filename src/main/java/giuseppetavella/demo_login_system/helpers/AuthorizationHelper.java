@@ -1,8 +1,8 @@
 package giuseppetavella.demo_login_system.helpers;
 
-import giuseppetavella.demo_login_system.entities.Company;
-import giuseppetavella.demo_login_system.entities.User;
-import giuseppetavella.demo_login_system.enums.UserRole;
+import giuseppetavella.demo_login_system.domain.entities.companies.Company;
+import giuseppetavella.demo_login_system.domain.entities.users.User;
+import giuseppetavella.demo_login_system.domain.entities.users.UserRole;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataFormatException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
 
