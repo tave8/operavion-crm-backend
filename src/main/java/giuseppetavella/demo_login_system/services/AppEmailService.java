@@ -231,7 +231,7 @@ public class AppEmailService extends EmailService {
         // generate the pdf 
         Pdf pdf = this.appPdfService.generateAdminDiscrepancyReport(newPdfVars);
         String pdfAttachment = pdf.toAttachment();
-        String pdfAttachmentName = "report_discrepanze.pdf";
+        String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate + ".pdf";
 
         EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
 
@@ -248,7 +248,7 @@ public class AppEmailService extends EmailService {
         // the html template for the email, this will be filled
         String emailTemplate = "emails/admin_discrepancy_report";
         // the email subject
-        String emailSubject = "Report discrepanze settimanale";
+        String emailSubject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
 
 
         // right before sending email, make sure you didn't forget

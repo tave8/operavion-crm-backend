@@ -55,6 +55,9 @@ public interface ClientAddressesRepository extends JpaRepository<ClientAddress, 
             ClientAddress ca
         WHERE
             ca.client.company = :company
+        ORDER BY
+            ca.client.legalName,
+            ca.addressName
                 
     """)
     List<ClientAddress> findAllClientAddressesByCompany(
