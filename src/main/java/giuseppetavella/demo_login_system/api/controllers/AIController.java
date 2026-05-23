@@ -2,8 +2,8 @@ package giuseppetavella.demo_login_system.api.controllers;
 
 import giuseppetavella.demo_login_system.infrastructure.CvDataModel;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
-import giuseppetavella.demo_login_system.integrations.AppAnthropicAPIService;
 import giuseppetavella.demo_login_system.infrastructure.email.BaseEmailService;
+import giuseppetavella.demo_login_system.domain.business.cv_extraction.CvExtractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AIController {
     
     @Autowired
-    private AppAnthropicAPIService appAIService;
+    private CvExtractionService cvExtractionService;
     
     @Autowired
     private BaseEmailService baseEmailService;
@@ -37,7 +37,7 @@ public class AIController {
         //         new EmailAttachment(file, "uploaded_file.pdf")
         // );
         
-        return this.appAIService.extractCv(file);
+        return cvExtractionService.extractCv(file);
         
     }
     

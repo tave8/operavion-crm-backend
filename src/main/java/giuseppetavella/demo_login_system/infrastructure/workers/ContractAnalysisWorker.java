@@ -10,7 +10,7 @@ import giuseppetavella.demo_login_system.domain.entities.notifications.Notificat
 import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.domain.entities.client_addresses.ClientAddress;
 import giuseppetavella.demo_login_system.domain.entities.notifications.NotificationType;
-import giuseppetavella.demo_login_system.integrations.AppAnthropicAPIService;
+import giuseppetavella.demo_login_system.domain.business.contract_discrepancy.ContractDiscrepancyDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class ContractAnalysisWorker {
     private ContractExpectationsService contractExpectationsService;
     
     @Autowired
-    private AppAnthropicAPIService appAIService;
+    private ContractDiscrepancyDetectionService contractDiscrepancyDetectionService;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -59,7 +59,7 @@ public class ContractAnalysisWorker {
         try {
 
             // process contract with AI
-            String extractedText = this.appAIService.extractContractExpectations(contractPdf);
+            String extractedText = contractDiscrepancyDetectionService.extractContractExpectations(contractPdf);
 
             // save contract expectation as success, with extracted text 
             this.contractExpectationsService.success(

@@ -1,9 +1,9 @@
 package giuseppetavella.demo_login_system.runners;
 
-import giuseppetavella.demo_login_system.integrations.AppAnthropicAPIService;
 import giuseppetavella.demo_login_system.infrastructure.pdf.AppPdfService;
 import giuseppetavella.demo_login_system.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.demo_login_system.domain.entities.shifts.ShiftsService;
+import giuseppetavella.demo_login_system.domain.business.contract_discrepancy.ContractDiscrepancyDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import tools.jackson.databind.ObjectMapper;
 public class AIDemoRunner implements CommandLineRunner {
     
     @Autowired
-    private AppAnthropicAPIService appAIService;
+    private ContractDiscrepancyDetectionService contractDiscrepancyDetectionService;
     
     @Autowired
     private AppPdfService appPdfGenerationService;

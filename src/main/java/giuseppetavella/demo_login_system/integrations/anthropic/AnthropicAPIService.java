@@ -82,7 +82,7 @@ public class AnthropicAPIService {
     /**
      * Send a PDF and a prompt, get a text response.
      */
-    public String askWithPdf(byte[] pdfBytes, String prompt) throws AIException 
+    public String askWithPdf(String prompt, byte[] pdfBytes) throws AIException 
     {
         
         // require file to be a pdf
