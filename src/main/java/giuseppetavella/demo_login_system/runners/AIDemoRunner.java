@@ -35,8 +35,6 @@ public class AIDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        // TODO: find shifts by client address between date range
-        
         // ClientAddress clientAddress = clientAddressesService.findById("03dd36c2-68f2-41ac-859d-47e8ba9923bc");
         // ClientAddressToSendDTO clientAddressToSendDTO = clientAddressesService.toClientAddressDTO(clientAddress);
         //
