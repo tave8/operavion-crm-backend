@@ -2,9 +2,12 @@ package giuseppetavella.demo_login_system.jobs.send_admin_discrepancies;
 
 import giuseppetavella.demo_login_system.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.demo_login_system.entities.Company;
+import giuseppetavella.demo_login_system.entities.Notification;
 import giuseppetavella.demo_login_system.entities.User;
 import giuseppetavella.demo_login_system.entities.clients.ClientAddress;
+import giuseppetavella.demo_login_system.enums.NotificationType;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
+import giuseppetavella.demo_login_system.helpers.TimeHelper;
 import giuseppetavella.demo_login_system.job_library.JobExecutionItem;
 import giuseppetavella.demo_login_system.job_library.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.job_library.JobExecutor;
@@ -15,6 +18,7 @@ import giuseppetavella.demo_login_system.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -75,8 +79,8 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         // CORE LOGIC: FIND DISCREPANCIES BY CLIENT ADDRESS
         // *******************
 
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = LocalDate.now();
+        LocalDate lastMonday = TimeHelper.lastMonday();
+        LocalDate lastFriday = TimeHelper.lastFriday();
 
         // contains the client addresses, along with the AI-generated
         // discrepancy summary, to be emailed to the admin in a single pdf report
@@ -101,8 +105,8 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                 // get the shifts for this client addresss, in date range
                 List<ShiftToSendDTO> shiftsDTO = shiftsService.findShiftsByClientAddressBetweenDatesDTO(
                         ca.getClientAddress(),
-                        startDate,
-                        endDate
+                        lastMonday,
+                        lastMonday
                 );
         
                 // the shifts for this client address in date range, stringified
@@ -172,12 +176,26 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         // *********************
         // SEND EMAIL & NOTIFY ADMIN 
         // ********************
+
+        // add notification
+        
+        Notification newNotification = new Notification(
+                admin,
+                NotificationType.DISCREPANCY_REPORT_GENERATION_SUCCESS,
+                "Report discrepanze pronto",
+                "Il tuo report discrepanze settimanale è pronto."
+        );
+
+        // add a notification so admin sees processing is done    
+        this.notificationsService.save(newNotification);
+        
+        // send email 
         
         this.appEmailService.sendAdminDiscrepancies(
                 admin,
                 discrepanciesList,
-                startDate,
-                endDate
+                lastMonday,
+                lastFriday
         );
 
 

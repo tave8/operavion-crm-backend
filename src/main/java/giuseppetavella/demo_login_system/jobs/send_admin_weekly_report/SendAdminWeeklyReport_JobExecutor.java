@@ -57,6 +57,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         
         Company company = admin.getCompany();
 
+        // TODO: fix this +2 logical bug
         LocalDate referenceDate = LocalDate.now().plusDays(2);
 
         LocalDate lastWeekTarget = referenceDate.minusWeeks(1);

@@ -3,9 +3,11 @@ package giuseppetavella.demo_login_system.helpers;
 import giuseppetavella.demo_login_system.exceptions.InvalidDataException;
 
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAdjusters;
 
 public class TimeHelper {
 
@@ -92,5 +94,25 @@ public class TimeHelper {
                                        LocalTime startTime, LocalTime endTime) {
         return isValidRange(startDate, endDate) && isValidRange(startTime, endTime);
     }
-    
+
+
+
+    /**
+     * Returns the Monday of last week.
+     */
+    public static LocalDate lastMonday() {
+        // 1. Get the Monday of THIS week (May 18)
+        LocalDate thisMonday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        // 2. Go back exactly 7 days to get LAST week's Monday (May 11)
+        return thisMonday.minusDays(7);
+    }
+
+    /**
+     * Returns the Friday of last week.
+     */
+    public static LocalDate lastFriday() {
+        // Aligns perfectly with the Monday calculated above (May 15)
+        return lastMonday().with(DayOfWeek.FRIDAY);
+    }
 }
