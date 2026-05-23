@@ -7,7 +7,6 @@ import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.exceptions.UnauthorizedException;
-import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import giuseppetavella.demo_login_system.domain.business.auth.dto.sent.LoginSentDTO;
 import giuseppetavella.demo_login_system.domain.business.auth.dto.sent.OperatorLoginSentDTO;
 import giuseppetavella.demo_login_system.domain.business.auth.dto.sent.SignupSentDTO;
@@ -32,10 +31,10 @@ public class AuthService {
     private TokenTools tokenTools;
     
     @Autowired
-    private EmailService appEmailService;
+    private AuthEmailService authEmailService;
     
     @Autowired
-    private EmailVerificationService emailVerificationService;
+    private AuthEmailVerificationService authEmailVerificationService;
     
     @Autowired
     private SeedDataOnSignupService seedDataOnSignupService;
@@ -82,8 +81,8 @@ public class AuthService {
         // user has not verified their email
         if(!userFound.isVerifiedEmail()) {
             
-            String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(userFound);
-            this.appEmailService.sendVerifyEmail(userFound, verificationUrl);
+            String verificationUrl = this.authEmailVerificationService.generateNewEmailVerificationUrl(userFound);
+            authEmailService.sendVerifyEmail(userFound, verificationUrl);
             
             // System.out.println("USER HAS NOT VERIFIED THEIR EMAIL");
             throw new EmailVerificationException("User can login only after verifying their email. "
@@ -156,10 +155,10 @@ public class AuthService {
         User newUserFromDB = this.usersService.addAdminOnlyOnce(body, companyFromDB);
 
         // send email verification code to the admin
-        String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(newUserFromDB);
+        String verificationUrl = this.authEmailVerificationService.generateNewEmailVerificationUrl(newUserFromDB);
         
         // send email
-        this.appEmailService.sendVerifyEmail(newUserFromDB, verificationUrl);
+        authEmailService.sendVerifyEmail(newUserFromDB, verificationUrl);
         
         // seed data - this could be done async
         this.seedDataOnSignupService.seedStandardChecklists(companyFromDB);

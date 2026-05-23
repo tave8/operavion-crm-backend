@@ -1,5 +1,6 @@
 package giuseppetavella.demo_login_system.infrastructure.jobs.job_library;
 
+import giuseppetavella.demo_login_system.infrastructure.email.ProblemsEmailService;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.enums.JobExecutionState;
 import giuseppetavella.demo_login_system.infrastructure.jobs.jobs.JobName;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.exceptions.JobException;
@@ -7,7 +8,6 @@ import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.excepti
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.exceptions.JobExecutionGetNextItemException;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.exceptions.JobExecutionGetNextIncompleteExecutionException;
 import giuseppetavella.demo_login_system.infrastructure.jobs.jobs.JobExecutors;
-import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class JobManager {
     private JobManagerRepository jobManagerRepository;
     
     @Autowired
-    private EmailService appEmailService;
+    private ProblemsEmailService problemsEmailService;
     
     
     // logger
@@ -108,7 +108,7 @@ public class JobManager {
             LOGGER.error("JOB '{}': system error executing job. Error details: {}", jobName, ex.getMessage());
             
             // i get an email with details about problem
-            this.appEmailService.sendEmailToDevForSystemProblemDuringBackgroundJob(
+            problemsEmailService.sendEmailToDevForSystemProblemDuringBackgroundJob(
                     jobName.name(), ex
             );
             
@@ -278,7 +278,7 @@ public class JobManager {
             if (errorDuringProcessing != null) {
 
                 // i get an email when job execution is unsuccessful
-                this.appEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
+                problemsEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
                         currentJobExecution,
                         executor.getMaxRetries(),
                         errorDuringProcessing
@@ -473,7 +473,7 @@ public class JobManager {
             if (isRetryCountExceeded || errorDuringProcessing != null) {
                 
                 // i get an email when job execution is unsuccessful
-                this.appEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
+                problemsEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
                         incompleteJobExecution,
                         executor.getMaxRetries(),
                         errorDuringProcessing

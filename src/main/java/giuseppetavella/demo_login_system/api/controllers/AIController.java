@@ -2,7 +2,7 @@ package giuseppetavella.demo_login_system.api.controllers;
 
 import giuseppetavella.demo_login_system.infrastructure.CvDataModel;
 import giuseppetavella.demo_login_system.helpers.PayloadValidationHelper;
-import giuseppetavella.demo_login_system.infrastructure.email.BaseEmailService;
+import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import giuseppetavella.demo_login_system.domain.business.cv_extraction.CvExtractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ public class AIController {
     private CvExtractionService cvExtractionService;
     
     @Autowired
-    private BaseEmailService baseEmailService;
+    private EmailService emailService;
     
 
 

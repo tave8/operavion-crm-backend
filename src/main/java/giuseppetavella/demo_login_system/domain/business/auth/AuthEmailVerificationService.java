@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class EmailVerificationService {
+public class AuthEmailVerificationService {
     
     @Autowired
     private EmailVerificationRepository emailVerificationRepository;
@@ -24,7 +24,7 @@ public class EmailVerificationService {
     private static final long VERIFICATION_CODE_TTL = 10;
 
 
-    public EmailVerificationService(
+    public AuthEmailVerificationService(
             @Qualifier("serverUrl") String serverUrl)
     {
         this.serverUrl = serverUrl;

@@ -1,388 +1,237 @@
 package giuseppetavella.demo_login_system.infrastructure.email;
 
-import giuseppetavella.demo_login_system.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
-import giuseppetavella.demo_login_system.domain.entities.users.User;
-import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
-import giuseppetavella.demo_login_system.helpers.DataValidationHelper;
-import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecution;
-import giuseppetavella.demo_login_system.infrastructure.pdf.AppPdfService;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.Attachment;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
+import giuseppetavella.demo_login_system.exceptions.HtmlTemplateException;
+import giuseppetavella.demo_login_system.helpers.LanguageHelper;
+import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.infrastructure.email_attachment.EmailAttachment;
-import giuseppetavella.demo_login_system.infrastructure.email_attachment.EmailAttachmentFromURL;
-import giuseppetavella.demo_login_system.infrastructure.pdf.Pdf;
-import giuseppetavella.demo_login_system.domain.business.auth.EmailVerificationService;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
+import giuseppetavella.demo_login_system.infrastructure.template.HtmlTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Send business-specific emails.
- * 
- * Examples:
- * - welcome on signup
- * - reset password
- * - etc.
+ * Send emails.
+ * Hides the email API library-specific implementation details.
  */
 @Service
-public class EmailService extends BaseEmailService {
- 
+public class EmailService {
+    
+    // Email API
     @Autowired
-    private EmailVerificationService emailVerificationService;
+    private Resend resend;
+    
+    // Email API-specific options/params builder 
+    @Autowired
+    private CreateEmailOptions.Builder defaultParams;
     
     @Autowired
-    private AppPdfService appPdfService;
-
-    private final String serverUrl;
-
-    public EmailService(@Qualifier("serverUrl") String serverUrl) {
-        this.serverUrl = serverUrl;
-    }
-
+    private HtmlTemplateService htmlTemplateService;
     
 
     /**
-     * Send verify your account email.
-     * Should be sent only after signup.
-     */
-    public void sendVerifyEmail(User user, String verificationUrl) throws EmailSendingException
-    {
-        
-        Map<String, Object> vars = Map.of(
-            "firstname", user.getFirstname(),
-            "verificationUrl", verificationUrl
-        );
-        
-        this.sendEmailFromTemplate(
-                "emails/verify_email",
-                vars,
-                user.getEmail(),
-                "Conferma la tua email"
-        );
-        
-    }
-
-    /**
-     * Generate a new code verification email code 
-     * and send an email with that.
-     */
-    public void sendVerifyEmailWithVerificationUrl(User user) throws EmailSendingException
-    {
-        String verificationUrl = this.emailVerificationService.generateNewEmailVerificationUrl(user);
-        
-        this.sendVerifyEmail(user, verificationUrl);
-    }
-
-
-    /**
-     * Send forgot password authorization email.
-     */
-    public void sendForgotPasswordAuthorization(User user, String verificationUrl) throws EmailSendingException
-    {
-
-        Map<String, Object> vars = Map.of(
-            "verificationUrl", verificationUrl
-        );
-
-        this.sendEmailFromTemplate(
-            "emails/forgot_password_authorization",
-            vars,
-            user.getEmail(),
-            "Reset your password"
-        );
-        
-    }
-
-
-    /**
-     * Send articles report email.
-     */
-    // public void sendArticlesReport(User user, byte[] articlesReportCsv) throws EmailSendingException 
-    // {
-    //
-    //     Context context = new Context();
-    //     context.setVariable("firstname", user.getFirstname());
-    //
-    //     String htmlBody = templateEngine.process("emails/articles_report", context);
-    //    
-    //     EmailAttachment attachment = new EmailAttachment(
-    //             articlesReportCsv, 
-    //             "articles_report.csv"
-    //     );
-    //
-    //     this.sendEmail(
-    //             user.getEmail(), 
-    //             "Articles Report", 
-    //             htmlBody, 
-    //             attachment
-    //     );
-    // }
-    
-
-    public void sendPdf(String recipient, String pdfUrl)
-    {
-        this.sendEmail(
-                recipient,
-                "Here's your pdf",
-                "Hello",
-                new EmailAttachmentFromURL(pdfUrl, "pdf_from_internet.pdf")
-        );
-    }
-    
-
-    public void sendAdminWeeklyReport(User admin,
-                                      Map<User, Integer> shiftsCountByOperator,
-                                      LocalDate startDate,
-                                      LocalDate endDate) 
-    {
-        
-        // *****************
-        // BUILD THE PDF
-        // *****************
-
-        // build the hashmap that gets passed to the html template
-        // that will be turned into pdf
-
-        // generate email attachment from pdf
-        
-        Map<String, Object> newPdfVars = Map.of(
-                "shiftsCountByOperator", shiftsCountByOperator,
-                "startDate", startDate, 
-                "endDate", endDate
-        );
-        
-        // generate the pdf 
-        Pdf pdf = this.appPdfService.generateAdminWeeklyReport(newPdfVars);
-        String pdfAttachment = pdf.toAttachment();
-        String pdfAttachmentName = "report_settimanale_turni.pdf";
-        
-        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
-
-        // *****************
-        // BUILD THE EMAIL
-        // **************
-
-        // build the hashmap that gets passed to the html template
-        // that will be sent as email
-        Map<String, Object> emailTemplateVars = Map.of(
-                "firstname", admin.getFirstname()
-        );
-        
-        // the html template for the email, this will be filled
-        String emailTemplate = "emails/admin_weekly_report";
-        // the email subject
-        String emailSubject = "Report turni settimanale";
-        
-        
-        // right before sending email, make sure you didn't forget
-        // any variable to pass to html template
-
-        DataValidationHelper.requireMapContainsOnlyKeys(
-                emailTemplateVars, 
-                List.of("firstname")
-        );
-
-        this.sendEmailFromTemplate(
-                emailTemplate,
-                emailTemplateVars,
-                admin.getEmail(), 
-                emailSubject,
-                attachment
-        );
-
-    }
-
-
-    /**
-     * Send the email that informs the admin of 
-     * discrepancies (expectation vs reality) 
-     * for each client address of their company.
+     * Send an email.
+     * Many attachments.
      * 
+     * @throws EmailSendingException if any problem occurred during email sending
      */
-    public void sendAdminDiscrepancies(User admin,
-                                      List<ClientAddressDiscrepancyDTO> discrepancies,
-                                      LocalDate startDate,
-                                      LocalDate endDate)
+    public String sendEmail(String recipient, 
+                            String subject, 
+                            String html,
+                            List<EmailAttachment> attachments) throws EmailSendingException 
     {
-
-        // *****************
-        // BUILD THE PDF
-        // *****************
-
-        // build the hashmap that gets passed to the html template
-        // that will be turned into pdf
-
-        // generate email attachment from pdf
-
-        Map<String, Object> newPdfVars = Map.of(
-                "discrepancies", discrepancies,
-                "startDate", startDate,
-                "endDate", endDate
+        
+        // check that the email is a valid email
+        StringHelper.requireValidEmailElseThrowWith(
+                recipient, 
+                "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
         );
         
-
-        // generate the pdf 
-        Pdf pdf = this.appPdfService.generateAdminDiscrepancyReport(newPdfVars);
-        String pdfAttachment = pdf.toAttachment();
-        String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate + ".pdf";
-
-        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
-
-        // *****************
-        // BUILD THE EMAIL
-        // **************
-
-        // build the hashmap that gets passed to the html template
-        // that will be sent as email
-        Map<String, Object> emailTemplateVars = Map.of(
-                "firstname", admin.getFirstname()
-        );
-
-        // the html template for the email, this will be filled
-        String emailTemplate = "emails/admin_discrepancy_report";
-        // the email subject
-        String emailSubject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
-
-
-        // right before sending email, make sure you didn't forget
-        // any variable to pass to html template
-
-        DataValidationHelper.requireMapContainsOnlyKeys(
-                emailTemplateVars,
-                List.of("firstname")
-        );
-
-        this.sendEmailFromTemplate(
-                emailTemplate,
-                emailTemplateVars,
-                admin.getEmail(),
-                emailSubject,
-                attachment
-        );
-
-    }
-
-
-
-    public void sendMeInvoiceReport() {
+        // these are the API-specific attachments
+        // we translate from API-independent to API-specific
+        List<Attachment> attachmentsForAPI = this.toAPIAttachments(attachments);
         
-        // *****************
-        // BUILD THE PDF
-        // *****************
-        
-        // build the hashmap that gets passed to the html template
-        // that will be turned into pdf
-        Map<String, Object> pdfVars = Map.of();
-        
-        // generate email attachment from pdf
-        EmailAttachment attachment = new EmailAttachment(
-                this.appPdfService.generateInvoice(pdfVars).toAttachment(),
-                "invoice_report.pdf"
+        CreateEmailOptions params = this.buildEmailParams(
+                recipient, 
+                subject, 
+                html,
+                attachmentsForAPI
         );
         
-        // *****************
-        // BUILD THE EMAIL
-        // **************
-
-        // build the hashmap that gets passed to the html template
-        // that will be sent as email
-        Map<String, Object> vars = Map.of(
-                "firstname", "Giuseppe",
-                "timeSent", OffsetDateTime.now()
-        );
-        
-        this.sendEmailFromTemplate(
-                "emails/invoice_report", 
-                vars,
-                "giuseppetavella8@gmail.com",
-                "Your Invoice Report",
-                attachment
-        );
-        
+        try {
+            
+            CreateEmailResponse data = resend.emails().send(params);
+            return data.getId();
+            
+        } catch (ResendException e) {
+            throw new EmailSendingException(e.getMessage());
+        }
     }
 
     /**
-     * Email the developer, about a problem.
+     * Send an email.
+     * One attachment.
      */
-    public void sendEmailToDevForProblem(String subject, 
-                                         String details,
-                                         Exception exception) 
+    public String sendEmail(String recipient,
+                               String subject,
+                               String html,
+                               EmailAttachment attachment) throws EmailSendingException
     {
 
-        OffsetDateTime now = OffsetDateTime.now();
-
-        Map<String, Object> vars = Map.of(
-                "message", exception.getMessage(),
-                "details", details,
-                "timestamp", now,
-                "stackTrace", ExceptionUtils.getStackTrace(exception)
-        );
-
-        this.sendEmailFromTemplate(
-                "dev_emails/error",
-                vars,
-                "giuseppetavella8@gmail.com",
-                subject
-        );
+        return this.sendEmail(recipient, subject, html, List.of(attachment));
     }
 
     
     /**
-     * This email should be sent when a system problem
-     * occurs during a background job.
+     * Send an email.
+     * No attachments.
      */
-    public void sendEmailToDevForSystemProblemDuringBackgroundJob(String jobName,
-                                                      Exception exception) 
+    public String sendEmail(String recipient,
+                            String subject,
+                            String html) throws EmailSendingException
     {
-        
-        String subject = "System error during background job. Job name: " + jobName;
-        
-        String details = "Job name: " + jobName;
-
-        this.sendEmailToDevForProblem(subject, details, exception);
+        return this.sendEmail(recipient, subject, html, List.of());
     }
 
     
-    /*
-    * This email should be sent when an unsuccessful
-    * job execution occurs (not a system problem during background job).
-    * */
-    public void sendEmailToDevForUnsuccessfulBackgroundJobExecution(JobExecution jobExecution,
-                                                                    Integer maxRetries,
-                                                                    Exception exception)
+    /**
+     * Send email from a HTML template.
+     * Many attachments.
+     * 
+     * @throws HtmlTemplateException if input template is not found
+     */
+    public String sendEmailFromTemplate(String template, 
+                                        Map<String, Object> vars,
+                                        String recipient,
+                                        String subject,
+                                        List<EmailAttachment> attachments) 
     {
-        String state = jobExecution.getState().name();
-        String jobName = jobExecution.getJobName().name();
-        Long executionId = jobExecution.getId();
-        String reason = exception != null ? exception.getMessage() : jobExecution.getMessage();
-        String stackTrace = exception != null ? ExceptionUtils.getStackTrace(exception) : null;
-
-        String subject = "[" + state + "] Background Job: " + jobName + " | Execution ID: " + executionId;
-
-        Map<String, Object> vars = new HashMap<>();
         
-        vars.put("jobName",     jobName);
-        vars.put("executionId", executionId);
-        vars.put("state",       state);
-        vars.put("startedAt",   jobExecution.getStartedAt());
-        vars.put("finishedAt",  jobExecution.getFinishedAt());
-        vars.put("retryCount",  jobExecution.getRetryCount());
-        vars.put("maxRetries",  maxRetries);
-        vars.put("itemId",      jobExecution.getLastProcessedItemId());
-        vars.put("reason",      reason);
-        vars.put("stackTrace",  stackTrace);
+        String html = this.htmlTemplateService.fillTemplate(template, vars);
+        
+        return this.sendEmail(recipient, subject, html, attachments);
+        
+    }
 
-        this.sendEmailFromTemplate(
-                "dev_emails/unsuccessful_background_job",
-                vars,
-                "giuseppetavella8@gmail.com",
-                subject
-        );
+    /**
+     * Send email from a HTML template.
+     * One attachment.
+     * 
+     * @throws HtmlTemplateException if input template is not found
+     */
+    public String sendEmailFromTemplate(String template,
+                                        Map<String, Object> vars,
+                                        String recipient,
+                                        String subject,
+                                        EmailAttachment attachment) throws HtmlTemplateException
+    {
+
+        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of(attachment));
+
+    }
+
+
+    /**
+     * Send email from a HTML template.
+     * No attachments.
+     * 
+     * @throws HtmlTemplateException if input template is not found
+     */
+    public String sendEmailFromTemplate(String template,
+                                        Map<String, Object> vars,
+                                        String recipient,
+                                        String subject) throws HtmlTemplateException
+    {
+
+        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
+
+    }
+
+    public String sendEmailFromTemplateWithDefaultLanguage(String template,
+                                                    Map<String, Object> vars,
+                                                    String recipient,
+                                                    String subject) throws HtmlTemplateException
+    {
+
+        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
+
+    }
+
+    public String sendEmailFromTemplateWithLanguage(String templateAfterLanguage,
+                                                   Map<String, Object> vars,
+                                                   String recipient,
+                                                   String subject) throws HtmlTemplateException
+    {
+
+        String lang = LanguageHelper.getLanguage().getValue();
+        
+        String templatePathWithLanguage = lang + "/" + templateAfterLanguage;
+        
+        return this.sendEmailFromTemplate(templatePathWithLanguage, vars, recipient, subject, List.of());
+
+    }
+    
+    /**
+     * Build the email params.
+     * Can add attachments.
+     * API-specific.
+     */
+    private CreateEmailOptions buildEmailParams(String recipient, 
+                                               String subject, 
+                                               String html,
+                                               List<Attachment> attachments) throws HtmlTemplateException
+    {
+        return this.defaultParams
+                .to(recipient)
+                .subject(subject)
+                .html(html)
+                .attachments(attachments)
+                // for now i get the response
+                .replyTo("giuseppetavella8@gmail.com")
+                .build();
+    }
+
+    
+    /**
+     * Build the email params.
+     * No attachments.
+     * API-specific.
+     */
+    private CreateEmailOptions buildEmailParams(String recipient,
+                                               String subject,
+                                               String html)
+    {
+        return this.buildEmailParams(recipient, subject, html, List.of());
+    }
+
+
+    /**
+     * Turn a list of app attachments, to API-specific attachments.
+     * (adapter/translation layer)
+     */
+    private List<Attachment> toAPIAttachments(List<EmailAttachment> emailAttachments) 
+    {
+        List<Attachment> attachments = new ArrayList<>();
+
+        for(EmailAttachment emailAttachment : emailAttachments) {
+            // library-specific object
+            Attachment attachment = Attachment.builder()
+                                        .fileName(emailAttachment.getFilename())
+                                        .content(emailAttachment.getBase64Content())
+                                        .build();
+
+            attachments.add(attachment);
+        }
+        
+        return attachments;
     }
     
 

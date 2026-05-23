@@ -7,7 +7,7 @@ import giuseppetavella.demo_login_system.domain.business.auth.dto.sent.SignupSen
 import giuseppetavella.demo_login_system.domain.entities.users.dto.sent.UpdatedProfileSentDTO;
 import giuseppetavella.demo_login_system.domain.business.auth.dto.sent.reset_password.ResetPasswordOldPasswordSentDTO;
 import giuseppetavella.demo_login_system.domain.entities.users.dto.to_send.ProfileToSendDTO;
-import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
+import giuseppetavella.demo_login_system.domain.business.auth.AuthEmailService;
 import giuseppetavella.demo_login_system.infrastructure.storage.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ public class UsersService {
     private UsersRepository usersRepository;
     
     @Autowired
-    private EmailService appEmailService;
+    private AuthEmailService authEmailService;
 
     @Autowired
     private PasswordEncoder bcrypt;
@@ -201,7 +201,7 @@ public class UsersService {
             User userFromDB = this.addAnyUser(newUser);
             
             // send email with verify email
-            this.appEmailService.sendVerifyEmailWithVerificationUrl(userFromDB);
+            authEmailService.sendVerifyEmailWithVerificationUrl(userFromDB);
             
             return userFromDB;
             

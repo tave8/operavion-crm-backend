@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class ContractDiscrepancyDetectionService {
+public class ContractDiscrepancyAIDetectionService {
 
     @Autowired
     private AIService aiService;

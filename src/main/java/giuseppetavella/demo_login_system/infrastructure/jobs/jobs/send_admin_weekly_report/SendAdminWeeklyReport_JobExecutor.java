@@ -7,7 +7,7 @@ import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
 import giuseppetavella.demo_login_system.domain.entities.companies.Company;
 import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
-import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
+import giuseppetavella.demo_login_system.domain.business.admin_weekly_report.AdminWeeklyReportEmailService;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutor;
@@ -28,7 +28,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
     private SendAdminWeeklyReport_Repository thisRepository;
     
     @Autowired
-    private EmailService appEmailService;
+    private AdminWeeklyReportEmailService adminWeeklyReportEmailService;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -73,7 +73,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         Map<User, Integer> shiftsCountByOperator  = this.shiftsService.countShiftsByOperator(company, lastMonday, lastFriday);
 
         // send email with weekly report as pdf attachment
-        this.appEmailService.sendAdminWeeklyReport(
+        adminWeeklyReportEmailService.sendAdminWeeklyReport(
                 admin,
                 shiftsCountByOperator,
                 lastMonday,

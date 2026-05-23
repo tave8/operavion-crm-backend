@@ -6,7 +6,6 @@ import giuseppetavella.demo_login_system.exceptions.EmailVerificationException;
 import giuseppetavella.demo_login_system.exceptions.ForgotPasswordVerificationException;
 import giuseppetavella.demo_login_system.exceptions.NotFoundException;
 import giuseppetavella.demo_login_system.helpers.TimeHelper;
-import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import giuseppetavella.demo_login_system.domain.entities.users.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +26,7 @@ public class ForgotPasswordService {
     private UsersService usersService;
     
     @Autowired
-    private EmailService appEmailService;
+    private AuthEmailService authEmailService;
     
     @Autowired
     private UsersRepository usersRepository;
@@ -90,7 +89,7 @@ public class ForgotPasswordService {
             String authorizationUrl = this.buildForgotPasswordAuthorizationUrl(newCode.getCode());
             //
             // // send an email to the user, with this code     
-            this.appEmailService.sendForgotPasswordAuthorization(emailOwner, authorizationUrl);
+            authEmailService.sendForgotPasswordAuthorization(emailOwner, authorizationUrl);
             
         } catch(NotFoundException ex) {
             

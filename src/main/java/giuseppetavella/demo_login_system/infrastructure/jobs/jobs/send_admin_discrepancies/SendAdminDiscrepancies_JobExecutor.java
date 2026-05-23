@@ -12,6 +12,7 @@ import giuseppetavella.demo_login_system.domain.entities.users.User;
 import giuseppetavella.demo_login_system.domain.entities.notifications.NotificationType;
 import giuseppetavella.demo_login_system.helpers.AuthorizationHelper;
 import giuseppetavella.demo_login_system.helpers.TimeHelper;
+import giuseppetavella.demo_login_system.domain.business.contract_discrepancy.ContractDiscrepancyEmailService;
 import giuseppetavella.demo_login_system.infrastructure.email.EmailService;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExecutionMetadata;
@@ -19,7 +20,7 @@ import giuseppetavella.demo_login_system.infrastructure.jobs.job_library.JobExec
 import giuseppetavella.demo_login_system.infrastructure.jobs.jobs.JobName;
 import giuseppetavella.demo_login_system.domain.entities.client_addresses.dto.to_send.ClientAddressToSendDTO;
 import giuseppetavella.demo_login_system.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
-import giuseppetavella.demo_login_system.domain.business.contract_discrepancy.ContractDiscrepancyDetectionService;
+import giuseppetavella.demo_login_system.domain.business.contract_discrepancy.ContractDiscrepancyAIDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,10 +49,13 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
     private CompaniesService companiesService;
     
     @Autowired
-    private ContractDiscrepancyDetectionService contractDiscrepancyDetectionService;
+    private ContractDiscrepancyAIDetectionService contractDiscrepancyAIDetectionService;
     
     @Autowired
     private ClientAddressesService clientAddressesService;
+    
+    @Autowired
+    private ContractDiscrepancyEmailService contractDiscrepancyEmailService;
     
     
     public SendAdminDiscrepancies_JobExecutor() {
@@ -119,7 +123,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                 String expectations = ca.getContractExpectation().getDetail().getExpectations();
                 
                 // the AI generates the summary "expectation vs reality"
-                String discrepancyText = contractDiscrepancyDetectionService.findDiscrepancies(
+                String discrepancyText = contractDiscrepancyAIDetectionService.findDiscrepancies(
                         expectations,
                         shiftsInfo
                 );
@@ -194,7 +198,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         
         // send email 
         
-        this.appEmailService.sendAdminDiscrepancies(
+        contractDiscrepancyEmailService.sendAdminDiscrepancies(
                 admin,
                 discrepanciesList,
                 lastMonday,

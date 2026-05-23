@@ -21,7 +21,7 @@ import giuseppetavella.demo_login_system.domain.entities.users.dto.to_send.Profi
 import giuseppetavella.demo_login_system.domain.business.auth.dto.to_send.forgot_password.ForgotPasswordToSendDTO;
 import giuseppetavella.demo_login_system.domain.entities.users.UsersService;
 import giuseppetavella.demo_login_system.domain.business.auth.AuthService;
-import giuseppetavella.demo_login_system.domain.business.auth.EmailVerificationService;
+import giuseppetavella.demo_login_system.domain.business.auth.AuthEmailVerificationService;
 import giuseppetavella.demo_login_system.domain.business.auth.ForgotPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +43,7 @@ public class AuthController {
     private UsersService usersService;
     
     @Autowired
-    private EmailVerificationService emailVerificationService;
+    private AuthEmailVerificationService authEmailVerificationService;
     
     @Autowired
     private ForgotPasswordService forgotPasswordService;
@@ -136,7 +136,7 @@ public class AuthController {
         
         try {
             
-            this.emailVerificationService.verifyEmailVerificationCode(code);
+            this.authEmailVerificationService.verifyEmailVerificationCode(code);
             
         } catch (EmailVerificationException ex) {
             return ex.getMessage();
