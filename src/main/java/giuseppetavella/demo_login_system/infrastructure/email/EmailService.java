@@ -11,6 +11,7 @@ import giuseppetavella.demo_login_system.helpers.StringHelper;
 import giuseppetavella.demo_login_system.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.demo_login_system.exceptions.EmailSendingException;
 import giuseppetavella.demo_login_system.infrastructure.template.HtmlTemplateService;
+import giuseppetavella.demo_login_system.integrations.resend.ResendAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +26,8 @@ import java.util.Map;
 @Service
 public class EmailService {
     
-    // Email API
     @Autowired
-    private Resend resend;
-    
-    // Email API-specific options/params builder 
-    @Autowired
-    private CreateEmailOptions.Builder defaultParams;
+    private ResendAPIService resendAPIService;
     
     @Autowired
     private HtmlTemplateService htmlTemplateService;
@@ -55,25 +51,16 @@ public class EmailService {
                 "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
         );
         
-        // these are the API-specific attachments
-        // we translate from API-independent to API-specific
-        List<Attachment> attachmentsForAPI = this.toAPIAttachments(attachments);
+        // TODO: check that html is not empty
+
         
-        CreateEmailOptions params = this.buildEmailParams(
-                recipient, 
-                subject, 
-                html,
-                attachmentsForAPI
-        );
-        
-        try {
-            
-            CreateEmailResponse data = resend.emails().send(params);
-            return data.getId();
-            
-        } catch (ResendException e) {
-            throw new EmailSendingException(e.getMessage());
-        }
+       return resendAPIService.sendEmail(
+               recipient,
+               subject,
+               html,
+               attachments
+       ); 
+       
     }
 
     /**
@@ -101,7 +88,7 @@ public class EmailService {
         return this.sendEmail(recipient, subject, html, List.of());
     }
 
-    
+     
     /**
      * Send email from a HTML template.
      * Many attachments.
@@ -179,60 +166,8 @@ public class EmailService {
 
     }
     
-    /**
-     * Build the email params.
-     * Can add attachments.
-     * API-specific.
-     */
-    private CreateEmailOptions buildEmailParams(String recipient, 
-                                               String subject, 
-                                               String html,
-                                               List<Attachment> attachments) throws HtmlTemplateException
-    {
-        return this.defaultParams
-                .to(recipient)
-                .subject(subject)
-                .html(html)
-                .attachments(attachments)
-                // for now i get the response
-                .replyTo("giuseppetavella8@gmail.com")
-                .build();
-    }
-
     
-    /**
-     * Build the email params.
-     * No attachments.
-     * API-specific.
-     */
-    private CreateEmailOptions buildEmailParams(String recipient,
-                                               String subject,
-                                               String html)
-    {
-        return this.buildEmailParams(recipient, subject, html, List.of());
-    }
 
-
-    /**
-     * Turn a list of app attachments, to API-specific attachments.
-     * (adapter/translation layer)
-     */
-    private List<Attachment> toAPIAttachments(List<EmailAttachment> emailAttachments) 
-    {
-        List<Attachment> attachments = new ArrayList<>();
-
-        for(EmailAttachment emailAttachment : emailAttachments) {
-            // library-specific object
-            Attachment attachment = Attachment.builder()
-                                        .fileName(emailAttachment.getFilename())
-                                        .content(emailAttachment.getBase64Content())
-                                        .build();
-
-            attachments.add(attachment);
-        }
-        
-        return attachments;
-    }
-    
+ 
 
 }
