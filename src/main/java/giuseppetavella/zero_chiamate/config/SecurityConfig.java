@@ -1,5 +1,6 @@
-package giuseppetavella.zero_chiamate.security;
+package giuseppetavella.zero_chiamate.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,35 @@ import java.util.List;
 // through the annotation @PreAuthorization
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    /**
+     * CORS
+     * 
+     * Add/edit the values of the returned list,
+     * to automatically configure CORS for these origins.
+     * 
+      * @return
+     */ 
+    @Bean(name = "allowedOrigins")
+    public List<String> getAllowedOrigins(@Value("${frontend.production.url}") String frontendProductionUrl,
+                                          @Value("${frontend.preview.url-pattern}") String frontendPreviewUrlPattern,
+                                          @Value("${frontend.local.url}") String frontendLocalUrl)
+    {
+        
+        return List.of(
+                // frontend: production
+                frontendProductionUrl,
+                // frontend: preview
+                frontendPreviewUrlPattern,
+                // frontend: local
+                frontendLocalUrl
+                
+                // add more origins here...
+                
+        );
+        
+    }
+    
 
     /**
      * In this bean we can customize and override default
@@ -52,29 +82,30 @@ public class SecurityConfig {
     }
 
 
+    /**
+     * BCrypt.
+     *  
+     * @return
+     */
     @Bean
     public PasswordEncoder getBCrypt() {
         return new BCryptPasswordEncoder(12);
     }
 
+    
+    /**
+     * Configure CORS.
+     * 
+     * @return
+     */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(@Value("${frontend.production.url}") String frontendProductionUrl,
-                                                           @Value("${frontend.preview.url-pattern}") String frontendPreviewUrlPattern,
-                                                           @Value("${frontend.local.url}") String frontendLocalUrl) 
+    public CorsConfigurationSource corsConfigurationSource(@Qualifier("allowedOrigins") List<String> allowedOrigins) 
     {
-
+        
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Here we define a whitelist  of allowed origins
-        configuration.setAllowedOriginPatterns(List.of(
-                // frontend: production
-                frontendProductionUrl,
-                // frontend: preview
-                frontendPreviewUrlPattern,
-                // frontend: local
-                frontendLocalUrl
-        ));
-        
+        configuration.setAllowedOriginPatterns(allowedOrigins);
 
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
