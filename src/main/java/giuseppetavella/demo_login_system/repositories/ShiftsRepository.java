@@ -97,6 +97,48 @@ public interface ShiftsRepository extends JpaRepository<Shift, UUID> {
 
 
     /**
+     * Find shifts by client address between a date range.
+     * 
+     * For the shift to be selected, it has to have at least 
+     * one operator assigned to it, between the input date range.
+     *
+     * @return shifts that match the above mentioned criteria, where 
+     *          a partial overlap exists
+     */
+    @Query("""
+        
+        SELECT 
+            DISTINCT s
+        FROM 
+            Shift s
+        WHERE 
+            s.clientAddress = :clientAddress
+            AND EXISTS (
+                SELECT 1
+                FROM 
+                    ShiftOperator so
+                WHERE 
+                   so.shift = s
+                   AND
+                       (:endDate >= s.startDate
+                       AND :startDate <= s.endDate)     
+            )      
+        ORDER BY
+            s.startDate,
+            s.startTime,
+            s.endDate,
+            s.endTime
+            
+    """)
+    List<Shift> findShiftsByClientAddressBetweenDates(
+            ClientAddress clientAddress,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    
+
+    /**
      * 
      * For an operator to have a conflict in shift:
      * 

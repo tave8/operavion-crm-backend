@@ -233,6 +233,38 @@ public class ShiftsService {
         return shiftOperators;
     }
     
+    
+    public List<Shift> findShiftsByClientAddressBetweenDates(ClientAddress clientAddress,
+                                                             LocalDate startDate,
+                                                             LocalDate endDate)
+    {
+        
+        DataValidationHelper.requireValidRange(startDate, endDate);
+
+        LocalDate newStartDate = this.getStartDateOrDefault(startDate);
+        LocalDate newEndDate = this.getEndDateOrDefault(endDate);
+
+        return shiftsRepository.findShiftsByClientAddressBetweenDates(
+                clientAddress,
+                newStartDate,
+                newEndDate
+        );
+        
+    }
+
+
+    public List<ShiftToSendDTO> findShiftsByClientAddressBetweenDatesDTO(ClientAddress clientAddress,
+                                                                         LocalDate startDate,
+                                                                         LocalDate endDate)
+    {
+        
+        return toShiftDTOs(
+                findShiftsByClientAddressBetweenDates(clientAddress, startDate, endDate)
+        );
+        
+    }
+    
+    
 
     public List<Shift> findShiftsByOperatorBetweenDates(User operator,
                                                         LocalDate startDate,
@@ -837,11 +869,28 @@ public class ShiftsService {
     /**
      * Stringify a list of shifts.
      * This might be fed into a AI prompt.
+     * 
+     * Shifts string will look like this:
+     * <pre>
+     *     
+     * --------
+     * WEDNESDAY
+     * 2026-05-12 - null
+     * 06:00 - 06:00
+     * --------
+     * WEDNESDAY,THURSDAY,FRIDAY,SATURDAY
+     * 2026-05-19 - null
+     * 06:00 - 06:00
+     * --------
+     *     
+     * </pre>
      */
     public String stringifyShifts(List<ShiftToSendDTO> shifts)
     {
         
         StringBuilder s = new StringBuilder();
+        // start 
+        s.append("--------").append("\n");
         
         shifts.forEach(shift -> {
             
@@ -852,9 +901,9 @@ public class ShiftsService {
                             .collect(Collectors.joining(","));
             
             s.append(days).append("\n")
-              .append(shift.getStartDate()).append(" - ").append(shift.getEndDate())
-              .append(shift.getStartTime()).append(" - ").append(shift.getEndTime())
-              .append("--------");
+              .append(shift.getStartDate()).append(" - ").append(shift.getEndDate()).append("\n")
+              .append(shift.getStartTime()).append(" - ").append(shift.getEndTime()).append("\n")
+              .append("--------").append("\n");
             
         });
         
