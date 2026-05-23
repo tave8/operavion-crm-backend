@@ -93,10 +93,14 @@
         </div>
 
         <!-- Discrepancy Text Line -->
-        <div style="margin-top: 4px; color: #444444;"
+        <pre style="margin-top: 4px; 
+            color: #444444; 
+            font-family: inherit; /* Prevents the ugly 'Courier' monospace look */
+            white-space: pre-wrap; /* Crucial: Forces the text to wrap inside the box */
+            word-break: break-word;"
              th:text="${item.discrepancy}">
             Dettaglio Discrepanza
-        </div>
+        </pre>
 
     </div>
 </div>

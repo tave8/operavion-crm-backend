@@ -90,15 +90,13 @@ public class ContractAnalysisWorker {
     private void notifyFailure(User admin, 
                                ClientAddress clientAddress)
     {
-     
-        String clientName = clientAddress.getClient().getLegalName();
-        
+
         Notification newNotification = new Notification(
                 admin,
                 NotificationType.CONTRACT_PROCESSING_FAILED,
                 "Errore processamento contratto",
                 "C'è stato un errore durante il processamento "
-                        +"del contratto di " + clientName + ". Riprova."
+                        +"del contratto di " + clientAddress.getClientAndAddressName() + ". Riprova."
         );
 
         // add a notification so admin sees processing is done    
@@ -112,14 +110,12 @@ public class ContractAnalysisWorker {
     private void notifySuccess(User admin,
                                ClientAddress clientAddress)
     {
-
-        String clientName = clientAddress.getClient().getLegalName();
-
+        
         Notification newNotification = new Notification(
                 admin,
                 NotificationType.CONTRACT_PROCESSING_SUCCESS,
                 "Contratto processato",
-                "Il contratto di " + clientName + " è stato processato. Puoi revisionarlo."
+                "Il contratto di " + clientAddress.getClientAndAddressName() + " è stato processato. Puoi revisionarlo."
         );
 
         // add a notification so admin sees processing is done    

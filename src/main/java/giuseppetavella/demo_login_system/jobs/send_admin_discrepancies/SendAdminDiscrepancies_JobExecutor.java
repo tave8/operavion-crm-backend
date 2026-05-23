@@ -116,6 +116,28 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                         expectations,
                         shiftsInfo
                 );
+                
+                
+
+                // System.out.println("\n");
+                // System.out.println("***************************");
+                //
+                // System.out.println(
+                //         "CLIENT ADDRESS: " + ca.getClientAddress().getClientAndAddressName()
+                // );
+                //
+                // System.out.println(
+                //         "EXPECTATIONS: " + expectations
+                // );
+                //
+                // System.out.println(
+                //         "DISCREPANCY TEXT (AI): " + discrepancyText
+                // );
+                //
+                // System.out.println("***************************");
+                // System.out.println("\n");
+                //
+                
 
                 ClientAddressDiscrepancyDTO discrepancy = new ClientAddressDiscrepancyDTO(
                         ca.getClientAddress(),

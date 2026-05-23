@@ -39,6 +39,15 @@ public class ClientAddress {
         this.addressName = addressName;
     }
 
+    /**
+     * Helper method. Get the client + address name,
+     * something like "Hotel Rossi, vicino parco nazionale"
+     * @return
+     */
+    public String getClientAndAddressName() {
+        return getClient().getLegalName() + ", " + getAddressName();
+    }
+    
     public Address getAddress() {
         return address;
     }
