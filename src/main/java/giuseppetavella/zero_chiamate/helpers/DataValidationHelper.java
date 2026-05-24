@@ -2,6 +2,7 @@ package giuseppetavella.zero_chiamate.helpers;
 
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -175,6 +176,16 @@ public class DataValidationHelper {
 
     }
 
-    
+    /**
+     * Require a valid URL.
+     */
+    public static void requireValidUrl(String url)
+    {
+        
+        if(!UrlHelper.isValidUrl(url)) {
+            throw new InvalidUrlException(url);
+        }
+        
+    }
 
 }

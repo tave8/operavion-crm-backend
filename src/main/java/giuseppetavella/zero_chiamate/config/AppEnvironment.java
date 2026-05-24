@@ -2,6 +2,8 @@ package giuseppetavella.zero_chiamate.config;
 
 import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
 import giuseppetavella.zero_chiamate.exceptions.AppStartupException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
+import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,9 +31,17 @@ public class AppEnvironment {
             @Value("${server.url}") String serverUrl,
             @Value("${frontend.production.url}") String frontendProductionUrl,
             @Value("${frontend.preview.url}") String frontendPreviewUrl,
-            @Value("${frontend.local.url}") String frontendLocalUrl) 
+            @Value("${frontend.local.url}") String frontendLocalUrl) throws InvalidUrlException
     {
+        
+        // validate the the URLs are valid
+        DataValidationHelper.requireValidUrl(serverUrl);
+        DataValidationHelper.requireValidUrl(frontendProductionUrl);
+        DataValidationHelper.requireValidUrl(frontendPreviewUrl);
+        DataValidationHelper.requireValidUrl(frontendLocalUrl);
+        
         this.whereami = whereami;
+        
         this.serverUrl = serverUrl;
         this.frontendProductionUrl = frontendProductionUrl;
         this.frontendPreviewUrl = frontendPreviewUrl;
@@ -79,8 +89,35 @@ public class AppEnvironment {
         throw new AppConfigurationException("While getting frontend URL, "
                                             +"no matching environment was found.");
     }
-    
 
+
+    /**
+     * Build the URL made of server URL (based on current env) + path. 
+     * 
+     * @param path
+     * @return
+     */
+    public String buildServer(String path) {
+        return getServerUrl() + path;
+    }
+
+    /**
+     * Build the URL made of frontend URL (based on current env) + path. 
+     * 
+     * @param path
+     * @return
+     */
+    public String buildFrontendUrl(String path) {
+        return getFrontendUrl() + path;
+    }
+    
+    
+    /**
+     * Get the current environment.
+     * TODO: could be an enum, something like AppEnv.LOCAL, AppEnv.PRODUCTION etc.
+     * 
+     * @return
+     */
     public String get() {
         return whereami;
     }
@@ -93,7 +130,8 @@ public class AppEnvironment {
      * 
      */
     @PostConstruct
-    public void validate() {
+    public void validate() throws AppStartupException
+    {
         if (!VALID_ENVIRONMENTS.contains(whereami)) {
             throw new AppStartupException(
                     "Invalid environment: '" + whereami + "'. " +
