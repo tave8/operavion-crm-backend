@@ -1,11 +1,21 @@
 package giuseppetavella.zero_chiamate.config;
 
 import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
+import giuseppetavella.zero_chiamate.exceptions.AppStartupException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AppEnvironment {
+
+    // all valid environments.
+    // if "whereami" property is not set exactly to one of these values,
+    // app will fail on startup
+    private static final List<String> VALID_ENVIRONMENTS = List.of("LOCAL", "PREVIEW", "PRODUCTION");
+
 
     // all these attributes are injected via constructor
     private final String whereami;
@@ -74,4 +84,23 @@ public class AppEnvironment {
     public String get() {
         return whereami;
     }
+
+
+    /**
+     * Runs after bean is created.
+     * Verifies that the "whereami" property has a legit value,
+     * i.e. that we are in a legit environment. 
+     * 
+     */
+    @PostConstruct
+    public void validate() {
+        if (!VALID_ENVIRONMENTS.contains(whereami)) {
+            throw new AppStartupException(
+                    "Invalid environment: '" + whereami + "'. " +
+                            "Valid values are: " + VALID_ENVIRONMENTS + ". " +
+                            "Check the 'whereami' property."
+            );
+        }
+    }
+    
 }
