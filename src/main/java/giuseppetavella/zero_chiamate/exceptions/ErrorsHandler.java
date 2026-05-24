@@ -76,6 +76,8 @@ public class ErrorsHandler {
     @ExceptionHandler(StripeAPIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleStripeAPIException(StripeAPIException ex) {
+
+        LOGGER.error("Error with Stripe API. DETAILS: {}", ex.getMessage());
         
         problemsEmailService.alertDevIfNonLocal(
                 "Error with Stripe API",
