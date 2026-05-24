@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailVerificationException;
@@ -34,12 +35,13 @@ public class ForgotPasswordService {
     @Autowired
     private PasswordEncoder bcrypt;
     
+    @Autowired
+    private AppEnvironment appEnvironment;
+    
     // the base endpoint at which the user 
     // will land upon clicking the authorization link
     private final String FRONTEND_ENDPOINT = "/auth/forgot-password/verify";
     
-    // this is a constructor-injected dependency
-    private final String frontendUrl;
     
     // how many minutes the user must wait before being authorized
     // to receive a new code.
@@ -52,11 +54,9 @@ public class ForgotPasswordService {
 
     // we inject dependencies
     public ForgotPasswordService(
-            @Qualifier("frontendUrl") String frontendUrl,
             @Qualifier("forgotPasswordNextCodeWaitTime") long forgotPasswordNextCodeWaitTime,
             @Qualifier("forgotPasswordSetPasswordTTL") long forgotPasswordSetPasswordTTL)
     {
-        this.frontendUrl = frontendUrl;
         this.NEXT_CODE_WAIT_TIME = forgotPasswordNextCodeWaitTime;
         this.SET_PASSWORD_TTL = forgotPasswordSetPasswordTTL;
     }
@@ -422,7 +422,7 @@ public class ForgotPasswordService {
         // something like:
         // /auth/forgot-password/verify/:code
         String path = FRONTEND_ENDPOINT + "/" + code;
-        return this.frontendUrl + path;
+        return appEnvironment.getFrontendUrl() + path;
     }
 
     private String buildForgotPasswordAuthorizationUrl(UUID code) {
