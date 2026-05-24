@@ -18,6 +18,9 @@ public class AppStartupRunner implements CommandLineRunner {
         // System.out.println(appEnvironment.isLocal());
         // System.out.println(appEnvironment.isPreview());
         // System.out.println(appEnvironment.isProduction());
+
+        // System.out.println(appEnvironment.getFrontendUrl());
+        // System.out.println(appEnvironment.getServerUrl());
         
     }
 }

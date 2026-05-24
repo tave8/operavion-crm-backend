@@ -79,6 +79,7 @@ public class StripeAPIConfig {
 
     /**
      * The price point ID of the product, which is the software itself.
+     * The price ID should change based on environment. 
      */
     @Bean(name = "stripeAPIPriceId")
     public String getStripeAPIPriceId(

@@ -360,7 +360,15 @@ public class ErrorsHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleGenericException(Exception ex) {
-        ex.printStackTrace();
+
+        LOGGER.error("Generic error in server. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Generic error in server",
+                ex.getMessage(),
+                ex
+        );
+        
         return new ErrorsToSendDTO("There was an error in the server.");
     }
 
