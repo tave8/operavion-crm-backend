@@ -4,6 +4,7 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 import giuseppetavella.zero_chiamate.domain.business.billing.BillingService;
+import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class StripeWebhookController {
     
     @Autowired
-    private BillingService billingService;
+    private StripeAPIService stripeAPIService;
     
     // dependency-injected
     private final String webhookSecret;
@@ -33,6 +34,11 @@ public class StripeWebhookController {
             @RequestHeader("Stripe-Signature") String sigHeader) 
     {
 
+        // stripeAPIService.createCustomer("giuseppetavella8@gmail.com", "Giuseppe Tavella");
+
+        // System.out.println("customer created");
+        
+        
         Event event;
 
         try {

@@ -1,9 +1,11 @@
 package giuseppetavella.zero_chiamate.domain.entities.companies;
 
+import giuseppetavella.zero_chiamate.exceptions.BillingException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataFormatException;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +24,14 @@ public class Company {
     
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+
+    /**
+     * We use this ID to identify the company
+     * in Stripe API.
+     */
+    @Column(name = "stripe_customer_id", unique = true)
+    private String stripeCustomerId;
+
     
     protected Company() {}
     
@@ -62,6 +72,40 @@ public class Company {
 
     public String getLegalName() {
         return legalName;
+    }
+
+    /**
+     * We set the Stripe customer ID
+     * after the company is saved to DB.
+     * 
+     * @param stripeCustomerId
+     */
+    public void setStripeCustomerId(String stripeCustomerId) throws BillingException 
+    {
+        // if Stripe company ID exists, throw
+        if(getStripeCustomerId() != null) {
+            throw new BillingException("While setting the Stripe customer ID "
+                                        +"for company with ID " + getId() + ", this company "
+                                        +"already has a non-null Stripe customer ID.");
+        }
+        this.stripeCustomerId = stripeCustomerId;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Company company = (Company) o;
+        return Objects.equals(id, company.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

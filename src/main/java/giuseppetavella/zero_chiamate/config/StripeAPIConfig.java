@@ -10,7 +10,20 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("application.properties")
 public class StripeAPIConfig {
+    
 
+    /**
+     * The Stripe API client.
+     *
+     */
+    @Bean
+    public StripeClient getStripeClient(
+            @Qualifier("stripeAPISecretKey") String stripeAPISecretKey)
+    {
+        return new StripeClient(stripeAPISecretKey);
+    }
+    
+    
     /**
      * Stripe API secret key.
      */
@@ -32,16 +45,6 @@ public class StripeAPIConfig {
         return stripeAPIWebhookSecret;
     }
 
-    
-    /**
-     * The Stripe API client.
-     * 
-     * @return
-     */
-    public StripeClient getStripeClient(
-            @Qualifier("stripeAPISecretKey") String stripeAPISecretKey)
-    {
-        return new StripeClient(stripeAPISecretKey);
-    }
+
 
 }

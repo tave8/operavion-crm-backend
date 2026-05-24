@@ -673,3 +673,14 @@ Therefore, in this version, these are the assumptions:
 # Configuration
 
 Run/Edit configuration. Spring must be in "local" profile when in local environment?
+
+
+# Stripe API local configuration
+
+
+
+`stripe listen --forward-to localhost:3001/webhooks/stripe`
+
+`stripe trigger payment_intent.succeeded`
+
+

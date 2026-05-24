@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
+import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -51,6 +52,21 @@ public class ErrorsHandler {
     public ErrorsToSendDTO handleInvalidFileUploaded(InvalidFileUploadedException ex) {
         return new ErrorsToSendDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(BillingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleBillingException(BillingException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(StripeAPIException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleStripeAPIException(StripeAPIException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
+
 
     @ExceptionHandler(EmailVerificationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
