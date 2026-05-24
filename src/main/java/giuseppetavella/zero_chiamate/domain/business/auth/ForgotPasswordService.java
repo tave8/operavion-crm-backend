@@ -40,7 +40,7 @@ public class ForgotPasswordService {
     
     // the base endpoint at which the user 
     // will land upon clicking the authorization link
-    private final String FRONTEND_ENDPOINT = "/auth/forgot-password/verify";
+    private final String VERIFY_AUTHORIZATION_FRONTEND_ENDPOINT = "/auth/forgot-password/verify";
     
     
     // how many minutes the user must wait before being authorized
@@ -421,8 +421,8 @@ public class ForgotPasswordService {
     private String buildForgotPasswordAuthorizationUrl(String code) {
         // something like:
         // /auth/forgot-password/verify/:code
-        String path = FRONTEND_ENDPOINT + "/" + code;
-        return appEnvironment.getFrontendUrl() + path;
+        String path = VERIFY_AUTHORIZATION_FRONTEND_ENDPOINT + "/" + code;
+        return appEnvironment.buildFrontendUrl(path);
     }
 
     private String buildForgotPasswordAuthorizationUrl(UUID code) {

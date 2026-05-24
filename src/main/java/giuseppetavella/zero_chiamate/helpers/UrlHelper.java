@@ -21,15 +21,19 @@ public class UrlHelper {
      * @param base
      * @param path
      * @return
+     * 
+     * @throws InvalidUrlException 
      */
-    public static String buildUrl(String base, String path) {
+    public static String buildUrl(String base, String path) throws InvalidUrlException
+    {
         try {
             String combined = base + path;
 
             // reject double slashes in path
             String pathPart = combined.replaceFirst("^https?://[^/]+", "");
+            
             if (pathPart.contains("//")) {
-                throw new AppConfigurationException(
+                throw new InvalidUrlException(
                         "Invalid URL: '" + combined + "'. Double slashes are not allowed in path."
                 );
             }
@@ -47,13 +51,13 @@ public class UrlHelper {
             }
 
             if (uri.getScheme() == null || uri.getHost() == null) {
-                throw new AppConfigurationException(
+                throw new InvalidUrlException(
                         "Invalid URL: '" + combined + "'. Missing scheme or host."
                 );
             }
 
             if (!VALID_SCHEMES.contains(uri.getScheme())) {
-                throw new AppConfigurationException(
+                throw new InvalidUrlException(
                         "Invalid URL scheme: '" + uri.getScheme() + "'. Must be http or https."
                 );
             }
@@ -61,7 +65,7 @@ public class UrlHelper {
             return uri.toString();
 
         } catch (URISyntaxException e) {
-            throw new AppConfigurationException(
+            throw new InvalidUrlException(
                     "Invalid URL syntax: '" + base + path + "'. Error: " + e.getMessage()
             );
         }

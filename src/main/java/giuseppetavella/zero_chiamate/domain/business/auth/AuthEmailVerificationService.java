@@ -123,7 +123,7 @@ public class AuthEmailVerificationService {
      */
     private String buildEmailVerificationUrl(String code) {
         String path = "/auth/verify-email/" + code;
-        return appEnvironment.getServerUrl() + path;
+        return appEnvironment.buildServerUrl(path);
     }
     
 }

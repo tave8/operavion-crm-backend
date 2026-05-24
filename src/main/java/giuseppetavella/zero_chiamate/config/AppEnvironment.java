@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
 import giuseppetavella.zero_chiamate.exceptions.AppStartupException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
 import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.UrlHelper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -97,8 +98,12 @@ public class AppEnvironment {
      * @param path
      * @return
      */
-    public String buildServer(String path) {
-        return getServerUrl() + path;
+    public String buildServerUrl(String path) throws InvalidUrlException
+    {
+        return UrlHelper.buildUrl(
+                getServerUrl(),
+                path
+        ); 
     }
 
     /**
@@ -107,8 +112,13 @@ public class AppEnvironment {
      * @param path
      * @return
      */
-    public String buildFrontendUrl(String path) {
-        return getFrontendUrl() + path;
+    public String buildFrontendUrl(String path) throws InvalidUrlException
+    {
+        return UrlHelper.buildUrl(
+            getFrontendUrl(),
+            path    
+        );
+        
     }
     
     
