@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +18,12 @@ public class AuthEmailVerificationService {
     @Autowired
     private EmailVerificationRepository emailVerificationRepository;
     
-    // a bean
-    private final String serverUrl;
-
+    @Autowired
+    private AppEnvironment appEnvironment;
+    
     // verification code time to live, in minutes
     private static final long VERIFICATION_CODE_TTL = 10;
-
-
-    public AuthEmailVerificationService(
-            @Qualifier("serverUrl") String serverUrl)
-    {
-        this.serverUrl = serverUrl;
-    }
+    
 
 
 
@@ -128,7 +123,7 @@ public class AuthEmailVerificationService {
      */
     private String buildEmailVerificationUrl(String code) {
         String path = "/auth/verify-email/" + code;
-        return this.serverUrl + path;
+        return appEnvironment.getServerUrl() + path;
     }
     
 }

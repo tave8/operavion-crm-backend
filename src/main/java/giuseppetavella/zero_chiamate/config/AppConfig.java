@@ -16,15 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("application.properties")
 public class AppConfig { 
 
-
-    /**
-     * The URL of this server.
-     */
-    @Bean(name = "serverUrl")
-    public String getServerUrl(@Value("${server.url}") String serverUrl) {
-        return serverUrl;
-    }
-
+    
     /**
      * The URL of that this server is "connected" to.
      * You can see this as the frontend URL that belongs 
