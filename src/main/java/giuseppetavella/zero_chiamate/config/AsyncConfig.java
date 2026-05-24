@@ -21,13 +21,20 @@ public class AsyncConfig implements AsyncConfigurer {
     // logger
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfig.class);
 
+    /**
+     * Catch async errors.
+     * 
+     * @return
+     */
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (throwable, method, params) -> {
             
+            // log 
             LOGGER.error("Uncaught async exception in method: '{}'. Error: {}",
                     method.getName(), throwable.getMessage());
 
+            // alert
             problemsEmailService.alertDev(
                     "Uncaught error during async operation.",
                     method.getName(),
