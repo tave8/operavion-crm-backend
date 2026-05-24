@@ -5,6 +5,7 @@ import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIValidator;
+import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIWebhookHandlersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ public class StripeWebhookController {
     
     @Autowired
     private StripeAPIService stripeAPIService;
+    
+    @Autowired
+    private StripeAPIWebhookHandlersService webhookHandlersService;
     
     @Autowired
     private StripeAPIValidator stripeAPIValidator;
@@ -80,8 +84,8 @@ public class StripeWebhookController {
                 // we must make sure that the API versions of what we expect
                 // and what Stripe sends, actually match
                 stripeAPIValidator.requireStableAPIVersion(event);
-                
-                stripeAPIService.handleSubscriptionUpdated(event);
+
+                webhookHandlersService.handleSubscriptionUpdated(event);
             
             }
             case "customer.subscription.deleted" -> {

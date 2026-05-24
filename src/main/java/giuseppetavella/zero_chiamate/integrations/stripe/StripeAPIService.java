@@ -11,8 +11,16 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.exceptions.NotFoundException;
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+/**
+ * Stripe API service that deals with sync requests.
+ * Thus, each method must be sync, so a normal method.
+ * If you're handling a webhook, see StripeAPIWebhookHandlersService,
+ * where methods are async.
+ * 
+ */
 @Service
 public class StripeAPIService {
 
@@ -46,43 +54,5 @@ public class StripeAPIService {
         }
     }
 
-    
-    /**
-     * 
-     * 
-     * 
-     * @param event
-     */
-    public void handleSubscriptionUpdated(Event event) {
-
-        // var deserializer = event.getDataObjectDeserializer();
-        
-        // System.out.println(">>> Event type: " + event.getType());
-        // System.out.println(">>> Has object: " + deserializer.getObject().isPresent());
-        // System.out.println(">>> API version: " + event.getApiVersion());
-        //
-        // System.out.println(">>> Raw JSON: " + event.getData().getObject().toJson());
-        // System.out.println(">>> Object type: " + event.getData().getObject().getClass().getName());
-        //
-        // System.out.println(">>> Raw object: " + event.getData().toJson());
-        
-        
-        
-        Subscription subscription = (Subscription) event
-                .getDataObjectDeserializer()
-                .getObject()
-                .orElseThrow(() -> new StripeAPIException("Could not deserialize subscription from event"));
-
-        String stripeCustomerId = subscription.getCustomer();
-        String stripeStatus = subscription.getStatus();
-
-        StripeAPISubscriptionStatus newStatus = StripeAPISubscriptionStatus.fromStripe(stripeStatus);
-
-        Company company = companiesService.findByStripeCustomerId(stripeCustomerId)
-                .orElseThrow(() -> new NotFoundException("No company found for Stripe customer: " + stripeCustomerId));
-
-        company.setStripeSubscriptionStatus(newStatus);
-        companiesService.save(company);
-    }
 
 }
