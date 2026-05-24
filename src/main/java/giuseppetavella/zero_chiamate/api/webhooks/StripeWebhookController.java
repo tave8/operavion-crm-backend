@@ -65,7 +65,8 @@ public class StripeWebhookController {
         
         }
 
-        
+        // we must make sure that the API versions of what we expect
+        // and what Stripe sends, actually match
         stripeAPIValidator.requireStableAPIVersion(event);
 
         

@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.email;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -20,6 +21,7 @@ public class ProblemsEmailService {
     /**
      * Email the developer, about a problem.
      */
+    @Async
     public void sendEmailToDevForProblem(String subject,
                                          String details,
                                          Exception exception)
@@ -47,6 +49,7 @@ public class ProblemsEmailService {
      * This email should be sent when a system problem
      * occurs during a background job.
      */
+    @Async
     public void sendEmailToDevForSystemProblemDuringBackgroundJob(String jobName,
                                                                   Exception exception)
     {
@@ -63,6 +66,7 @@ public class ProblemsEmailService {
      * This email should be sent when an unsuccessful
      * job execution occurs (not a system problem during background job).
      * */
+    @Async
     public void sendEmailToDevForUnsuccessfulBackgroundJobExecution(JobExecution jobExecution,
                                                                     Integer maxRetries,
                                                                     Exception exception)

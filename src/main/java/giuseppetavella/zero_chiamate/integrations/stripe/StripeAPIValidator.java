@@ -45,7 +45,7 @@ public class StripeAPIValidator {
                             "Event type: '" + event.getType() + "'. " +
                             "Event ID: '" + event.getId() + "'. " +
                             "This likely means the Stripe account's default API version was changed. " +
-                            "Update the expected Stripe API version in Stripe configuration, "
+                            "Update the expected Stripe API version in the internal configuration (source code), "
                             +"or roll back the version in the Stripe Dashboard."
             );
         }

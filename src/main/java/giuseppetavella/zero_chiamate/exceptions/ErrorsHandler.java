@@ -1,11 +1,13 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
+import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -30,6 +32,9 @@ import java.util.List;
 @RestControllerAdvice
 public class ErrorsHandler {
 
+    @Autowired
+    private ProblemsEmailService problemsEmailService;
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorsHandler.class);
     
     
@@ -71,6 +76,16 @@ public class ErrorsHandler {
     @ExceptionHandler(StripeAPIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleStripeAPIException(StripeAPIException ex) {
+        
+        // send an email to developer, only in non-local environment
+        // 
+        problemsEmailService.sendEmailToDevForProblem(
+                "Error with Stripe API",
+                ex.getMessage(),
+                ex
+        );
+        
+        
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
