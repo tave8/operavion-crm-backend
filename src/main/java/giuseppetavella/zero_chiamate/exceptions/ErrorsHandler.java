@@ -1,7 +1,11 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
+import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
 import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.tool.schema.spi.CommandAcceptanceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -25,6 +29,10 @@ import java.util.List;
 
 @RestControllerAdvice
 public class ErrorsHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorsHandler.class);
+    
+    
     //
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -322,6 +330,17 @@ public class ErrorsHandler {
         ex.printStackTrace();
         return new ErrorsToSendDTO("There was an error in the server.");
     }
+
+    // this is a startup error, not an error during request lifecyle.
+    // it means, it cannot be caught like i do with other errors
+    // @ExceptionHandler(CommandAcceptanceException.class)
+    // @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    // public ErrorsToSendDTO handleCommandAcceptanceException(CommandAcceptanceException ex) {
+    //     // ex.printStackTrace();
+    //     LOGGER.error(ex.getMessage());
+    //     return new ErrorsToSendDTO("Fatal error at the ORM level. "
+    //                                 +"This is likely due to a fatal error at the database level.");
+    // }
     
 
     @ExceptionHandler(Exception.class)

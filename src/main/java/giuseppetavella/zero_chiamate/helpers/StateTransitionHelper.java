@@ -39,7 +39,16 @@ public class StateTransitionHelper {
         }
         
         // if there's a current state
-        return stateMap.get(currentState).contains(desiredState);
+        List<String> validNextStates = stateMap.get(currentState);
+        
+        // the current state passed does not exist  in the valid next states
+        if (validNextStates == null) {
+            throw new InvalidStateTransitionException(
+                    "Unknown state: " + currentState
+            );
+        }
+        
+        return validNextStates.contains(desiredState);
 
     }
 

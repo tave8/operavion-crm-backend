@@ -26,32 +26,51 @@ public class StripeWebhookController {
     {
         this.webhookSecret = stripeAPIWebhookSecret;
     }
-    
 
+
+    /**
+     * <h1>Webhook that receives events from Stripe API</h1>
+     *
+     * 
+     * @param payload
+     * @param sigHeader
+     * @return
+     */
     @PostMapping("/stripe")
     public ResponseEntity<?> handleWebhook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) 
     {
-
-        // stripeAPIService.createCustomer("giuseppetavella8@gmail.com", "Giuseppe Tavella");
-
-        // System.out.println("customer created");
         
-        
+        // Stripe event
         Event event;
 
+        // *********************************
+        // VERIFY SIGNATURE
+        // *********************************
+        
         try {
-            
+            // - verify that the request is coming from Stripe
+            // - deserialize payload string into actual Stripe Event instance
             event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
             
         } catch (SignatureVerificationException e) {
         
+            // verification failed: possible causes:
+            // event is not coming from Stripe, etc.
             return ResponseEntity.status(400).body("Invalid signature");
         
         }
 
-        System.out.println(event);
+        // stripeAPIService.createCustomer("giuseppetavella8@gmail.com", "Giuseppe Tavella");
+
+        // System.out.println("customer created");
+
+        
+        // *********************************
+        // HANDLE STRIPE EVENTS
+        // *********************************
+
         
         switch (event.getType()) {
             case "customer.subscription.updated" -> {
