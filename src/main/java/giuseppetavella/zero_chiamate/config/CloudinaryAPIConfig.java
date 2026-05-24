@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Configuration
 @PropertySource("application.properties")
-public class CloudinaryConfig {
+public class CloudinaryAPIConfig {
 
 
     /**

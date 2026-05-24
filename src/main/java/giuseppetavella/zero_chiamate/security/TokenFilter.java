@@ -91,6 +91,11 @@ public class TokenFilter extends OncePerRequestFilter {
         
         boolean isAuthPath = matcher.match("/auth/**", path);
         boolean isResetPasswordPath = matcher.match("/auth/reset-password-first-login", path);
+        
+        // with Stripe API, we authenticated the webhook with the 
+        // webhook signature, so we must not authenticated with JWT
+        boolean isStripeWebhook = matcher.match("/webhooks/stripe", path);
+        
         boolean isFileUpload = matcher.match("/file-upload/**", path);
         // boolean isNotificationsPath = matcher.match("/notifications/**", path);
         // boolean isAI = matcher.match("/ai/**", path);
@@ -103,6 +108,11 @@ public class TokenFilter extends OncePerRequestFilter {
         // }
         //
         if(isFileUpload || isExtractFile) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if(isStripeWebhook) {
             filterChain.doFilter(request, response);
             return;
         }

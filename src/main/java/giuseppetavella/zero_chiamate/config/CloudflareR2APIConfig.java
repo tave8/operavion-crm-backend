@@ -15,7 +15,7 @@ import java.net.URI;
 
 @Configuration
 @PropertySource("application.properties")
-public class CloudflareR2Config {
+public class CloudflareR2APIConfig {
 
 
     /**
