@@ -77,14 +77,11 @@ public class ErrorsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleStripeAPIException(StripeAPIException ex) {
         
-        // send an email to developer, only in non-local environment
-        // 
-        problemsEmailService.sendEmailToDevForProblem(
+        problemsEmailService.alertDevIfNonLocal(
                 "Error with Stripe API",
                 ex.getMessage(),
                 ex
         );
-        
         
         return new ErrorsToSendDTO(ex.getMessage());
     }

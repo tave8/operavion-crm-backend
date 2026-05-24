@@ -1,11 +1,10 @@
 package giuseppetavella.zero_chiamate.config;
 
-import com.cloudinary.Cloudinary;
+import giuseppetavella.zero_chiamate.exceptions.AppStartupException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 
 
 /**
@@ -50,7 +49,7 @@ public class AppConfig {
         if(whereami.equals("PRODUCTION")) {
             return frontendProductionUrl;
         }
-        throw new RuntimeException("While loading env vars in a "
+        throw new AppStartupException("While loading env vars in a "
                                     +"Spring bean, the value '" + whereami+ "' for 'whereami' was not "
                                     +"found in the env vars related to frontend URL." );
     }

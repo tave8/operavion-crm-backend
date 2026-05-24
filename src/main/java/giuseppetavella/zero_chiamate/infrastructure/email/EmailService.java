@@ -39,6 +39,9 @@ public class EmailService {
                             List<EmailAttachment> attachments) throws EmailSendingException 
     {
         
+        // TODO: rate limit emails. max 5 emails per second based on Resend API limit
+        
+        
         // check that the email is a valid email
         StringHelper.requireValidEmailElseThrowWith(
                 recipient, 

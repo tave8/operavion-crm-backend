@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.email;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,19 @@ public class ProblemsEmailService {
     
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private AppEnvironment appEnvironment;
 
 
     /**
      * Email the developer, about a problem.
+     * Only fires in non-local environment.
+     * 
      */
-    @Async
-    public void sendEmailToDevForProblem(String subject,
-                                         String details,
-                                         Exception exception)
+    public void alertDev(String subject,
+                         String details,
+                         Exception exception)
     {
 
         OffsetDateTime now = OffsetDateTime.now();
@@ -44,6 +49,22 @@ public class ProblemsEmailService {
         );
     }
 
+    
+    @Async
+    public void alertDevIfNonLocal(String subject,
+                                 String details,
+                                 Exception exception)
+    {
+        
+        // if local environment, skip
+        if(appEnvironment.isLocal()) {
+            return;
+        }
+        
+        // alert dev if non-local environment
+        alertDev(subject, details, exception);
+    }
+    
 
     /**
      * This email should be sent when a system problem
@@ -58,7 +79,7 @@ public class ProblemsEmailService {
 
         String details = "Job name: " + jobName;
 
-        this.sendEmailToDevForProblem(subject, details, exception);
+        this.alertDev(subject, details, exception);
     }
 
 

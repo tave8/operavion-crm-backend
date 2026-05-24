@@ -1,5 +1,7 @@
 package giuseppetavella.zero_chiamate;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +14,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @SpringBootApplication
 public class App {
+	
+
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(App.class, args);
 	}
+	
+
 
 	/**
 	 * This bean was used to check whether Flyway dependency exists.

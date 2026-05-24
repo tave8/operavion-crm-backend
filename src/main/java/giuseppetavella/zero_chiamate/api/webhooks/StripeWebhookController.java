@@ -65,27 +65,37 @@ public class StripeWebhookController {
         
         }
 
-        // we must make sure that the API versions of what we expect
-        // and what Stripe sends, actually match
-        stripeAPIValidator.requireStableAPIVersion(event);
-
         
         // we have the event, now we can process it with custom logic
-        // System.out.println(event.getData());
         
         // *********************************
         // HANDLE STRIPE EVENTS
         // *********************************
-
+        
+        // we ignore events that we are not interested in,
+        // but we run checks on the evens we are intested in
 
         switch (event.getType()) {
             case "customer.subscription.updated" -> {
+                // we must make sure that the API versions of what we expect
+                // and what Stripe sends, actually match
+                stripeAPIValidator.requireStableAPIVersion(event);
+                
                 stripeAPIService.handleSubscriptionUpdated(event);
+            
             }
             case "customer.subscription.deleted" -> {
+                // we must make sure that the API versions of what we expect
+                // and what Stripe sends, actually match
+                stripeAPIValidator.requireStableAPIVersion(event);
+                
                 // stripeAPIService.handleSubscriptionDeleted(event);
             }
             case "invoice.payment_failed" -> {
+                // we must make sure that the API versions of what we expect
+                // and what Stripe sends, actually match
+                stripeAPIValidator.requireStableAPIVersion(event);
+                
                 // stripeAPIService.handlePaymentFailed(event);
             }
             default -> {
