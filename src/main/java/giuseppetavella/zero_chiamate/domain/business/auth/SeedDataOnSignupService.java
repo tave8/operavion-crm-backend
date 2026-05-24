@@ -9,6 +9,7 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.tasks.Task;
 import giuseppetavella.zero_chiamate.exceptions.SeedDataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

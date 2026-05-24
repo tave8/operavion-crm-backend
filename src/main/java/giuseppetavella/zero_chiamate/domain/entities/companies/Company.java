@@ -102,10 +102,12 @@ public class Company {
     public void setStripeCustomerId(String stripeCustomerId) throws BillingException 
     {
         // if Stripe company ID exists, throw
+        // "internal" means, the company in "my software", not in stripe API
         if(getStripeCustomerId() != null) {
             throw new BillingException("While setting the Stripe customer ID "
-                                        +"for company with ID " + getId() + ", this company "
-                                        +"already has a non-null Stripe customer ID.");
+                                        +"for company with ID " + getId() + " (internal), this company "
+                                        +"already has a non-null Stripe customer ID with value " 
+                                        + getStripeCustomerId() + ". ");
         }
         this.stripeCustomerId = stripeCustomerId;
     }

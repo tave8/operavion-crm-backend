@@ -29,16 +29,17 @@ public class ProblemsEmailService {
      */
     public void alertDev(String subject,
                          String details,
-                         Exception exception)
+                         String exceptionMessage,
+                         String stackTrace)
     {
 
         OffsetDateTime now = OffsetDateTime.now();
 
         Map<String, Object> vars = Map.of(
-                "message", exception.getMessage(),
+                "message", exceptionMessage,
                 "details", details,
                 "timestamp", now,
-                "stackTrace", ExceptionUtils.getStackTrace(exception)
+                "stackTrace", stackTrace
         );
 
         emailService.sendEmailFromTemplate(
@@ -47,6 +48,21 @@ public class ProblemsEmailService {
                 "giuseppetavella8@gmail.com",
                 subject
         );
+    }
+    
+
+    public void alertDev(String subject,
+                         String details,
+                         Exception exception)
+    {
+
+        this.alertDev(
+                subject,
+                details,
+                exception.getMessage(),
+                ExceptionUtils.getStackTrace(exception)
+        );
+        
     }
 
     

@@ -12,6 +12,7 @@ import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.OperatorLogin
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.SignupSentDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.to_send.AfterLoginDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.to_send.AfterSignupDTO;
+import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import giuseppetavella.zero_chiamate.security.TokenTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder bcrypt;
+    
+    @Autowired
+    private StripeAPIService stripeAPIService;
 
 
     
@@ -147,20 +151,50 @@ public class AuthService {
     @Transactional
     public AfterSignupDTO signup(SignupSentDTO body) 
     {
+
+        // ************************
+        // CREATE NEW COMPANY IN MY DB
+        // ************************
         
         // add company to DB
         Company companyFromDB = this.companiesService.addCompany(body);
+
+        // ************************
+        // CREATE NEW ADMIN & ASSOCIATE IT TO COMPANY
+        // ************************
         
         // add the admin and associate it to the company
         User newUserFromDB = this.usersService.addAdminOnlyOnce(body, companyFromDB);
 
+        // ************************
+        // CREATE NEW COMPANY IN STRIPE API
+        // ************************
+
+        // create Stripe customer and save ID to company
+        String stripeCustomerId = this.stripeAPIService.createCustomer(
+                companyFromDB.getEmail(),
+                companyFromDB.getLegalName()
+        );
+
+        // we associate the Stripe customer ID to this 
+        // newly created company
+        companyFromDB.setStripeCustomerId(stripeCustomerId);
+
+        // ************************
+        // GENERATE EMAIL VERIFICATION CODE & SEND EMAIL
+        // ************************
+
         // send email verification code to the admin
         String verificationUrl = this.authEmailVerificationService.generateNewEmailVerificationUrl(newUserFromDB);
-        
+
         // send email
         authEmailService.sendVerifyEmail(newUserFromDB, verificationUrl);
         
-        // seed data - this could be done async
+        // ************************
+        // SEED COMPANY DATA
+        // ************************
+        
+        // seed data
         this.seedDataOnSignupService.seedStandardChecklists(companyFromDB);
         
         return new AfterSignupDTO(

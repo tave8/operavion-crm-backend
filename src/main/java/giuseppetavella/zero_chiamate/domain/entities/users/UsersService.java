@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.entities.users;
 
+import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.exceptions.*;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.NewUserSentDTO;
@@ -36,6 +37,9 @@ public class UsersService {
 
     @Autowired
     private ImageUploadService imageUploadService;
+    
+    @Autowired
+    private AuthEmailVerificationService authEmailVerificationService;
 
 
     
@@ -200,8 +204,14 @@ public class UsersService {
             
             User userFromDB = this.addAnyUser(newUser);
             
-            // send email with verify email
-            authEmailService.sendVerifyEmailWithVerificationUrl(userFromDB);
+            // ******************
+            // SEND EMAIL VERIFICATION
+            // ******************
+
+            String verificationUrl = authEmailVerificationService.generateNewEmailVerificationUrl(userFromDB);
+
+            authEmailService.sendVerifyEmail(userFromDB, verificationUrl);
+            
             
             return userFromDB;
             

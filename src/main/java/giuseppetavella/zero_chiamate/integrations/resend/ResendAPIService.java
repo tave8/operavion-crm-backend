@@ -52,6 +52,8 @@ public class ResendAPIService {
 
         try {
 
+            // this is where we send the email with the API,
+            // and where the "journey" of email sending ends for our system
             CreateEmailResponse data = resend.emails().send(params);
             
             return data.getId();
