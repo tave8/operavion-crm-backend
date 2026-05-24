@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
 import giuseppetavella.zero_chiamate.config.AppEnvironment;
+import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,11 @@ public class AuthEmailVerificationService {
 
     /**
      * Verify if the code is valid, not expired, and was not used.
+     * 
+     * @return the user associated to the verification code
      */
     @Transactional
-    public void verifyEmailVerificationCode(String codeAsStr) throws EmailVerificationException
+    public User verifyEmailVerificationCode(String codeAsStr) throws EmailVerificationException
     {
         UUID code;
 
@@ -87,6 +90,8 @@ public class AuthEmailVerificationService {
             throw new EmailVerificationException("This code is not valid (error 3)");
         }
 
+        // the user associated to the verification code
+        return codeFromDB.getUser();
 
     }
 
