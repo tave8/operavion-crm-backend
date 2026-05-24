@@ -7,33 +7,40 @@ import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.SignupSentDTO
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CompaniesService {
 
     @Autowired
-    private CompanyRepository companyRepository;
+    private CompaniesRepository companiesRepository;
 
     /**
      * Find company by ID.
      */
-    public Company findById(UUID companyId) throws NotFoundException {
-        return this.companyRepository.findById(companyId).orElseThrow(() -> new NotFoundException(companyId, "company"));
+    public Company getById(UUID companyId) throws NotFoundException {
+        return this.companiesRepository.findById(companyId).orElseThrow(() -> new NotFoundException(companyId, "company"));
     }
 
-    public Company findById(String companyId) throws NotFoundException {
+    public Company getById(String companyId) throws NotFoundException {
         try {
             
-            return this.findById(UUID.fromString(companyId));
+            return this.getById(UUID.fromString(companyId));
             
         } catch(IllegalArgumentException ex) {
             throw new InvalidUUIDStringException(companyId);
         }
     }
 
+
+    public Optional<Company> findByStripeCustomerId(String stripeCustomerId) {
+        return companiesRepository.findByStripeCustomerId(stripeCustomerId);
+    }
+    
+
     public Company save(Company company) {
-        return this.companyRepository.save(company);
+        return this.companiesRepository.save(company);
     }
 
     /**
@@ -51,7 +58,7 @@ public class CompaniesService {
                 body.email()
         );
         
-        return this.companyRepository.save(company);
+        return this.companiesRepository.save(company);
         
     }
 
@@ -60,7 +67,7 @@ public class CompaniesService {
      * A company with the given email exists?
      */
     public boolean existsByEmail(String email) {
-        return this.companyRepository.existsByEmail(email);
+        return this.companiesRepository.existsByEmail(email);
     }
     
 
