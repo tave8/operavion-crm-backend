@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.api.webhooks;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
+import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIProperties;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIValidator;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIWebhookHandlersService;
@@ -24,15 +25,10 @@ public class StripeWebhookController {
     @Autowired
     private StripeAPIValidator stripeAPIValidator;
     
-    // dependency-injected
-    private final String webhookSecret;
+    @Autowired
+    private StripeAPIProperties APIproperties;
     
-    public StripeWebhookController(
-            @Qualifier("stripeAPIWebhookSecret") String stripeAPIWebhookSecret) 
-    {
-        this.webhookSecret = stripeAPIWebhookSecret;
-    }
-
+    
 
     /**
      * <h1>Webhook that receives events from Stripe API</h1>
@@ -59,7 +55,7 @@ public class StripeWebhookController {
         try {
             // - verify that the request is coming from Stripe
             // - deserialize payload string into actual Stripe Event instance
-            event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
+            event = Webhook.constructEvent(payload, sigHeader, APIproperties.getWebhookSecret());
             
         } catch (SignatureVerificationException e) {
         

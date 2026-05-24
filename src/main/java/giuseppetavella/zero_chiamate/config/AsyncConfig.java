@@ -35,7 +35,7 @@ public class AsyncConfig implements AsyncConfigurer {
                     method.getName(), throwable.getMessage());
 
             // alert
-            problemsEmailService.alertDev(
+            problemsEmailService.alertDevIfNonLocal(
                     "Uncaught error during async operation.",
                     method.getName(),
                     throwable.getMessage(),

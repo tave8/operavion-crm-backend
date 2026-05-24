@@ -23,13 +23,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StripeAPIService {
-
-    // this injects the StripeClient we defined in StripeAPIConfig
+    
     @Autowired
-    private StripeClient stripeClient;
+    private StripeAPIProperties APIproperties;
 
     @Autowired
     private CompaniesService companiesService;
+    
     
     
     /**
@@ -46,7 +46,7 @@ public class StripeAPIService {
                     .setName(companyName)
                     .build();
 
-            Customer customer = stripeClient.customers().create(params);
+            Customer customer = APIproperties.getStripeClient().customers().create(params);
             return customer.getId();
 
         } catch (StripeException e) {

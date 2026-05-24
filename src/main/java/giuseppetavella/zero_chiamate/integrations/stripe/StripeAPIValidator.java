@@ -12,14 +12,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class StripeAPIValidator {
-
-    // injected dependency
-    private final String expectedStripeAPIVersion;
     
-    public StripeAPIValidator(@Qualifier("expectedStripeAPIVersion") String expectedStripeAPIVersion) 
-    {
-        this.expectedStripeAPIVersion = expectedStripeAPIVersion;    
-    }
+    @Autowired
+    private StripeAPIProperties APIproperties;
     
     
     /**
@@ -40,7 +35,7 @@ public class StripeAPIValidator {
         {
             throw new StripeAPIException(
                     "Stripe API version mismatch detected. " +
-                            "Expected: '" + expectedStripeAPIVersion + "'. " +
+                            "Expected: '" + APIproperties.getExpectedAPIVersion() + "'. " +
                             "Received: '" + event.getApiVersion() + "'. " +
                             "Event type: '" + event.getType() + "'. " +
                             "Event ID: '" + event.getId() + "'. " +
@@ -66,7 +61,7 @@ public class StripeAPIValidator {
                                         +"has a fixed version, the event is null.");
         }
         
-        return expectedStripeAPIVersion.equals(event.getApiVersion());
+        return APIproperties.getExpectedAPIVersion().equals(event.getApiVersion());
         
     }
 

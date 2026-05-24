@@ -69,7 +69,8 @@ public class ProblemsEmailService {
     @Async
     public void alertDevIfNonLocal(String subject,
                                  String details,
-                                 Exception exception)
+                                   String exceptionMessage,
+                                   String stackTrace)
     {
         
         // if local environment, skip
@@ -78,9 +79,25 @@ public class ProblemsEmailService {
         }
         
         // alert dev if non-local environment
+        alertDev(subject, details, exceptionMessage, stackTrace);
+    }
+
+    
+    @Async
+    public void alertDevIfNonLocal(String subject,
+                                   String details,
+                                   Exception exception)
+    {
+
+        // if local environment, skip
+        if(appEnvironment.isLocal()) {
+            return;
+        }
+
+        // alert dev if non-local environment
         alertDev(subject, details, exception);
     }
-    
+
 
     /**
      * This email should be sent when a system problem
