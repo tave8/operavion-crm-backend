@@ -100,6 +100,32 @@ public class Company {
     }
 
     /**
+     * Is Stripe subscription trial or active? (billing)
+     * Use it to verify if user's Stripe subscription 
+     * is either trialing or subscription was paid.
+     */
+    public boolean isStripeSubscriptionTrialOrActive()
+    {
+        return List.of(
+             StripeAPISubscriptionStatus.TRIALING,
+             StripeAPISubscriptionStatus.ACTIVE       
+        ).contains(getStripeSubscriptionStatus());
+    }
+
+    /**
+     * Is Stripe subscription status NOT trial AND not active?
+     * This means the user has not an active subscription 
+     * and is not in trial either.
+     * 
+     * @return
+     */
+    public boolean isStripeSubscriptionInactive()
+    {
+        return !isStripeSubscriptionTrialOrActive();
+    }
+    
+    
+    /**
      * We set the Stripe customer ID
      * after the company is saved to DB.
      * 

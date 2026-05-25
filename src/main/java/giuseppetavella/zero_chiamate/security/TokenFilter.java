@@ -283,6 +283,26 @@ public class TokenFilter extends OncePerRequestFilter {
 
 
 
+        // *************************
+        // USER'S SUBSCRIPTION IS IN TRIAL OR NOT ACTIVE (BILLING)
+        // *************************
+
+        // if(currentUser.getCompany().isStripeSubscriptionInactive()) 
+        // {
+        //     this.sendUnauthorizedErrorResponse(
+        //             response,
+        //             "Access denied. User with ID '" + currentUser.getId() + "' " +
+        //                     "belongs to company with ID '" + currentUser.getCompany().getId() + "' " +
+        //                     "which has an inactive subscription status: '" + currentUser.getCompany().getStripeSubscriptionStatus() + "'. " +
+        //                     "Expected: TRIALING or ACTIVE."
+        //     );
+        //     return;
+        // }
+        
+        
+        // **************************
+        // ALL CHECKS PASSED, USER CAN ACCESS RESOURCE 
+        // **************************
 
         // 3. now we need to make this user available to the Security Context
         Authentication authentication = new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities());
