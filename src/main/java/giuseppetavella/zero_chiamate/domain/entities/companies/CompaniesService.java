@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.entities.companies;
 
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUUIDStringException;
 import giuseppetavella.zero_chiamate.exceptions.NotFoundException;
 import giuseppetavella.zero_chiamate.exceptions.UnauthorizedException;
@@ -49,6 +50,7 @@ public class CompaniesService {
      */
     public Company addCompany(SignupSentDTO body) 
     {
+        
         if(this.existsByEmail(body.email())) {
             throw new UnauthorizedException("A company with this email already exists.");
         }
@@ -67,7 +69,15 @@ public class CompaniesService {
      * A company with the given email exists?
      */
     public boolean existsByEmail(String email) {
-        return this.companiesRepository.existsByEmail(email);
+
+        if(email == null) {
+            throw new InvalidDataException("While checking if company exists by email, "
+                                            +"the email cannot be null.");
+        }
+        
+        return this.companiesRepository.existsByEmail(
+                email.trim().toLowerCase()
+        );
     }
     
 

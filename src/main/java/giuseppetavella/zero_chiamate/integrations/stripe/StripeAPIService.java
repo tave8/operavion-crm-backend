@@ -40,6 +40,7 @@ public class StripeAPIService {
     
     /**
      * Create a Stripe customer.
+     * We create a Stripe customer at company signup.
      * 
      * @param email
      * @param companyName
@@ -64,6 +65,9 @@ public class StripeAPIService {
 
     /**
      * Create a Stripe Checkout Session for a company.
+     * We create a checkout session when user needs to pay the software.
+     * We do this after admin verifies their email.
+     * 
      *
      * This generates a one-time, hosted Stripe payment page URL.
      * The company is identified by their Stripe customer ID,

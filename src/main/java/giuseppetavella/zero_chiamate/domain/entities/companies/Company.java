@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.entities.companies;
 
 import giuseppetavella.zero_chiamate.exceptions.BillingException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataFormatException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
@@ -48,7 +49,12 @@ public class Company {
     protected Company() {}
     
     public Company(String legalName, String email) {
-        this.email = email;
+
+        if(email == null) {
+            throw new InvalidDataException("While adding a company, the company email cannot be null.");
+        }
+        
+        this.email = email.trim().toLowerCase();
         this.legalName = legalName;
         this.createdAt = OffsetDateTime.now();
         // when company is first created, Stripe subscription status

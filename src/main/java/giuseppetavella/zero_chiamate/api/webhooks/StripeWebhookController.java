@@ -3,10 +3,13 @@ package giuseppetavella.zero_chiamate.api.webhooks;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
+import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIProperties;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIValidator;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIWebhookHandlersService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +30,12 @@ public class StripeWebhookController {
     
     @Autowired
     private StripeAPIProperties APIproperties;
-    
-    
+
+    // logger
+    private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookController.class);
+
+
+
 
     /**
      * <h1>Webhook that receives events from Stripe API</h1>
@@ -74,33 +81,46 @@ public class StripeWebhookController {
         
         // we ignore events that we are not interested in,
         // but we run checks on the evens we are intested in
+        
+        var wasInterestedEvent = true;
 
         switch (event.getType()) {
-            case "customer.subscription.updated" -> {
+            // fix: when the user first signs up (in the Stripe-hosted checkout page), 
+            // the subscription is created, so we need to handle it
+            case "customer.subscription.created", "customer.subscription.updated" -> {
                 // we must make sure that the API versions of what we expect
                 // and what Stripe sends, actually match
                 stripeAPIValidator.requireStableAPIVersion(event);
 
                 webhookHandlersService.handleSubscriptionUpdated(event);
-            
             }
+
             case "customer.subscription.deleted" -> {
                 // we must make sure that the API versions of what we expect
                 // and what Stripe sends, actually match
                 stripeAPIValidator.requireStableAPIVersion(event);
-                
+
                 // stripeAPIService.handleSubscriptionDeleted(event);
             }
             case "invoice.payment_failed" -> {
                 // we must make sure that the API versions of what we expect
                 // and what Stripe sends, actually match
                 stripeAPIValidator.requireStableAPIVersion(event);
+
                 
                 // stripeAPIService.handlePaymentFailed(event);
             }
             default -> {
+                
+                wasInterestedEvent = false;
                 // ignore events that we are not interested in
             }
+        }
+        
+        if(wasInterestedEvent) {
+            
+            LOGGER.info("Stripe API: relevant webhook '{}' fired.", event.getType());
+            
         }
         
 

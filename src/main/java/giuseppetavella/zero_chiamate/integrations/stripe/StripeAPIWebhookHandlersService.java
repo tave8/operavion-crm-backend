@@ -26,7 +26,9 @@ public class StripeAPIWebhookHandlersService {
     
 
     /**
-     * Handle subscription update. 
+     * Handle subscription update or created.
+     * This is triggered when user signs up (in the Stripe-hosted checkout page)
+     * or when user updates the subscription?
      *
      * @param event
      */
