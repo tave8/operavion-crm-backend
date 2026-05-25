@@ -69,6 +69,16 @@ public class ErrorsHandler {
     @ExceptionHandler(BillingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleBillingException(BillingException ex) {
+
+        LOGGER.error("Error with billing. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error with billing",
+                ex.getMessage(),
+                ex
+        );
+
+
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
@@ -113,6 +123,15 @@ public class ErrorsHandler {
     @ExceptionHandler(AIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handlAiException(AIException ex) {
+
+        LOGGER.error("Error working with AI. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error working with AI",
+                ex.getMessage(),
+                ex
+        );
+        
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
@@ -192,6 +211,16 @@ public class ErrorsHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+
+        LOGGER.error("Error with data integrity violation. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error with data integrity violation",
+                ex.getMessage(),
+                ex
+        );
+        
+        
         String message = ex.getMessage();
 
         if (message.contains("duplicate key")) {
@@ -329,6 +358,15 @@ public class ErrorsHandler {
     @ExceptionHandler(InvalidDataAccessApiUsageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleDataAccessApiUsage(InvalidDataAccessApiUsageException ex) {
+
+        LOGGER.error("Error in server. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error in server",
+                ex.getMessage(),
+                ex
+        );
+        
         String msg = "Error while using an API. DETAILS: " + ex.getMessage();
         return new ErrorsToSendDTO(msg);
     }
@@ -341,7 +379,15 @@ public class ErrorsHandler {
     @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleIncorrectInternalAPIUsage(InvalidDataAccessResourceUsageException ex) {
-        ex.printStackTrace();
+
+        LOGGER.error("Error in server. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error in server",
+                ex.getMessage(),
+                ex
+        );
+        
         return new ErrorsToSendDTO("There was an error in the server.");
     }
 
