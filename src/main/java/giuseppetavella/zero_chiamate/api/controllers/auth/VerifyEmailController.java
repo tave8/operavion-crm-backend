@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.api.controllers.auth;
 
 import giuseppetavella.zero_chiamate.config.AppEnvironment;
+import giuseppetavella.zero_chiamate.config.FrontendRoutes;
 import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailVerificationException;
@@ -24,7 +25,7 @@ public class VerifyEmailController {
     private StripeAPIService stripeAPIService;
     
     @Autowired
-    private AppEnvironment appEnvironment;
+    private FrontendRoutes frontendRoutes;
 
 
     /**
@@ -48,12 +49,12 @@ public class VerifyEmailController {
             // }
 
             return ResponseEntity.status(302)
-                    .header("Location", appEnvironment.buildFrontendUrl("/?emailVerificationSuccess=true"))
+                    .header("Location", frontendRoutes.emailVerificationSuccess())
                     .build();
 
         } catch (EmailVerificationException ex) {
             return ResponseEntity.status(302)
-                    .header("Location", appEnvironment.buildFrontendUrl("/?emailVerificationSuccess=false"))
+                    .header("Location", frontendRoutes.emailVerificationFailed())
                     .build();
         }
         
