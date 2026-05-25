@@ -53,4 +53,32 @@ public class StripeAPIWebhookHandlersService {
         companiesService.save(company);
     }
 
+
+    /**
+     * When company deletes subscription.
+     * 
+     * @param event
+     */
+    @Async
+    public void handleSubscriptionDeleted(Event event) {
+
+        Subscription subscription = (Subscription) event
+                .getDataObjectDeserializer()
+                .getObject()
+                .orElseThrow(() -> new StripeAPIException(
+                        "Could not deserialize subscription from event. " +
+                                "Event ID: '" + event.getId() + "'."
+                ));
+
+        String stripeCustomerId = subscription.getCustomer();
+
+        Company company = companiesService.findByStripeCustomerId(stripeCustomerId)
+                .orElseThrow(() -> new NotFoundException(
+                        "No company found for Stripe customer ID: '" + stripeCustomerId + "'."
+                ));
+
+        company.setStripeSubscriptionStatus(StripeAPISubscriptionStatus.CANCELED);
+        companiesService.save(company);
+    }
+
 }

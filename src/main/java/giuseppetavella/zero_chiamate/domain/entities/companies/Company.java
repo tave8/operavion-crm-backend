@@ -165,14 +165,29 @@ public class Company {
 
         boolean noStateYet = currentStatus == null;
 
-        List<StripeAPISubscriptionStatus> firstStates = List.of(StripeAPISubscriptionStatus.INCOMPLETE);
+        List<StripeAPISubscriptionStatus> firstStates = List.of(
+                StripeAPISubscriptionStatus.INCOMPLETE
+        );
 
         Map<StripeAPISubscriptionStatus, List<StripeAPISubscriptionStatus>> stateMap = Map.of(
-                StripeAPISubscriptionStatus.INCOMPLETE, List.of(StripeAPISubscriptionStatus.TRIALING, StripeAPISubscriptionStatus.ACTIVE),
-                StripeAPISubscriptionStatus.TRIALING,   List.of(StripeAPISubscriptionStatus.ACTIVE, StripeAPISubscriptionStatus.PAST_DUE),
-                StripeAPISubscriptionStatus.ACTIVE,     List.of(StripeAPISubscriptionStatus.PAST_DUE, StripeAPISubscriptionStatus.CANCELED),
-                StripeAPISubscriptionStatus.PAST_DUE,   List.of(StripeAPISubscriptionStatus.ACTIVE, StripeAPISubscriptionStatus.CANCELED),
-                StripeAPISubscriptionStatus.CANCELED,   List.of()
+                StripeAPISubscriptionStatus.INCOMPLETE, List.of(
+                        StripeAPISubscriptionStatus.TRIALING,
+                        StripeAPISubscriptionStatus.ACTIVE
+                ),
+                StripeAPISubscriptionStatus.TRIALING, List.of(
+                        StripeAPISubscriptionStatus.ACTIVE,
+                        StripeAPISubscriptionStatus.PAST_DUE,
+                        StripeAPISubscriptionStatus.CANCELED
+                ),
+                StripeAPISubscriptionStatus.ACTIVE, List.of(
+                        StripeAPISubscriptionStatus.PAST_DUE,
+                        StripeAPISubscriptionStatus.CANCELED
+                ),
+                StripeAPISubscriptionStatus.PAST_DUE, List.of(
+                        StripeAPISubscriptionStatus.ACTIVE,
+                        StripeAPISubscriptionStatus.CANCELED
+                ),
+                StripeAPISubscriptionStatus.CANCELED, List.of()
         );
 
         DataValidationHelper.requireValidStateTransition(

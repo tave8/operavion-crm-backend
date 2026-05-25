@@ -100,7 +100,7 @@ public class StripeWebhookController {
                 // and what Stripe sends, actually match
                 stripeAPIValidator.requireStableAPIVersion(event);
 
-                // stripeAPIService.handleSubscriptionDeleted(event);
+                webhookHandlersService.handleSubscriptionDeleted(event);
             }
             case "invoice.payment_failed" -> {
                 // we must make sure that the API versions of what we expect
