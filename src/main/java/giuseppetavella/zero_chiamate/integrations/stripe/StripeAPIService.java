@@ -11,6 +11,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import giuseppetavella.zero_chiamate.config.FrontendRoutes;
 import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.NotFoundException;
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,9 @@ public class StripeAPIService {
      */
     public String createCustomer(String email, String companyName) {
         try {
-            CustomerCreateParams params = CustomerCreateParams.builder()
+            
+            var params = com.stripe.param.CustomerCreateParams
+                    .builder()
                     .setEmail(email)
                     .setName(companyName)
                     .build();
@@ -64,6 +67,8 @@ public class StripeAPIService {
 
 
     /**
+     * <h1>Stripe Checkout = create a new subscription</h1>
+     * 
      * Create a Stripe Checkout Session for a company.
      * We create a checkout session when user needs to pay the software.
      * We do this after admin verifies their email.
@@ -80,8 +85,17 @@ public class StripeAPIService {
      * @return the URL of the hosted Stripe checkout page
      */
     public String createCheckoutSession(String stripeCustomerId) {
+
+
+        // stripe customer ID cannot be null
+        if(stripeCustomerId == null) {
+            throw new InvalidDataException("While creating a Stripe Checkout Session, "
+                    +"the Stripe customer ID cannot be null (null was passed).");
+        }
+        
         try {
-            SessionCreateParams params = SessionCreateParams.builder()
+            
+            var params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
                     .setCustomer(stripeCustomerId)
                     .addLineItem(SessionCreateParams.LineItem.builder()
@@ -110,6 +124,46 @@ public class StripeAPIService {
 
         } catch (StripeException e) {
             throw new StripeAPIException("Failed to create Stripe checkout session", e);
+        }
+    }
+
+
+    /**
+     * <h1>Stripe Customer Portal = manage existing subscription</h1>
+     * 
+     * Create Customer Portal session.
+     * This is 
+     * 
+     * @param stripeCustomerId
+     * @return
+     */
+    public String createCustomerPortalSession(String stripeCustomerId) {
+        
+        // stripe customer ID cannot be null
+        if(stripeCustomerId == null) {
+            throw new InvalidDataException("While creating a Stripe Customer Portal Session, "
+                                            +"the Stripe customer ID cannot be null (null was passed).");
+        }
+        
+        try {
+            
+            // note: both SessionCreateParams and Session are NOT
+            // the same as those in "create checkout session" or "create customer".
+            // be aware of using the right class. this is why we use
+            // the fully qualified class path instead of the class reference
+            
+            var params = com.stripe.param.billingportal
+                                            .SessionCreateParams.builder()
+                                            .setCustomer(stripeCustomerId)
+                                            .setReturnUrl(frontendRoutes.dashboard())
+                                            .build();
+            
+            var session = APIproperties.getStripeClient().billingPortal().sessions().create(params);
+
+            return session.getUrl();
+
+        } catch (StripeException e) {
+            throw new StripeAPIException("Failed to create billing portal session", e);
         }
     }
     

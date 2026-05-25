@@ -2,6 +2,7 @@ package giuseppetavella.zero_chiamate.integrations.stripe;
 
 import com.stripe.Stripe;
 import com.stripe.StripeClient;
+import com.stripe.param.billingportal.SessionCreateParams;
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,8 @@ public class StripeAPIProperties {
         this.stripeClient = new StripeClient(secretKey);
         
     }
+    
+
 
     /**
      * Stripe API secret key.
