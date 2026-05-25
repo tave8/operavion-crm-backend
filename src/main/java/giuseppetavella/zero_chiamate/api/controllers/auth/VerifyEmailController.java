@@ -39,23 +39,35 @@ public class VerifyEmailController {
     public ResponseEntity<?> verifyEmail(@PathVariable String code) {
 
         try {
+            
+            // verify email with code
             User user = authEmailVerificationService.verifyEmailVerificationCode(code);
 
             var company = user.getCompany();
             
-            // if (company.getStripeSubscriptionStatus() == StripeAPISubscriptionStatus.INCOMPLETE) {
-            //     String checkoutUrl = stripeAPIService.createCheckoutSession(company.getStripeCustomerId());
-            //     return ResponseEntity.status(302).header("Location", checkoutUrl).build();
-            // }
+            // assume: this is the admin that has just signed up,
+            // and verified their email. remember this functionality
+            // is also used to verify emails of any user, not just admins
+            if (company.getStripeSubscriptionStatus() == StripeAPISubscriptionStatus.INCOMPLETE) {
+                
+                String checkoutUrl = stripeAPIService.createCheckoutSession(company.getStripeCustomerId());
+                
+                return ResponseEntity.status(302).header("Location", checkoutUrl).build();
+                
+            }
 
+            // code was valid: email verified
             return ResponseEntity.status(302)
                     .header("Location", frontendRoutes.emailVerificationSuccess())
                     .build();
 
         } catch (EmailVerificationException ex) {
+        
+            // code is not valid
             return ResponseEntity.status(302)
                     .header("Location", frontendRoutes.emailVerificationFailed())
                     .build();
+        
         }
         
     }

@@ -52,12 +52,20 @@ import org.springframework.stereotype.Component;
  * By calling the methods of this bean, we take it a step further, 
  * and we don't even care about any of this; We just call a method.
  * 
+ * TODO: instead of using the frontend root, we could use a dedicated 
+ *  route for frontend-backend communication of this kind, something like:
+ *  /shortcuts
+ * 
  */
 @Component
 public class FrontendRoutes {
 
     @Autowired
     private AppEnvironment appEnvironment;
+
+    public String root() {
+        return appEnvironment.buildFrontendUrl("/");
+    }
 
     public String dashboard() {
         return appEnvironment.buildFrontendUrl("/dashboard");
