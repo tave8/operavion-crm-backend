@@ -36,7 +36,7 @@ public class UsersController {
     @GetMapping("/me")
     public ProfileToSendDTO getOwnProfile(@AuthenticationPrincipal User currentUser)
     {
-        return new ProfileToSendDTO(
+        return usersService.toProfileDTO(
                 this.usersService.findById(currentUser.getId())
         );
     }
@@ -52,7 +52,7 @@ public class UsersController {
 
         PayloadValidationHelper.requireNoErrors(validation);
         
-        return new ProfileToSendDTO(
+        return usersService.toProfileDTO(
                 this.usersService.updateOwnProfile(currentUser, body)
         );
     }
@@ -80,7 +80,7 @@ public class UsersController {
     
         Page<User> usersPage = this.usersService.getNonAdminUsersByCompany(company);
         
-        return usersPage.map(user -> new ProfileToSendDTO(user));
+        return usersPage.map(usersService::toProfileDTO);
         
     }
         
@@ -134,7 +134,7 @@ public class UsersController {
     public ProfileToSendDTO uploadMyAvatarImage(@AuthenticationPrincipal User currentUser,
                                                 @RequestParam("avatar_image") MultipartFile avatarImage)
     {
-        return new ProfileToSendDTO(
+        return usersService.toProfileDTO(
                 this.usersService.uploadMyAvatarImage(currentUser, avatarImage)
         );
     }

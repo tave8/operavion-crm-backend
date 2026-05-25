@@ -412,7 +412,7 @@ public class ShiftsService {
     {
         return this.findOperatorsByShift(shift)
                 .stream()
-                .map(operator -> new ProfileToSendDTO(operator))
+                .map(usersService::toProfileDTO)
                 .toList();
     }
 
@@ -443,7 +443,7 @@ public class ShiftsService {
         return this
                 .findOperatorsWithShiftsBetweenDates(company, startDate, endDate)
                 .stream()
-                .map(operator -> new ProfileToSendDTO(operator))
+                .map(usersService::toProfileDTO)
                 .toList();
     }
 
@@ -473,7 +473,7 @@ public class ShiftsService {
         return this
                 .findOperatorsWithoutShiftsBetweenDates(company, startDate, endDate)
                 .stream()
-                .map(operator -> new ProfileToSendDTO(operator))
+                .map(usersService::toProfileDTO)
                 .toList();
     }
 
@@ -505,7 +505,7 @@ public class ShiftsService {
         return this
                 .findOperatorsByClientAddressBetweenDates(clientAddress, startDate, endDate)
                 .stream()
-                .map(operator -> new ProfileToSendDTO(operator))
+                .map(usersService::toProfileDTO)
                 .toList();
     }
 

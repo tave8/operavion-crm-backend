@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth.dto.to_send;
 
+import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
 
@@ -15,7 +16,11 @@ public class AfterLoginDTO {
         this.accessToken = accessToken;
         this.message = message;
         this.mustChangePasswordNow = user.mustChangePasswordNow();
-        this.user = new ProfileToSendDTO(user);
+        // TODO: refactor 
+        this.user = new ProfileToSendDTO(
+                user, 
+                new CompanyToSendDTO(user.getCompany())
+        );
     }
     
     public AfterLoginDTO(String accessToken, User user) {

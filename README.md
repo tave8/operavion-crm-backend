@@ -677,7 +677,9 @@ Run/Edit configuration. Spring must be in "local" profile when in local environm
 
 # Stripe API local configuration
 
-
+Note: If Stripe doesn't seem to work locally, it's likely because you haven't set up 
+the local listener. Set up the local listener with the Stripe CLI.
+This way, Stripe will forward the test events to my localhost, through the CLI.
 
 `stripe listen --forward-to localhost:3001/webhooks/stripe`
 

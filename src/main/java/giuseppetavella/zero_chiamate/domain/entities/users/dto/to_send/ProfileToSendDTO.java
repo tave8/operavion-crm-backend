@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send;
 
+import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 
 import java.time.OffsetDateTime;
@@ -16,8 +17,9 @@ public class ProfileToSendDTO {
     private final String role;
     private final String username;
     private final boolean mustChangePasswordNow;
+    private final CompanyToSendDTO company;
     
-    public ProfileToSendDTO(User user) {
+    public ProfileToSendDTO(User user, CompanyToSendDTO companyDTO) {
         this.userId = user.getId();
         this.email = user.getEmail();
         this.firstname = user.getFirstname();
@@ -27,6 +29,11 @@ public class ProfileToSendDTO {
         this.role = user.getRole().name();
         this.username = user.getUsername();
         this.mustChangePasswordNow = user.mustChangePasswordNow();
+        this.company = companyDTO;
+    }
+
+    public CompanyToSendDTO getCompany() {
+        return company;
     }
 
     public String getAvatarUrl() {

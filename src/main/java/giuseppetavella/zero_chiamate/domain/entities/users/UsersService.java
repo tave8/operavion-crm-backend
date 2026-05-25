@@ -1,7 +1,9 @@
 package giuseppetavella.zero_chiamate.domain.entities.users;
 
 import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
+import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
+import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
 import giuseppetavella.zero_chiamate.exceptions.*;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.NewUserSentDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.SignupSentDTO;
@@ -40,14 +42,31 @@ public class UsersService {
     
     @Autowired
     private AuthEmailVerificationService authEmailVerificationService;
+   
 
-
+    /**
+     * User -> profile DTO
+     */
+    public ProfileToSendDTO toProfileDTO(User profile)
+    {
+        var companyDTO = new CompanyToSendDTO(profile.getCompany());
+                
+        return new ProfileToSendDTO(
+                profile,
+                companyDTO
+        );
+    }
+    
     
     /**
      * Find a user by ID.
      */
     public User findById(UUID userId) throws NotFoundException {
         return usersRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId, "user"));
+    }
+    
+    public ProfileToSendDTO findByIdDTO(UUID userId) {
+        return toProfileDTO(findById(userId));
     }
 
     public User findById(String userId) throws NotFoundException {
@@ -78,23 +97,31 @@ public class UsersService {
         
         return userFound;
     }
+    
+    public ProfileToSendDTO findByEmailDTO(String email) {
+        return toProfileDTO(findByEmail(email));
+    }
 
 
     /**
      * Find a user by username.
      */
-    public User findByUsername(String email) throws NotFoundException {
-        if(email == null) {
+    public User findByUsername(String username) throws NotFoundException {
+        if(username == null) {
             throw new NotFoundException("A username that was null was given.");
         }
 
-        User userFound = this.usersRepository.findByUsername(email);
+        User userFound = this.usersRepository.findByUsername(username);
 
         if (userFound == null) {
-            throw new NotFoundException("User with username '" + email + "' was not found.");
+            throw new NotFoundException("User with username '" + username + "' was not found.");
         }
 
         return userFound;
+    }
+
+    public ProfileToSendDTO findByUsernameDTO(String username) {
+        return toProfileDTO(findByUsername(username));
     }
 
     /**
@@ -131,7 +158,7 @@ public class UsersService {
         
         return this.usersRepository.save(user);
     }
-
+    
     
     
     /**
@@ -312,7 +339,7 @@ public class UsersService {
         return this
                 .findUsersByRole(company, role)
                 .stream()
-                .map(ProfileToSendDTO::new)
+                .map(this::toProfileDTO)
                 .toList();
     }
     
@@ -391,7 +418,7 @@ public class UsersService {
         // save user in DB
         User userFromDB = this.usersRepository.save(currentUser);
         // return the saved user
-        return new ProfileToSendDTO(userFromDB);
+        return toProfileDTO(userFromDB);
 
     }
 
