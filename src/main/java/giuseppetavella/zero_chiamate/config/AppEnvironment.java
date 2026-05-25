@@ -128,7 +128,7 @@ public class AppEnvironment {
      * 
      * @return
      */
-    public String get() {
+    public String getEnv() {
         return whereami;
     }
 

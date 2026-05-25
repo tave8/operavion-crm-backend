@@ -34,19 +34,22 @@ public class ProblemsEmailService {
     {
 
         OffsetDateTime now = OffsetDateTime.now();
+        
+        var newSubject = subject + " | Environment: " + appEnvironment.getEnv();
 
         Map<String, Object> vars = Map.of(
                 "message", exceptionMessage,
                 "details", details,
                 "timestamp", now,
-                "stackTrace", stackTrace
+                "stackTrace", stackTrace,
+                "environment", appEnvironment.getEnv()
         );
 
         emailService.sendEmailFromTemplate(
                 "dev_emails/error",
                 vars,
                 "giuseppetavella8@gmail.com",
-                subject
+                newSubject
         );
     }
     

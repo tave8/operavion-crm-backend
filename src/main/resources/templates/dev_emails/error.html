@@ -60,7 +60,7 @@
     <div class="subtitle" th:text="'Occurred at: ' + ${timestamp}"></div>
 
     <div class="field">
-        <div class="label">Message</div>
+        <div class="label">Error Message</div>
         <div class="value" th:text="${message}"></div>
     </div>
 
@@ -69,6 +69,11 @@
         <div class="value" th:text="${details}"></div>
     </div>
 
+    <div class="field" th:if="${environment != null}">
+        <div class="label">Environment</div>
+        <div class="value" th:text="'Error occurred in environment: ' + ${environment}"></div>
+    </div>
+    
     <div class="field" th:if="${stackTrace != null}">
         <div class="label">Stack Trace</div>
         <div class="stacktrace" th:text="${stackTrace}"></div>
