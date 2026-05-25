@@ -52,10 +52,6 @@ import org.springframework.stereotype.Component;
  * By calling the methods of this bean, we take it a step further, 
  * and we don't even care about any of this; We just call a method.
  * 
- * TODO: instead of using the frontend root, we could use a dedicated 
- *  route for frontend-backend communication of this kind, something like:
- *  /shortcuts
- * 
  */
 @Component
 public class FrontendRoutes {
@@ -63,22 +59,31 @@ public class FrontendRoutes {
     @Autowired
     private AppEnvironment appEnvironment;
 
-    public String root() {
-        return appEnvironment.buildFrontendUrl("/");
-    }
-
     public String dashboard() {
-        return appEnvironment.buildFrontendUrl("/dashboard");
+        return buildShortcut(FrontendShortcutRoute.DASHBOARD);
     }
 
     public String emailVerificationSuccess() {
-        return appEnvironment.buildFrontendUrl("/?emailVerificationSuccess=true");
+        return buildShortcut(FrontendShortcutRoute.EMAIL_VERIFICATION_SUCCESS);
     }
 
-    public String emailVerificationFailed() {
-        return appEnvironment.buildFrontendUrl("/?emailVerificationSuccess=false");
+    public String emailVerificationInvalid() {
+        return buildShortcut(FrontendShortcutRoute.EMAIL_VERIFICATION_INVALID);
     }
     
     // add more pre-built frontend routes here...     
+
+    
+    
+    /**
+     * Shortcuts URL and the ? symbol.
+     * 
+     * 
+     * @return
+     */
+    private String buildShortcut(FrontendShortcutRoute route) {
+        return appEnvironment.buildFrontendUrl("/shortcut?for=" + route.getValue());
+    }
+    
     
 }

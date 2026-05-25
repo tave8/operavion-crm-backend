@@ -117,9 +117,10 @@ public class StripeWebhookController {
             }
         }
         
+        // we only log relevant event types 
         if(wasInterestedEvent) {
             
-            LOGGER.info("Stripe API: relevant webhook '{}' fired.", event.getType());
+            LOGGER.info("Stripe API: webhook with event type '{}' fired.", event.getType());
             
         }
         

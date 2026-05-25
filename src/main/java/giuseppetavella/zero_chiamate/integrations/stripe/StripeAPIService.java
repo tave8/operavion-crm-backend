@@ -112,9 +112,9 @@ public class StripeAPIService {
                     )
 
                     // where to redirect after successful payment
-                    .setSuccessUrl(frontendRoutes.root())
+                    .setSuccessUrl(frontendRoutes.dashboard())
                     // where to redirect if user cancels or closes the checkout page
-                    .setCancelUrl(frontendRoutes.root())
+                    .setCancelUrl(frontendRoutes.dashboard())
                     .build();
 
             Session session = APIproperties.getStripeClient().checkout().sessions().create(params);

@@ -54,7 +54,7 @@ public class VerifyEmailController {
         
             // code is not valid
             return ResponseEntity.status(302)
-                    .header("Location", frontendRoutes.emailVerificationFailed())
+                    .header("Location", frontendRoutes.emailVerificationInvalid())
                     .build();
         
         }
