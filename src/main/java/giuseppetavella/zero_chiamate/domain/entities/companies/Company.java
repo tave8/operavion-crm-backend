@@ -123,8 +123,21 @@ public class Company {
     {
         return !isStripeSubscriptionTrialOrActive();
     }
+
     
-    
+    /**
+     * The Stripe subscription status is incomplete if 
+     * there was no subscription ever.
+     * (This company never had a subscription).
+     * 
+     * @return
+     */
+    public boolean isStripeSubscriptionIncomplete()
+    {
+        return StripeAPISubscriptionStatus.INCOMPLETE.equals(getStripeSubscriptionStatus());
+    }
+
+
     /**
      * We set the Stripe customer ID
      * after the company is saved to DB.
