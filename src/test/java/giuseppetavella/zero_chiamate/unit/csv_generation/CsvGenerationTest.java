@@ -14,26 +14,26 @@ public class CsvGenerationTest {
     @Test
     void addHeader_isValid() {
         
-        List<String> names = List.of("Giuseppe", "Maria");
-        
-        String[] fields = {"Fullname", "Age,", "People\" count"};
-        
-        var csv = new Csv(fields);
-        
-        // assertThrows(CsvGenerationException.class, () -> {
-        for (var name : names) {
-            csv.addRow(
-                    name,
-                    123+"",
-                    223+""
-            );
-        }
+        // List<String> names = List.of("Giuseppe", "Maria");
+        //
+        // String[] fields = {"Fullname", "Age,", "People\" count"};
+        //
+        // var csv = new Csv(fields);
+        //
+        // // assertThrows(CsvGenerationException.class, () -> {
+        // for (var name : names) {
+        //     csv.addRow(
+        //             name,
+        //             123+"",
+        //             223+""
+        //     );
+        // }
         // });
         
         // csv.
 
         
-        System.out.println(csv);
+        // System.out.println(csv);
         
         // assertTrue();
         

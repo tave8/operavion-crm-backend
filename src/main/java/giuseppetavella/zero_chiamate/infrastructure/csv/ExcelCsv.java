@@ -3,6 +3,8 @@ package giuseppetavella.zero_chiamate.infrastructure.csv;
 import giuseppetavella.zero_chiamate.infrastructure.CsvSeparator;
 import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
 
+import java.util.List;
+
 /**
  * In a ExcelCsv, we always add the separator hint,
  * for simplicity - it will display it correctly,
@@ -10,20 +12,20 @@ import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
  */
 public class ExcelCsv extends Csv {
 
-    public ExcelCsv(String[] fields, 
+    public ExcelCsv(List<String> fields,
                     String nullReplacement,
                     CsvSeparator separator) throws CsvGenerationException
     {
         super(fields, nullReplacement, separator, true);
     }
 
-    public ExcelCsv(String[] fields,
+    public ExcelCsv(List<String> fields,
                     String nullReplacement) throws CsvGenerationException
     {
         this(fields, nullReplacement, CsvSeparator.COMMA);
     }
 
-    public ExcelCsv(String[] fields) throws CsvGenerationException
+    public ExcelCsv(List<String> fields) throws CsvGenerationException
     {
         this(fields, null);
     }

@@ -7,6 +7,8 @@ import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachable;
 import org.jspecify.annotations.NonNull;
 
+import java.util.List;
+
 /**
  * This is a business-independent entity + behavior.
  */
@@ -15,7 +17,7 @@ public class Csv implements EmailAttachable {
     // the csv is simply a string builder instance
     private final StringBuilder csv;
     // the columns, also known as fields
-    private final String[] fields;
+    private final List<String> fields;
     // what separator are we using, for example comma or semicolon
     private final CsvSeparator separator;
     // what to replace null with, when a cell value is null
@@ -26,6 +28,8 @@ public class Csv implements EmailAttachable {
     private final boolean addSeparatorHint;
     // was the header added? we can only add it once
     private boolean headerAdded = false;
+    // number of rows, excluding header
+    // private long rowCount = 0;
 
     /**
      * CSV has:
@@ -35,12 +39,12 @@ public class Csv implements EmailAttachable {
      *     <li>choose if you want separator hint</li>
      * </ul>
      */
-    public Csv(String[] fields,
+    public Csv(List<String> fields,
                String nullReplacement,
                CsvSeparator separator,
                boolean addSeparatorHint) throws CsvGenerationException
     {
-        if(fields.length == 0) {
+        if(fields.isEmpty()) {
             throw new CsvGenerationException("Csv must have at least 1 header field.");
         }
         
@@ -62,7 +66,7 @@ public class Csv implements EmailAttachable {
      *     <li>no separator hint</li>
      * </ul>
      */
-    public Csv(String[] fields, 
+    public Csv(List<String> fields, 
                String nullReplacement, 
                CsvSeparator separator) throws CsvGenerationException
     {
@@ -77,7 +81,7 @@ public class Csv implements EmailAttachable {
      *     <li>no separator hint</li>
      * </ul>
      */
-    public Csv(String[] fields, 
+    public Csv(List<String> fields, 
                String nullReplacement) throws CsvGenerationException
     {
         this(fields, nullReplacement, CsvSeparator.COMMA);
@@ -92,12 +96,13 @@ public class Csv implements EmailAttachable {
      *     <li>no separator hint</li>
      * </ul>
      */
-    public Csv(String[] fields) throws CsvGenerationException
+    public Csv(List<String> fields) throws CsvGenerationException
     {
         this(fields, null);
     }
     
-    
+
+
     /**
      * Add a row to the CSV.
      * The number of values in each row 
@@ -105,26 +110,27 @@ public class Csv implements EmailAttachable {
      */
     public void addRow(String... values) throws CsvGenerationException
     {
+
         // the number of cell values passed
         // matches the number of csv columns?
-        var fieldNumberMatch = values.length == getFields().length;
-        
+        var fieldNumberMatch = values.length == getFields().size();
+
         // check if the number of values is different 
         // from the number of fields
         if(!fieldNumberMatch) {
             throw new CsvGenerationException("While adding a row to a csv, the number "
-                                            +"of values in this row was different than "
-                                            +"the number of header fields. "
-                                            +"Number of values in this row was '" + values.length + "'. " 
-                                            +"Number of header fields was '" + getFields().length + "'. "
-                                            +"The source of truth is the number of header fields or row values?");
+                    +"of values in this row was different than "
+                    +"the number of header fields. "
+                    +"Number of values in this row was '" + values.length + "'. "
+                    +"Number of header fields was '" + getFields().size() + "'. "
+                    +"The source of truth is the number of header fields or row values?");
         }
-        
+
         var csv = this.getCsv();
         var separator = this.getSeparator().getValue();
 
         // loop through the values to be added as a csv row
-        for (int i = 0; i < values.length; i++) 
+        for (int i = 0; i < values.length; i++)
         {
             var value = getSafeStringFromValues(values, i, separator);
 
@@ -132,17 +138,92 @@ public class Csv implements EmailAttachable {
 
             // append separator after every value except the last
             var isLast = i == values.length - 1;
-            
+
             if (!isLast) {
                 csv.append(separator);
             }
+
         }
 
         // end of row
         csv.append("\n");
-        
     }
+
     
+    /**
+     * Initialize the CSV with a header row.
+     *
+     * Must only be generated AFTER setting 
+     * all other attributes, otherwise 
+     * you'll get an initialization error.
+     */
+    private void addHeader() {
+
+        if(headerAdded) {
+            throw new CsvGenerationException(
+                    "Internal error while generating a csv. "
+                            +"While adding the header, the header was already added."
+            );
+        }
+
+        var isNotProperlyInitialized = this.csv == null || this.fields == null || this.separator == null;
+
+        // .addHeader() must be called only after these 
+        // attributes are set
+        if (isNotProperlyInitialized) {
+            throw new CsvGenerationException(
+                    "Internal error while generating a csv. " +
+                            "Initialization error: Some required attribute was null. " +
+                            "You must call .addHeader() AFTER " +
+                            "all attributes have been properly initialized."
+            );
+        }
+
+        // a field name cannot be null
+        // we must check this before we 
+        // add the fields as a row. 
+        // thus, we must do this check exactly here.
+        for (int i = 0; i < fields.size(); i++) {
+
+            var field = fields.get(i);
+
+            // a field can never be null
+            if(field == null) {
+                throw new CsvGenerationException(
+                        "While adding a header field to a csv, a field can never be null, "
+                                +"regardless of null replacement. " +
+                                "Field index: " + i + ". " +
+                                "Previous field: '" + getPreviousValueIfExists(fields, i) + "'. " +
+                                "Next field: '" + getNextValueIfExists(fields, i) + "'."
+                );
+            }
+
+        }
+
+
+        var csv = this.csv;
+        var fields = this.fields;
+        var separator = this.separator.getValue();
+
+        // before generating the header fields,
+        // let's check whether we need to add 
+        // an excel-specific separator hint
+        if(this.isAddSeparatorHint()) {
+            csv.append("sep=").append(separator).append("\n");
+        }
+
+        // adding the header is a sub-case of adding a row
+        // converts fields list to fields array
+        this.addRow(fields.toArray(new String[0]));
+
+        // we add the header only once
+        this.headerAdded = true;
+
+    }
+
+
+    
+
 
     /**
      * Return a safe string. The values string are used 
@@ -187,85 +268,16 @@ public class Csv implements EmailAttachable {
      * Get the field at the given index.
      */
     public String getFieldAt(int i) throws CsvException {
-        if (i < 0 || i >= fields.length) {
+        if (i < 0 || i >= fields.size()) {
             throw new CsvException(
                     "Field index out of bounds. " +
                             "Index: " + i + ". " +
-                            "Number of fields: " + fields.length + "."
+                            "Number of fields: " + fields.size() + "."
             );
         }
-        return fields[i];
+        return fields.get(i);
     }
     
-
-    /**
-     * Initialize the CSV with a header row.
-     * 
-     * Must only be generated AFTER setting 
-     * all other attributes, otherwise 
-     * you'll get an initialization error.
-     */
-    private void addHeader() {
-        
-        if(headerAdded) {
-            throw new CsvGenerationException(
-                    "Internal error while generating a csv. "
-                    +"While adding the header, the header was already added."
-            );
-        }
-
-        var isNotProperlyInitialized = this.csv == null || this.fields == null || this.separator == null;
-        
-        // .addHeader() must be called only after these 
-        // attributes are set
-        if (isNotProperlyInitialized) {
-            throw new CsvGenerationException(
-                    "Internal error while generating a csv. " +
-                            "Initialization error: Some required attribute was null. " +
-                            "You must call .addHeader() AFTER " +
-                            "all attributes have been properly initialized."
-            );
-        }
-        
-        // a field name cannot be null
-        // we must check this before we 
-        // add the fields as a row. 
-        // thus, we must do this check exactly here.
-        for (int i = 0; i < fields.length; i++) {
-            
-            var field = fields[i];
-            
-            // a field can never be null
-            if(field == null) {
-                throw new CsvGenerationException(
-                        "While adding a header field to a csv, a field can never be null, "
-                                +"regardless of null replacement. " +
-                                "Field index: " + i + ". " +
-                                "Previous field: '" + getPreviousValueIfExists(fields, i) + "'. " +
-                                "Next field: '" + getNextValueIfExists(fields, i) + "'."
-                );
-            }
-            
-        }
-        
-
-        var csv = this.csv;
-        var fields = this.fields;
-        var separator = this.separator.getValue();
-        
-        // before generating the header fields,
-        // let's check whether we need to add 
-        // an excel-specific separator hint
-        if(this.isAddSeparatorHint()) {
-            csv.append("sep=").append(separator).append("\n");
-        }
-        
-        // adding the header is a sub-case of adding a row
-        this.addRow(fields);
-        // we add the header only once
-        this.headerAdded = true;
-
-    }
 
 
     
@@ -313,6 +325,14 @@ public class Csv implements EmailAttachable {
      * @param currentIdx
      * @return
      */
+    private static String getPreviousValueIfExists(List<String> values, int currentIdx) {
+        boolean hasPrevious = currentIdx > 0;
+        if (hasPrevious) {
+            return values.get(currentIdx - 1);
+        }
+        return "<no previous>";
+    }
+
     private static String getPreviousValueIfExists(String[] values, int currentIdx) {
         boolean hasPrevious = currentIdx > 0;
         if (hasPrevious) {
@@ -321,6 +341,7 @@ public class Csv implements EmailAttachable {
         return "<no previous>";
     }
 
+
     /**
      * Return the next value, if it exists.
      * 
@@ -328,6 +349,14 @@ public class Csv implements EmailAttachable {
      * @param currentIdx
      * @return
      */
+    private static String getNextValueIfExists(List<String> values, int currentIdx) {
+        boolean hasNext = currentIdx < values.size() - 1;
+        if (hasNext) {
+            return values.get(currentIdx + 1);
+        }
+        return "<no next>";
+    }
+
     private static String getNextValueIfExists(String[] values, int currentIdx) {
         boolean hasNext = currentIdx < values.length - 1;
         if (hasNext) {
@@ -335,6 +364,7 @@ public class Csv implements EmailAttachable {
         }
         return "<no next>";
     }
+    
 
     public String getNullReplacement() {
         return nullReplacement;
@@ -366,13 +396,17 @@ public class Csv implements EmailAttachable {
         return csv;
     }
 
+    // public long getRowCount() {
+    //     return rowCount;
+    // }
+
     /**
      * The header fields, i.e. the columns.
      * 
      * @return
      */
-    public String[] getFields() {
-        return fields.clone();
+    public List<String> getFields() {
+        return List.copyOf(fields);
     }
 
     public CsvSeparator getSeparator() {

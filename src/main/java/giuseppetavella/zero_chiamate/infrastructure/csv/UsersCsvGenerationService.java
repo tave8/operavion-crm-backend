@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.UserRole;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
+import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,17 +33,22 @@ public class UsersCsvGenerationService {
      */
     public Csv generateOperatorsByCompanyReport(Company company) {
         
-        List<User> users = usersService.findUsersByRole(company, UserRole.OPERATOR);
+        List<ProfileToSendDTO> users = usersService
+                            .findUsersByRole(company, UserRole.OPERATOR)
+                            .stream()
+                            .map(usersService::toProfileDTO)
+                            .toList();
         
-        String[] fields = {"Name", "Email"};
+        List<String> fields = List.of("Name", "Email");
         
-        var csv = new Csv(fields, "missing");
+        var csv = new Csv(fields, "mis\"\"sin,g");
         
         
         for (var user : users) {
             csv.addRow(
                 user.getFirstname(),
-                user.getEmail()
+                user.getEmail(),
+                user.getCompany().getEmail()
             );
         }
 
