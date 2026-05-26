@@ -10,14 +10,22 @@ import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
  */
 public class ExcelCsv extends Csv {
 
-    public ExcelCsv(String[] fields, CsvSeparator separator) throws CsvGenerationException
+    public ExcelCsv(String[] fields, 
+                    String nullReplacement,
+                    CsvSeparator separator) throws CsvGenerationException
     {
-        super(fields, separator, true);
+        super(fields, nullReplacement, separator, true);
+    }
+
+    public ExcelCsv(String[] fields,
+                    String nullReplacement) throws CsvGenerationException
+    {
+        this(fields, nullReplacement, CsvSeparator.COMMA);
     }
 
     public ExcelCsv(String[] fields) throws CsvGenerationException
     {
-        this(fields, CsvSeparator.COMMA);
+        this(fields, null);
     }
 
 }

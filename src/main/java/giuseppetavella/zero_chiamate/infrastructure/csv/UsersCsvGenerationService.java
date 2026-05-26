@@ -38,6 +38,7 @@ public class UsersCsvGenerationService {
         
         var csv = new Csv(fields);
         
+        
         for (var user : users) {
             csv.addRow(
                 user.getEmail()

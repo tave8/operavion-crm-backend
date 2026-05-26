@@ -18,6 +18,9 @@ public class Csv implements EmailAttachable {
     private final String[] fields;
     // what separator are we using, for example comma or semicolon
     private final CsvSeparator separator;
+    // what to replace null with, when a cell value is null
+    // if nullReplacement is still null, error will be thrown
+    private final String nullReplacement;
     // add a hint that indicates which csv separator are we using?
     // only excel suports this, so should  be used with care
     private final boolean addSeparatorHint;
@@ -25,14 +28,15 @@ public class Csv implements EmailAttachable {
     private boolean headerAdded = false;
 
     /**
-     * Initialize a CSV with a custom separator.
-     * 
-     * @param fields array of header fields
-     * @param separator the value separator, for example comma
-     * @param addSeparatorHint whether to add a marker at the start of the csv (excel-specific),
-     *                         indicating which separator the csv is using
+     * CSV has:
+     * <ul>
+     *     <li>custom null replacement</li>
+     *     <li>custom separator</li>
+     *     <li>choose if you want separator hint</li>
+     * </ul>
      */
     public Csv(String[] fields,
+               String nullReplacement,
                CsvSeparator separator,
                boolean addSeparatorHint) throws CsvGenerationException
     {
@@ -42,6 +46,7 @@ public class Csv implements EmailAttachable {
         
         this.csv = new StringBuilder();
         this.fields = fields;
+        this.nullReplacement = nullReplacement;
         this.separator = separator;
         this.addSeparatorHint = addSeparatorHint;
         // generate header. this must come AFTER other fields 
@@ -49,18 +54,47 @@ public class Csv implements EmailAttachable {
         this.addHeader();
     }
 
-
-    public Csv(String[] fields, CsvSeparator separator) throws CsvGenerationException
+    /**
+     * CSV has:
+     * <ul>
+     *     <li>custom null replacement</li>
+     *     <li>custom separator</li>
+     *     <li>no separator hint</li>
+     * </ul>
+     */
+    public Csv(String[] fields, 
+               String nullReplacement, 
+               CsvSeparator separator) throws CsvGenerationException
     {
-        this(fields, separator, false);
+        this(fields, nullReplacement, separator, false);
     }
     
     /**
-     * Initialize a CSV with a comma as default separator
+     * CSV has:
+     * <ul>
+     *     <li>custom null replacement</li>
+     *     <li>comma as separator</li>
+     *     <li>no separator hint</li>
+     * </ul>
+     */
+    public Csv(String[] fields, 
+               String nullReplacement) throws CsvGenerationException
+    {
+        this(fields, nullReplacement, CsvSeparator.COMMA);
+    }
+
+
+    /**
+     * The simplest CSV has:
+     * <ul>
+     *     <li>no null replacement (having null as value will throw error)</li>
+     *     <li>comma as separator</li>
+     *     <li>no separator hint</li>
+     * </ul>
      */
     public Csv(String[] fields) throws CsvGenerationException
     {
-        this(fields, CsvSeparator.COMMA, false);
+        this(fields, null);
     }
     
     
@@ -184,6 +218,28 @@ public class Csv implements EmailAttachable {
                             "all attributes have been properly initialized."
             );
         }
+        
+        // a field name cannot be null
+        // we must check this before we 
+        // add the fields as a row. 
+        // thus, we must do this check exactly here.
+        for (int i = 0; i < fields.length; i++) {
+            
+            var field = fields[i];
+            
+            // a field can never be null
+            if(field == null) {
+                throw new CsvGenerationException(
+                        "While adding a header field to a csv, a field can never be null, "
+                                +"regardless of null replacement. " +
+                                "Field index: " + i + ". " +
+                                "Previous field: '" + getPreviousValueIfExists(fields, i) + "'. " +
+                                "Next field: '" + getNextValueIfExists(fields, i) + "'."
+                );
+            }
+            
+        }
+        
 
         var csv = this.csv;
         var fields = this.fields;
@@ -197,7 +253,6 @@ public class Csv implements EmailAttachable {
         }
         
         // adding the header is a sub-case of adding a row
-        // keep in mind, 
         this.addRow(fields);
         // we add the header only once
         this.headerAdded = true;
@@ -272,8 +327,11 @@ public class Csv implements EmailAttachable {
         }
         return "<no next>";
     }
-    
-    
+
+    public String getNullReplacement() {
+        return nullReplacement;
+    }
+
     /**
      * This csv -> bytes 
      */
