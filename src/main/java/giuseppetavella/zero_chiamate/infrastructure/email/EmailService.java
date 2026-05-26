@@ -41,12 +41,13 @@ public class EmailService {
     {
         
         // TODO: rate limit emails. max 5 emails per second based on Resend API limit
-
         
         // check that the email is a valid email
-        StringHelper.requireValidEmailElseThrowWith(
-                recipient, 
-                "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
+        ValidationHelper.requireValidEmailElseThrow(
+                recipient,
+                () -> new EmailSendingException("Before sending an email, "
+                                                +"recipient email is not valid. "
+                                                +"Email was '" + recipient+ "'. ")
         );
         
         // recipient and subject cannot be empty

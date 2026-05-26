@@ -3,10 +3,7 @@ package giuseppetavella.zero_chiamate.api.controllers;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.UserRole;
-import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
-import giuseppetavella.zero_chiamate.helpers.EnumHelper;
-import giuseppetavella.zero_chiamate.helpers.PayloadValidationHelper;
-import giuseppetavella.zero_chiamate.helpers.StringHelper;
+import giuseppetavella.zero_chiamate.helpers.*;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.NewUserSentDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.UpdatedProfileSentDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.NewUserToSendDTO;
@@ -107,10 +104,12 @@ public class UsersController {
         // if desired role is coordinator, the email must be valid
         // whereas for operator role, we don't use the email
         if(desiredRole.equals(UserRole.COORDINATOR)) {
-            StringHelper.requireValidEmailElseThrowWith(
-                    body.email(), 
+
+            ValidationHelper.requireValidEmailElseThrowWith(
+                    body.email(),
                     "When adding a coordinator, email must exist and must be valid."
             );
+            
         }
         
         // to add a user, we need the company

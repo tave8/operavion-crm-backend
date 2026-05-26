@@ -23,6 +23,14 @@ import java.util.function.Supplier;
  *  "requireMapContains" or "requireListContains"
  * - thus, one method is a "requireValidSomething" method, 
  *   the other method is a "requireValidSomethingElseThrow" method 
+ *   
+ *   
+ *   METHOD SUFFIX  |  WHAT IT DOES
+ *   ------------------------------
+ *   orElseThrow       throw a custom exception
+ *   orElseThrowWith   throw the default exception (InvalidDataException)
+ *                     with a custom message
+ *   
  *  </pre>
  *  
  * This is not guaranteed; In the process of standardization.
@@ -54,6 +62,51 @@ public class ValidationHelper {
             throw exceptionSupplier.get();
         }
     }
+
+    /**
+     * Require valid email.
+     *
+     * @param email
+     * @throws InvalidDataException
+     */
+    public static void requireValidEmail(@Nullable String email) throws InvalidDataException 
+    {
+        if (email == null) {
+            throw new InvalidDataException("While validating if a string's value is a valid email, "
+                                            + "the email is null");
+        }
+        if(StringHelper.isValidEmail(email)) {
+            throw new InvalidDataException("While validating if a string's value is a valid email, "
+                                            + "the format was not recognized. "
+                                            + "Input value '" + email + "' does not match a valid email pattern.");
+        }
+    }
+
+    
+    public static void requireValidEmailElseThrow(@Nullable String email, 
+                                                  Supplier<? extends RuntimeException> exceptionSupplier)
+    {
+        try {
+            ValidationHelper.requireValidEmail(email);
+        } catch (InvalidDataException e) {
+            throw exceptionSupplier.get();
+        }
+
+    }
+
+    
+    public static void requireValidEmailElseThrowWith(@Nullable String email,
+                                                      String customErrorMsg)
+    {
+        try {
+            ValidationHelper.requireValidEmail(email);
+        } catch (InvalidDataException e) {
+            throw new InvalidDataException(customErrorMsg);
+        }
+
+    }
+    
+    
     
 
     public static void requireValidRange(LocalDate start, LocalDate end) {

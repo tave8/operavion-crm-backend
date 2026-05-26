@@ -57,40 +57,14 @@ public class StringHelper {
     }
 
 
-    /**
-     * Require valid email.
-     * 
-     * @param email
-     * @throws InvalidDataException
-     */
-    public static void requireValidEmail(String email) throws InvalidDataException {
-        
-        if (email == null) {
-            throw new InvalidDataException("While validating if a string's value is a valid email, "
-                    + "the email is null");
-        }
-        
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
-        if (!email.matches(emailRegex)) {
-            throw new InvalidDataException("While validating if a string's value is a valid email, "
-                    + "the format was not recognized. "
-                    + "Input value '" + email + "' does not match a valid email pattern.");
-        }
-        
-    }
     
-    public static void requireValidEmailElseThrowWith(String email, String message) 
-    {
-        
-        try {
-            
-            StringHelper.requireValidEmail(email);
-            
-        } catch (InvalidDataException e) {
-            throw new InvalidDataException(message);
+    public static boolean isValidEmail(String email) {
+        if(email == null) {
+            throw new InvalidDataException("While validating if email is valid, email cannot be null.");
         }
-        
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return !email.matches(emailRegex);
     }
 
 

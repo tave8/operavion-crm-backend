@@ -44,10 +44,10 @@ public class UsersCsvGenerationService {
             );
         }
         
-        emailService.sendEmail(
-                
-        );
-                
+        // emailService.sendEmail(
+        //        
+        // );
+        //        
         return csv;
     }
     
