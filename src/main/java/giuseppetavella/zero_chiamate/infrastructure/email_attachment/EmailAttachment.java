@@ -2,6 +2,9 @@ package giuseppetavella.zero_chiamate.infrastructure.email_attachment;
 
 import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
+import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
+import org.jspecify.annotations.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,23 +13,31 @@ public class EmailAttachment {
     
     // base64-encoded file
     private final String base64Content;
-    
     // this is what is shown in the email
     private final String filename;
     
-    public EmailAttachment(String base64Content, String attachmentFilename) {
+    public EmailAttachment(String base64Content, String filename) {
         this.base64Content = base64Content;
-        this.filename = attachmentFilename;
+        this.filename = filename;
     }
 
-    public EmailAttachment(byte[] bytes, String attachmentFilename) {
-        this(FileHelper.toBase64(bytes), attachmentFilename);
+    public EmailAttachment(byte[] bytes, String filename) {
+        this(FileHelper.toBase64(bytes), filename);
     }
-
-    public EmailAttachment(MultipartFile file, String attachmentFilename) throws FileException
+    
+    public EmailAttachment(@NonNull MultipartFile file, String filename) throws FileException
     {
-        this(EmailAttachment.getBytes(file), attachmentFilename);
+        this(FileHelper.getBytes(file), filename);
     }
+    
+    public EmailAttachment(@NonNull Csv csv, String filenameWithoutExt) {
+        this(csv.toAttachment(), filenameWithoutExt + ".csv");
+    }
+
+    public EmailAttachment(@NonNull Pdf pdf, String filenameWithoutExt) {
+        this(pdf.toAttachment(), filenameWithoutExt + ".pdf");
+    }
+
     
     public String getBase64Content() {
         return base64Content;
@@ -36,12 +47,4 @@ public class EmailAttachment {
         return filename;
     }
     
-    private static byte[] getBytes(MultipartFile file) throws FileException
-    {
-        try {
-            return file.getBytes();
-        } catch (IOException ex) {
-            throw new FileException(ex.getMessage());
-        }
-    }
 }

@@ -34,7 +34,7 @@ public class UsersCsvGenerationService {
         
         List<User> users = usersService.findUsersByRole(company, UserRole.OPERATOR);
         
-        String[] fields = {"Fullname"};
+        String[] fields = {"Email"};
         
         var csv = new Csv(fields);
         
@@ -43,12 +43,6 @@ public class UsersCsvGenerationService {
                 user.getEmail()
             );
         }
-        //
-        // emailService.sendEmail(
-        //     "giuseppetavella8@gmail.com",
-        //         "Your report",
-        //         ""
-        // );
 
         return csv;
     }

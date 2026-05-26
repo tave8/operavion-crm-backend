@@ -1,10 +1,7 @@
-package giuseppetavella.zero_chiamate.csv_generation;
+package giuseppetavella.zero_chiamate.unit.csv_generation;
 
-import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
-import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

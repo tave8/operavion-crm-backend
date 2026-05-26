@@ -74,6 +74,8 @@ public class FileHelper {
 
     /**
      * URL -> base64
+     * TODO: fix semantics. it's not url to base64, it's 
+     *  "download the content of the URL" and that is converted to base64
      */
     public static String urlToBase64(String url) throws FileDownloadException 
     {

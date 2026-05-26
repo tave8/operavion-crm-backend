@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.csv;
 
+import giuseppetavella.zero_chiamate.exceptions.CsvException;
 import giuseppetavella.zero_chiamate.infrastructure.CsvSeparator;
 import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
@@ -118,9 +119,9 @@ public class Csv implements EmailAttachable {
      * @param separator
      * @return
      */
-    private static @NonNull String getSafeStringFromValues(String[] values, 
-                                                           int currIdx, 
-                                                           String separator) 
+    private @NonNull String getSafeStringFromValues(String[] values, 
+                                                   int currIdx, 
+                                                   String separator) 
     {
         // the current value
         var value = values[currIdx];
@@ -130,6 +131,7 @@ public class Csv implements EmailAttachable {
             throw new CsvGenerationException(
                     "While adding a row to a csv, cell value cannot be null. " +
                             "Cell index: " + currIdx + ". " +
+                            "Corresponding field: '" + getFieldAt(currIdx) + "'. " + 
                             "Previous value: '" + getPreviousValueIfExists(values, currIdx) + "'. " +
                             "Next value: '" + getNextValueIfExists(values, currIdx) + "'."
             );
@@ -137,7 +139,21 @@ public class Csv implements EmailAttachable {
         
         return escapeIfNecessary(value, separator);
     }
+
     
+    /**
+     * Get the field at the given index.
+     */
+    public String getFieldAt(int i) throws CsvException {
+        if (i < 0 || i >= fields.length) {
+            throw new CsvException(
+                    "Field index out of bounds. " +
+                            "Index: " + i + ". " +
+                            "Number of fields: " + fields.length + "."
+            );
+        }
+        return fields[i];
+    }
     
 
     /**
@@ -210,7 +226,7 @@ public class Csv implements EmailAttachable {
      * @param separator the CSV separator in use
      * @return the escaped value, or the original value if no escaping was needed
      */
-    public static String escapeIfNecessary(String value, String separator) {
+    public static @NonNull String escapeIfNecessary(@NonNull String value, String separator) {
 
         var containsSeparator = value.contains(separator);
         var containsQuote = value.contains("\"");
