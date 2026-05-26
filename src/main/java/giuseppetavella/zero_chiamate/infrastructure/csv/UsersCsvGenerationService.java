@@ -34,13 +34,14 @@ public class UsersCsvGenerationService {
         
         List<User> users = usersService.findUsersByRole(company, UserRole.OPERATOR);
         
-        String[] fields = {"Email"};
+        String[] fields = {"Name", "Email"};
         
-        var csv = new Csv(fields);
+        var csv = new Csv(fields, "missing");
         
         
         for (var user : users) {
             csv.addRow(
+                user.getFirstname(),
                 user.getEmail()
             );
         }

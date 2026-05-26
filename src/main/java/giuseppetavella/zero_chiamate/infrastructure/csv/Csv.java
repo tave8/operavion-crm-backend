@@ -142,6 +142,7 @@ public class Csv implements EmailAttachable {
         csv.append("\n");
         
     }
+    
 
     /**
      * Return a safe string. The values string are used 
@@ -159,18 +160,25 @@ public class Csv implements EmailAttachable {
     {
         // the current value
         var value = values[currIdx];
-
-        // cell value cannot be null
+        
         if (value == null) {
-            throw new CsvGenerationException(
-                    "While adding a row to a csv, cell value cannot be null. " +
-                            "Cell index: " + currIdx + ". " +
-                            "Corresponding field: '" + getFieldAt(currIdx) + "'. " + 
-                            "Previous value: '" + getPreviousValueIfExists(values, currIdx) + "'. " +
-                            "Next value: '" + getNextValueIfExists(values, currIdx) + "'."
-            );
+            // if the null replacement is also null
+            if(this.nullReplacement == null) {
+                throw new CsvGenerationException(
+                        "While adding a row to a csv, cell value cannot be null, and null replacement was "
+                                +"null or not explicitly set. " +
+                                "Cell index: " + currIdx + ". " +
+                                "Corresponding field: '" + getFieldAt(currIdx) + "'. " + 
+                                "Previous value: '" + getPreviousValueIfExists(values, currIdx) + "'. " +
+                                "Next value: '" + getNextValueIfExists(values, currIdx) + "'."
+                );
+            }
+            // the null replacement is non-null, so we can safely
+            // use that as value  
+            return escapeIfNecessary(this.nullReplacement, separator);
         }
         
+        // cell value is not null 
         return escapeIfNecessary(value, separator);
     }
 
@@ -310,7 +318,7 @@ public class Csv implements EmailAttachable {
         if (hasPrevious) {
             return values[currentIdx - 1];
         }
-        return "<no prev>";
+        return "<no previous>";
     }
 
     /**
