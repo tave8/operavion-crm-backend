@@ -7,16 +7,16 @@ import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
  * In a ExcelCsv, we always add the separator hint,
  * for simplicity.
  */
-public class ExcelCsvGeneratorService extends CsvGeneratorService {
-    
-    public ExcelCsvGeneratorService(String[] fields, CsvSeparator separator) throws CsvGenerationException
-    {
-        super(fields, separator, true);
-    }
-    
-    public ExcelCsvGeneratorService(String[] fields) throws CsvGenerationException
-    {
-        this(fields, CsvSeparator.COMMA);
-    }
-
-}
+// public class ExcelCsvGeneratorService {
+//    
+//     public ExcelCsvGeneratorService(String[] fields, CsvSeparator separator) throws CsvGenerationException
+//     {
+//         super(fields, separator, true);
+//     }
+//    
+//     public ExcelCsvGeneratorService(String[] fields) throws CsvGenerationException
+//     {
+//         this(fields, CsvSeparator.COMMA);
+//     }
+//
+// }

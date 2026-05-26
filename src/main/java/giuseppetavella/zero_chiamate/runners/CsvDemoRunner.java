@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.infrastructure.csv.AppCsvService;
+import giuseppetavella.zero_chiamate.infrastructure.csv.UsersCsvGenerationService;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class CsvDemoRunner implements CommandLineRunner {
 
     @Autowired
-    private AppCsvService appCsvGenerationService;
+    private UsersCsvGenerationService appCsvGenerationService;
     
     @Autowired
     private EmailService appEmailService;

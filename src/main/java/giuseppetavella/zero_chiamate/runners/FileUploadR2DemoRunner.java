@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.infrastructure.csv.AppCsvService;
+import giuseppetavella.zero_chiamate.infrastructure.csv.UsersCsvGenerationService;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import giuseppetavella.zero_chiamate.infrastructure.storage.FileUploadService;
@@ -15,7 +15,7 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
     private FileUploadService fileUploadService;
     
     @Autowired
-    private AppCsvService appCsvGenerationService;
+    private UsersCsvGenerationService appCsvGenerationService;
     
     @Autowired
     private AppPdfService appPdfGenerationService;
