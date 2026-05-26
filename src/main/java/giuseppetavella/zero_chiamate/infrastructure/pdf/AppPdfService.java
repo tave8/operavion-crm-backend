@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
 import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class AppPdfService extends PdfService {
     {
 
         // require that the vars passed have these keys
-        DataValidationHelper.requireMapContainsOnlyKeys(
+        ValidationHelper.requireMapContainsOnlyKeys(
                 vars, 
                 List.of("shiftsCountByOperator", "startDate", "endDate")
         );
@@ -51,7 +51,7 @@ public class AppPdfService extends PdfService {
     {
 
         // require that the vars passed have these keys
-        DataValidationHelper.requireMapContainsOnlyKeys(
+        ValidationHelper.requireMapContainsOnlyKeys(
                 vars,
                 List.of("discrepancies", "startDate", "endDate")
         );

@@ -4,7 +4,7 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.UserRole;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.OperatorShiftConflictsToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.OperatorShiftAvailabilityToSendDTO;
@@ -55,7 +55,7 @@ public class OperatorsController {
                                                      @RequestParam(value = "from", required = false) LocalDate startDate,
                                                      @RequestParam(value = "to", required = false) LocalDate endDate)
     {
-        DataValidationHelper.requireValidRange(startDate, endDate);
+        ValidationHelper.requireValidRange(startDate, endDate);
         
         Company company = currentUser.getCompany();
         
@@ -81,7 +81,7 @@ public class OperatorsController {
                                              @RequestParam(value = "from", required = false) LocalDate startDate,
                                              @RequestParam(value = "to", required = false) LocalDate endDate)
     {
-        DataValidationHelper.requireValidRange(startDate, endDate);
+        ValidationHelper.requireValidRange(startDate, endDate);
 
         AuthorizationHelper.requireUserOperator(currentUser);
 
@@ -108,7 +108,7 @@ public class OperatorsController {
     )
     {
 
-        DataValidationHelper.requireValidRange(fromTime, toTime);
+        ValidationHelper.requireValidRange(fromTime, toTime);
         
         Company company = currentUser.getCompany();
         
@@ -152,9 +152,9 @@ public class OperatorsController {
     {
 
         
-        DataValidationHelper.requireValidRange(from, to);
+        ValidationHelper.requireValidRange(from, to);
         
-        DataValidationHelper.requireValidRange(fromTime, toTime);
+        ValidationHelper.requireValidRange(fromTime, toTime);
 
         Company company = currentUser.getCompany();
 

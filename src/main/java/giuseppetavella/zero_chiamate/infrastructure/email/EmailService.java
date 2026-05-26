@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.email;
 import giuseppetavella.zero_chiamate.exceptions.HtmlTemplateException;
 import giuseppetavella.zero_chiamate.helpers.LanguageHelper;
 import giuseppetavella.zero_chiamate.helpers.StringHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.template.HtmlTemplateService;
@@ -40,7 +41,7 @@ public class EmailService {
     {
         
         // TODO: rate limit emails. max 5 emails per second based on Resend API limit
-        
+
         
         // check that the email is a valid email
         StringHelper.requireValidEmailElseThrowWith(
@@ -48,8 +49,17 @@ public class EmailService {
                 "Before sending an email, recipient email is not valid. Email was '" + recipient+ "'. "
         );
         
-        // TODO: check that html is not empty
-
+        // recipient and subject cannot be empty
+        ValidationHelper.requireStringNotBlankElseThrow(
+                subject,
+                () -> new EmailSendingException("Email subject cannot be empty")
+        );
+        
+        // html cannot be empty
+        ValidationHelper.requireStringNotBlankElseThrow(
+                html, 
+                () -> new EmailSendingException("Html body cannot be empty")
+        );
         
        return resendAPIService.sendEmail(
                recipient,

@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.domain.entities.contract_expectations;
 
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddress;
 import giuseppetavella.zero_chiamate.infrastructure.ContractExpectationState;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
@@ -75,7 +75,7 @@ public class ContractExpectation {
         );
 
         // check if valid state transition
-        DataValidationHelper.requireValidStateTransition(
+        ValidationHelper.requireValidStateTransition(
                 ContractExpectationState.class,
                 currentState,
                 desiredState,

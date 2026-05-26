@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.api.controllers;
 
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.helpers.PayloadValidationHelper;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.sent.NewShiftSentDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
@@ -60,7 +60,7 @@ public class ShiftsController {
                                   @RequestParam(value = "to", required = false) LocalDate endDate) 
     {
 
-        DataValidationHelper.requireValidRange(startDate, endDate);
+        ValidationHelper.requireValidRange(startDate, endDate);
         
         Company company = currentUser.getCompany();
         
@@ -80,7 +80,7 @@ public class ShiftsController {
                                                 @RequestParam(value = "hasShifts", defaultValue = "true") Boolean hasShifts)
     {
 
-        DataValidationHelper.requireValidRange(startDate, endDate);
+        ValidationHelper.requireValidRange(startDate, endDate);
 
         Company company = currentUser.getCompany();
         

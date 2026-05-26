@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.admin_weekly_report;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
@@ -70,7 +70,7 @@ public class AdminWeeklyReportEmailService {
         // right before sending email, make sure you didn't forget
         // any variable to pass to html template
 
-        DataValidationHelper.requireMapContainsOnlyKeys(
+        ValidationHelper.requireMapContainsOnlyKeys(
                 emailTemplateVars,
                 List.of("firstname")
         );

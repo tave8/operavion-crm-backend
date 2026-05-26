@@ -3,12 +3,58 @@ package giuseppetavella.zero_chiamate.helpers;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Supplier;
 
-public class DataValidationHelper {
+/**
+ * Helper class for all things validation.
+ * Ideally, the methods should:
+ * <pre>
+ * - be static
+ * - return void
+ * - throw one exception only, InvalidDataException
+ * - give possibility to throw a custom exception through a callback
+ * - start with "requireValid" for example
+ *  "requireValidRange". Or "requireObjectContains" for example
+ *  "requireMapContains" or "requireListContains"
+ * - thus, one method is a "requireValidSomething" method, 
+ *   the other method is a "requireValidSomethingElseThrow" method 
+ *  </pre>
+ *  
+ * This is not guaranteed; In the process of standardization.
+ */
+public class ValidationHelper {
+    
+    
+    public static void requireStringNotBlank(@Nullable String s) throws InvalidDataException 
+    {
+        if(s == null) {
+            throw new InvalidDataException(
+                    "String was required to be not blank, it's null instead."
+            );
+        }
+        if(s.isBlank()) {
+            throw new InvalidDataException(
+                    "String was required to be not blank, but it's blank. "
+                    + "Value: " + s
+            );
+        }
+    }
+    
+    public static void requireStringNotBlankElseThrow(@Nullable String s,
+                                                     Supplier<? extends RuntimeException> exceptionSupplier) 
+    {
+        try {
+            ValidationHelper.requireStringNotBlank(s);
+        } catch (InvalidDataException e) {
+            throw exceptionSupplier.get();
+        }
+    }
+    
 
     public static void requireValidRange(LocalDate start, LocalDate end) {
         if (!TimeHelper.isValidRange(start, end)) {
@@ -25,7 +71,7 @@ public class DataValidationHelper {
                     "Invalid time range validation failed: 'startTime' cannot be after 'endTime'. " +
                             "Provided start: [" + start + "], provided end: [" + end + "]"
             );
-        }
+        } 
     }
 
     public static void requireValidRange(LocalDate startDate, LocalDate endDate,
@@ -165,7 +211,7 @@ public class DataValidationHelper {
                                                                        String entity) throws InvalidStateTransitionException
     {
 
-        DataValidationHelper.requireValidStateTransition(
+        ValidationHelper.requireValidStateTransition(
             currentState == null ? null : currentState.name(),
             desiredState == null ? null : desiredState.name(),
             EnumHelper.stringify(enumClass, firstStates),

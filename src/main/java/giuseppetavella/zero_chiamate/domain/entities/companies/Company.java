@@ -4,7 +4,7 @@ import giuseppetavella.zero_chiamate.exceptions.BillingException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataFormatException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPISubscriptionStatus;
 import jakarta.persistence.*;
 
@@ -203,7 +203,7 @@ public class Company {
                 StripeAPISubscriptionStatus.CANCELED, List.of()
         );
 
-        DataValidationHelper.requireValidStateTransition(
+        ValidationHelper.requireValidStateTransition(
                 StripeAPISubscriptionStatus.class,
                 currentStatus,
                 stripeSubscriptionStatus,

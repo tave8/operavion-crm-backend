@@ -132,7 +132,7 @@ public class ClientAddressesController {
                                                                @RequestParam(value = "from", required = false) LocalDate startDate,
                                                                @RequestParam(value = "to", required = false) LocalDate endDate)
     {
-        DataValidationHelper.requireValidRange(startDate, endDate);
+        ValidationHelper.requireValidRange(startDate, endDate);
         
         // find client address     
         ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);

@@ -3,7 +3,7 @@ package giuseppetavella.zero_chiamate.config;
 import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
 import giuseppetavella.zero_chiamate.exceptions.AppStartupException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
-import giuseppetavella.zero_chiamate.helpers.DataValidationHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.helpers.UrlHelper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,10 +36,10 @@ public class AppEnvironment {
     {
         
         // validate the the URLs are valid
-        DataValidationHelper.requireValidUrl(serverUrl);
-        DataValidationHelper.requireValidUrl(frontendProductionUrl);
-        DataValidationHelper.requireValidUrl(frontendPreviewUrl);
-        DataValidationHelper.requireValidUrl(frontendLocalUrl);
+        ValidationHelper.requireValidUrl(serverUrl);
+        ValidationHelper.requireValidUrl(frontendProductionUrl);
+        ValidationHelper.requireValidUrl(frontendPreviewUrl);
+        ValidationHelper.requireValidUrl(frontendLocalUrl);
         
         this.whereami = whereami;
         

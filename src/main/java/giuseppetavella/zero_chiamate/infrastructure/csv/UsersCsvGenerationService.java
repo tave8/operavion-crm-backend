@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.UserRole;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
+import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class UsersCsvGenerationService {
     
     @Autowired
     private UsersService usersService;
+    
+    @Autowired
+    private EmailService emailService;
 
 
     /**
@@ -39,6 +43,10 @@ public class UsersCsvGenerationService {
                 user.getEmail()
             );
         }
+        
+        emailService.sendEmail(
+                
+        );
                 
         return csv;
     }
