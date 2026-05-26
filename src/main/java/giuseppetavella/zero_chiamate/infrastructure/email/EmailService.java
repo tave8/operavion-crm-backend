@@ -150,29 +150,29 @@ public class EmailService {
 
     }
 
-    public String sendEmailFromTemplateWithDefaultLanguage(String template,
-                                                    Map<String, Object> vars,
-                                                    String recipient,
-                                                    String subject) throws HtmlTemplateException
-    {
+    // public String sendEmailFromTemplateWithDefaultLanguage(String template,
+    //                                                 Map<String, Object> vars,
+    //                                                 String recipient,
+    //                                                 String subject) throws HtmlTemplateException
+    // {
+    //
+    //     return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
+    //
+    // }
 
-        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
-
-    }
-
-    public String sendEmailFromTemplateWithLanguage(String templateAfterLanguage,
-                                                   Map<String, Object> vars,
-                                                   String recipient,
-                                                   String subject) throws HtmlTemplateException
-    {
-
-        String lang = LanguageHelper.getLanguage().getValue();
-        
-        String templatePathWithLanguage = lang + "/" + templateAfterLanguage;
-        
-        return this.sendEmailFromTemplate(templatePathWithLanguage, vars, recipient, subject, List.of());
-
-    }
+    // public String sendEmailFromTemplateWithLanguage(String templateAfterLanguage,
+    //                                                Map<String, Object> vars,
+    //                                                String recipient,
+    //                                                String subject) throws HtmlTemplateException
+    // {
+    //
+    //     String lang = LanguageHelper.getLanguage().getValue();
+    //    
+    //     String templatePathWithLanguage = lang + "/" + templateAfterLanguage;
+    //    
+    //     return this.sendEmailFromTemplate(templatePathWithLanguage, vars, recipient, subject, List.of());
+    //
+    // }
     
     
 

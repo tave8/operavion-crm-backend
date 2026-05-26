@@ -43,11 +43,13 @@ public class UsersCsvGenerationService {
                 user.getEmail()
             );
         }
-        
+        //
         // emailService.sendEmail(
-        //        
+        //     "giuseppetavella8@gmail.com",
+        //         "Your report",
+        //         ""
         // );
-        //        
+
         return csv;
     }
     
