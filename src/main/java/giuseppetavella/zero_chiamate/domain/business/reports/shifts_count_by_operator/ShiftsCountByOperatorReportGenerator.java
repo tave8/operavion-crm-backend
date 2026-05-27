@@ -5,6 +5,7 @@ import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepanc
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorReportParams;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.PdfService;
@@ -20,17 +21,46 @@ public class ShiftsCountByOperatorReportGenerator {
     
     @Autowired
     private PdfService pdfService;
-    
-    
-    public Pdf generate(ShiftsCountByOperatorReportParams params) throws PdfGenerationException
+
+
+    /**
+     * Same report, different format. This is a csv.
+     * 
+     * @param params
+     * @return
+     */
+    public Csv generate(ShiftsCountByOperatorReportParams params) 
+    {
+        
+        var csv = new Csv(List.of("Operatore", "Numero turni"));
+        
+        for(var user : params.shiftsCountByOperator().keySet()) {
+            csv.addRow(
+                    user.getFullname(),
+                    params.shiftsCountByOperator().get(user).toString()
+            );
+        }
+        
+        return csv;
+    }
+
+
+    /**
+     * Same report, different format. This is a pdf.
+     * 
+     * @param params
+     * @return
+     */
+    public Pdf generatePdf(ShiftsCountByOperatorReportParams params)
     {
         
         return pdfService.templateToPdf(
                 Template.REPORT_SHIFTS_COUNT_BY_OPERATOR,
                 toTemplateVars(params)
         );
-
+    
     }
+
 
     
     /**
@@ -41,12 +71,12 @@ public class ShiftsCountByOperatorReportGenerator {
     public EmailAttachment asAttachment(ShiftsCountByOperatorReportParams params)
     {
 
-        var pdf = generate(params);
+        var csv = generate(params);
 
         var pdfAttachmentName = "report_turni_" + params.startDate() + "_" + params.endDate();
 
         return new EmailAttachment(
-                pdf,
+                csv,
                 pdfAttachmentName
         );
 

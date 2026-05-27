@@ -16,7 +16,7 @@ public class ShiftsCountByOperatorTestRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        jobManager.executeJob(JobName.SEND_ADMIN_WEEKLY_REPORT);
+        // jobManager.executeJob(JobName.SEND_ADMIN_WEEKLY_REPORT);
         
     }
 }
