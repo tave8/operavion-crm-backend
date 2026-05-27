@@ -28,7 +28,7 @@ public class ContractDiscrepancyReportGenerator {
     {
         
         return pdfService.templateToPdf(
-                Template.EMAIL_CONTRACT_DISCREPANCY, 
+                Template.REPORT_CONTRACT_DISCREPANCY, 
                 toTemplateVars(params)
         );
  

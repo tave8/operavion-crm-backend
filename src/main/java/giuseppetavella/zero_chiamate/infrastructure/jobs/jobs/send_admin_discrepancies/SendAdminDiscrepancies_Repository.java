@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,8 +57,7 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
                     AND 
                         j.last_processed_item_id = u.id
                     AND 
-                        -- Filters for executions within the current week (last 7 days)
-                        j.started_at >= CURRENT_DATE - INTERVAL '7 day'
+                         j.started_at >= :startDate
                 
             )
         
@@ -65,7 +65,8 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
 
 """)
     Optional<User> getNextItem(
-            @Param("jobName") String jobName
+            @Param("jobName") String jobName,
+            LocalDate startDate
     );
 
     

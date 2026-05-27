@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_discrepancies;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationsService;
@@ -56,6 +57,9 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
     
     @Autowired
     private ContractDiscrepancyMailer contractDiscrepancyMailer;
+    
+    @Autowired
+    private AppEnvironment appEnvironment;
     
     
     public SendAdminDiscrepancies_JobExecutor() {
@@ -219,8 +223,15 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
 
     @Override
     public JobExecutionItem<User> getNextItem() {
-        
-        Optional<User> maybeNextUser = this.thisRepository.getNextItem(this.getJobName().name());
+
+        // change the interval to get next item, based on app env
+        int intervalDays = appEnvironment.isPreview() ? 1 : 7;
+        LocalDate startDate = LocalDate.now().minusDays(intervalDays);
+
+        Optional<User> maybeNextUser = this.thisRepository.getNextItem(
+                this.getJobName().name(),
+                startDate
+        );
         
         if(maybeNextUser.isEmpty()) {
             return null; 
