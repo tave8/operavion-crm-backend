@@ -1,14 +1,11 @@
 package giuseppetavella.zero_chiamate.infrastructure.email;
 
 import giuseppetavella.zero_chiamate.domain.business.Template;
-import giuseppetavella.zero_chiamate.exceptions.HtmlTemplateException;
-import giuseppetavella.zero_chiamate.helpers.LanguageHelper;
-import giuseppetavella.zero_chiamate.helpers.StringHelper;
+import giuseppetavella.zero_chiamate.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
-import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachable;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
-import giuseppetavella.zero_chiamate.infrastructure.template.HtmlTemplateService;
+import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;
 import giuseppetavella.zero_chiamate.integrations.resend.ResendAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +24,7 @@ public class EmailService {
     private ResendAPIService resendAPIService;
     
     @Autowired
-    private HtmlTemplateService htmlTemplateService;
+    private TemplateService templateService;
     
 
     /**
@@ -103,7 +100,7 @@ public class EmailService {
      * Send email from a HTML template.
      * Many attachments.
      * 
-     * @throws HtmlTemplateException if input template is not found
+     * @throws TemplateException if input template is not found
      */
     public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
@@ -112,7 +109,7 @@ public class EmailService {
                                         List<EmailAttachment> attachments) 
     {
         
-        String html = this.htmlTemplateService.fillTemplate(template, vars);
+        String html = this.templateService.fillTemplate(template, vars);
         
         return this.sendEmail(recipient, subject, html, attachments);
         
@@ -122,13 +119,13 @@ public class EmailService {
      * Send email from a HTML template.
      * One attachment.
      * 
-     * @throws HtmlTemplateException if input template is not found
+     * @throws TemplateException if input template is not found
      */
     public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject,
-                                        EmailAttachment attachment) throws HtmlTemplateException
+                                        EmailAttachment attachment) throws TemplateException
     {
 
         return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of(attachment));
@@ -141,12 +138,12 @@ public class EmailService {
      * Send email from a HTML template.
      * No attachments.
      * 
-     * @throws HtmlTemplateException if input template is not found
+     * @throws TemplateException if input template is not found
      */
     public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
                                         String recipient,
-                                        String subject) throws HtmlTemplateException
+                                        String subject) throws TemplateException
     {
 
         return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());

@@ -3,7 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.pdf;
 import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.BrowserContentDispositionHeader;
-import giuseppetavella.zero_chiamate.infrastructure.template.HtmlTemplateService;
+import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class BasePdfService {
     
     @Autowired
-    private HtmlTemplateService htmlTemplateService;
+    private TemplateService templateService;
 
 
     /**
@@ -58,7 +58,7 @@ public class BasePdfService {
                                 Map<String, ? extends Object> vars) throws PdfGenerationException
     {
         // template -> html 
-        String html = this.htmlTemplateService.fillTemplate(template, vars);
+        String html = this.templateService.fillTemplate(template, vars);
         // html -> pdf 
         return this.htmlToPdf(html);
     }
@@ -73,7 +73,7 @@ public class BasePdfService {
                                                          BrowserContentDispositionHeader contentDispositionHeader)
     {
         // template -> html
-        String html = this.htmlTemplateService.fillTemplate(template, vars);
+        String html = this.templateService.fillTemplate(template, vars);
         // html -> pdf
         byte[] bytes = this.htmlToPdf(html);
         // pdf -> http response

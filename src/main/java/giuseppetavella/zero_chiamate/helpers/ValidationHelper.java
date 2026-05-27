@@ -36,6 +36,27 @@ import java.util.function.Supplier;
  * This is not guaranteed; In the process of standardization.
  */
 public class ValidationHelper {
+
+
+    /**
+     * Require that html template exists.
+     */
+    public static void requireTemplateExists(String templatePathWithoutExt)
+    {
+        if(!FileSystemHelper.templateExists(templatePathWithoutExt)) {
+            throw new InvalidDataException("Template '" +  templatePathWithoutExt + "' does not exist.");
+        }
+    }
+    
+    public static void requireTemplateExistsElseThrow(String templatePathWithoutExt,
+                                                      Supplier<? extends RuntimeException> exceptionSupplier)
+    {
+        try {
+            requireTemplateExists(templatePathWithoutExt);
+        } catch(InvalidDataException e) {
+            throw exceptionSupplier.get();
+        }
+    }
     
     
     public static void requireStringNotBlank(@Nullable String s) throws InvalidDataException 
