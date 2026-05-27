@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.template;
 
+import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.exceptions.HtmlTemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class HtmlTemplateService {
      * 
      * @throws HtmlTemplateException if input template is not valid / does not exist
      */
-    public String fillTemplate(String template, Map<String, ? extends Object> vars) 
+    public String fillTemplate(Template template, Map<String, ? extends Object> vars) 
     {
 
         // TODO: make sure the template path exists
@@ -40,7 +41,7 @@ public class HtmlTemplateService {
 
         try {
 
-            return this.templateEngine.process(template, context);
+            return this.templateEngine.process(template.getValue(), context);
 
         } catch(TemplateInputException ex) {
 

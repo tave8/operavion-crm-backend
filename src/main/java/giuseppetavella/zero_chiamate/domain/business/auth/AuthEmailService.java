@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
+import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
@@ -49,7 +50,7 @@ public class AuthEmailService {
         try {
 
             emailService.sendEmailFromTemplate(
-                    "emails/verify_email",
+                    Template.EMAIL_VERIFY_EMAIL,
                     vars,
                     user.getEmail(),
                     "Conferma la tua email"
@@ -87,7 +88,7 @@ public class AuthEmailService {
         );
 
         emailService.sendEmailFromTemplate(
-                "emails/forgot_password_authorization",
+                Template.EMAIL_FORGOT_PASSWORD_AUTHORIZATION,
                 vars,
                 user.getEmail(),
                 "Reset your password"

@@ -7,7 +7,8 @@ import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
-import giuseppetavella.zero_chiamate.domain.business.reports.admin_weekly_report.AdminWeeklyReportEmailSender;
+import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.ShiftsCountByOperatorMailer;
+import giuseppetavella.zero_chiamate.helpers.TimeHelper;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -28,7 +29,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
     private SendAdminWeeklyReport_Repository thisRepository;
     
     @Autowired
-    private AdminWeeklyReportEmailSender adminWeeklyReportEmailSender;
+    private ShiftsCountByOperatorMailer shiftsCountByOperatorMailer;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -62,18 +63,20 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         Company company = admin.getCompany();
 
         // TODO: fix this +2 logical bug
-        LocalDate referenceDate = LocalDate.now().plusDays(2);
-
-        LocalDate lastWeekTarget = referenceDate.minusWeeks(1);
-
-        LocalDate lastMonday = lastWeekTarget.with(DayOfWeek.MONDAY); 
-        LocalDate lastFriday = lastWeekTarget.with(DayOfWeek.FRIDAY); 
+        //  range should be this week
+        LocalDate lastMonday = TimeHelper.lastMonday();
+        LocalDate lastFriday = TimeHelper.lastFriday();
         
         // find shifts by operator
         Map<User, Integer> shiftsCountByOperator  = this.shiftsService.countShiftsByOperator(company, lastMonday, lastFriday);
 
+        // if no entry is present, skip this admin
+        if(shiftsCountByOperator.isEmpty()) {
+            return;
+        }
+        
         // send email with weekly report as pdf attachment
-        adminWeeklyReportEmailSender.sendAdminWeeklyReport(
+        shiftsCountByOperatorMailer.send(
                 admin,
                 shiftsCountByOperator,
                 lastMonday,

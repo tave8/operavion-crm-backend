@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
+import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.BrowserContentDispositionHeader;
 import giuseppetavella.zero_chiamate.infrastructure.template.HtmlTemplateService;
@@ -53,7 +54,7 @@ public class BasePdfService {
     /**
      * template + vars -> PDF
      */
-    public byte[] templateToPdf(String template, 
+    public byte[] templateToPdf(Template template,
                                 Map<String, ? extends Object> vars) throws PdfGenerationException
     {
         // template -> html 
@@ -66,7 +67,7 @@ public class BasePdfService {
     /**
      * template + vars -> HTTP response entity 
      */
-    public ResponseEntity<byte[]> templateToHttpResponse(String template,
+    public ResponseEntity<byte[]> templateToHttpResponse(Template template,
                                                          Map<String, Object> vars,
                                                          String outputFilename,
                                                          BrowserContentDispositionHeader contentDispositionHeader)

@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
+import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyEmailParams;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
@@ -35,19 +36,21 @@ public class ContractDiscrepancyMailer {
                        LocalDate endDate)
     {
         
-        var attachment = reportGenerator.asAttachment(discrepancies, startDate, endDate);
+        var reportParams = new ContractDiscrepancyReportParams(
+                discrepancies, startDate, endDate
+        );
         
-        var params = new ContractDiscrepancyEmailParams(
+        var emailParams = new ContractDiscrepancyEmailParams(
                 admin.getFirstname()
         ); 
         
-        var template = "emails/admin_discrepancy_report";
+        var attachment = reportGenerator.asAttachment(reportParams);
         
         var subject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
 
         emailService.sendEmailFromTemplate(
-                template,
-                toTemplateVars(params),
+                Template.EMAIL_CONTRACT_DISCREPANCY,
+                toTemplateVars(emailParams),
                 admin.getEmail(),
                 subject,
                 attachment

@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.email;
 
+import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.exceptions.HtmlTemplateException;
 import giuseppetavella.zero_chiamate.helpers.LanguageHelper;
 import giuseppetavella.zero_chiamate.helpers.StringHelper;
@@ -104,7 +105,7 @@ public class EmailService {
      * 
      * @throws HtmlTemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(String template, 
+    public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject,
@@ -123,7 +124,7 @@ public class EmailService {
      * 
      * @throws HtmlTemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(String template,
+    public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject,
@@ -142,7 +143,7 @@ public class EmailService {
      * 
      * @throws HtmlTemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(String template,
+    public String sendEmailFromTemplate(Template template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject) throws HtmlTemplateException
