@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
 import giuseppetavella.zero_chiamate.config.Template;
-import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

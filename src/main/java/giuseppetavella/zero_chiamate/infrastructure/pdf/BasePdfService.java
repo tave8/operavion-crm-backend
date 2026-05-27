@@ -1,14 +1,9 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
 import giuseppetavella.zero_chiamate.config.Template;
-import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
-import giuseppetavella.zero_chiamate.infrastructure.BrowserContentDispositionHeader;
+import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 

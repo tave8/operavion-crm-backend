@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.infrastructure.csv;
 
 import giuseppetavella.zero_chiamate.infrastructure.CsvSeparator;
-import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.csv.exceptions.CsvGenerationException;
 
 import java.util.List;
 

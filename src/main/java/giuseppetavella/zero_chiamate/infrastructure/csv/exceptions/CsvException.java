@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.exceptions;
+package giuseppetavella.zero_chiamate.infrastructure.csv.exceptions;
 
 public class CsvException extends RuntimeException {
     public CsvException(String message) {

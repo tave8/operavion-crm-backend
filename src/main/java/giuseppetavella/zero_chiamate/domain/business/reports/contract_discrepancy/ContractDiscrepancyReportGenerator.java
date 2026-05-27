@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepan
 
 import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
-import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.PdfService;

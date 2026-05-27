@@ -1,10 +1,11 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
+import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
+import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -401,7 +402,22 @@ public class ErrorsHandler {
     //     return new ErrorsToSendDTO("Fatal error at the ORM level. "
     //                                 +"This is likely due to a fatal error at the database level.");
     // }
-    
+
+
+    @ExceptionHandler(TemplateException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleTemplateException(TemplateException ex) {
+
+        LOGGER.error("Error in server while working with a template. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error in server while working with a template",
+                ex.getMessage(),
+                ex
+        );
+
+        return new ErrorsToSendDTO("There was an error in the server while working with a template.");
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

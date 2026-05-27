@@ -1,9 +1,9 @@
 package giuseppetavella.zero_chiamate.infrastructure.csv;
 
-import giuseppetavella.zero_chiamate.exceptions.CsvException;
 import giuseppetavella.zero_chiamate.infrastructure.CsvSeparator;
-import giuseppetavella.zero_chiamate.exceptions.CsvGenerationException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.infrastructure.csv.exceptions.CsvException;
+import giuseppetavella.zero_chiamate.infrastructure.csv.exceptions.CsvGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachable;
 import org.jspecify.annotations.NonNull;
 

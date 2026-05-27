@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.integrations.anthropic;
 
-import giuseppetavella.zero_chiamate.exceptions.AIException;
+import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.helpers.PayloadValidationHelper;
 import okhttp3.OkHttpClient;

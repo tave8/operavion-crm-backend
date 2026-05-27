@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.cv_extraction;
 
-import giuseppetavella.zero_chiamate.exceptions.AIException;
+import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.exceptions.PayloadValidationException;
 import giuseppetavella.zero_chiamate.exceptions.UnknownFileTypeException;

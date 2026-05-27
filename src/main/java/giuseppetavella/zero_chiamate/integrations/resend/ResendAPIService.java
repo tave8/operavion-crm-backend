@@ -6,7 +6,7 @@ import com.resend.services.emails.model.Attachment;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
-import giuseppetavella.zero_chiamate.exceptions.TemplateException;
+import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

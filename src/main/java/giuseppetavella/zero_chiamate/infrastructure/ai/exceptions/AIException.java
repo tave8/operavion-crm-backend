@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.exceptions;
+package giuseppetavella.zero_chiamate.infrastructure.ai.exceptions;
 
 public class AIException extends RuntimeException {
     public AIException(String message) {

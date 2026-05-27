@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.exceptions;
+package giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions;
 
 public class PdfGenerationException extends RuntimeException {
     public PdfGenerationException(String message) {
