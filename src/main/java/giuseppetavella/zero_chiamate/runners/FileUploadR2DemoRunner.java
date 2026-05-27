@@ -1,8 +1,7 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.infrastructure.csv.UsersCsvGenerationService;
+import giuseppetavella.zero_chiamate.domain.business.reports.operators_by_company.OperatorsByCompanyReportGenerator;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import giuseppetavella.zero_chiamate.infrastructure.storage.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,10 +14,9 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
     private FileUploadService fileUploadService;
     
     @Autowired
-    private UsersCsvGenerationService appCsvGenerationService;
+    private OperatorsByCompanyReportGenerator appCsvGenerationService;
     
-    @Autowired
-    private AppPdfService appPdfGenerationService;
+
     
     @Autowired
     private EmailService appEmailService;

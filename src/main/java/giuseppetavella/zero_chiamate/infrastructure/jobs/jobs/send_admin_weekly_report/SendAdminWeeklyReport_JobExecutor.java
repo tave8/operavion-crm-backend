@@ -7,7 +7,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
-import giuseppetavella.zero_chiamate.domain.business.admin_weekly_report.AdminWeeklyReportEmailService;
+import giuseppetavella.zero_chiamate.domain.business.reports.admin_weekly_report.AdminWeeklyReportEmailSender;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -28,7 +28,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
     private SendAdminWeeklyReport_Repository thisRepository;
     
     @Autowired
-    private AdminWeeklyReportEmailService adminWeeklyReportEmailService;
+    private AdminWeeklyReportEmailSender adminWeeklyReportEmailSender;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -73,7 +73,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
         Map<User, Integer> shiftsCountByOperator  = this.shiftsService.countShiftsByOperator(company, lastMonday, lastFriday);
 
         // send email with weekly report as pdf attachment
-        adminWeeklyReportEmailService.sendAdminWeeklyReport(
+        adminWeeklyReportEmailSender.sendAdminWeeklyReport(
                 admin,
                 shiftsCountByOperator,
                 lastMonday,

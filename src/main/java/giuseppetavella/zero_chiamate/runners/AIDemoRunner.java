@@ -1,9 +1,8 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
-import giuseppetavella.zero_chiamate.domain.business.contract_discrepancy.ContractDiscrepancyAIDetectionService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyAIDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,9 +13,7 @@ public class AIDemoRunner implements CommandLineRunner {
     
     @Autowired
     private ContractDiscrepancyAIDetectionService contractDiscrepancyAIDetectionService;
-    
-    @Autowired
-    private AppPdfService appPdfGenerationService;
+
     
     @Autowired
     private ShiftsService shiftsService;

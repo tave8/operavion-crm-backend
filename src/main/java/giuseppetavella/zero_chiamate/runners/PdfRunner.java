@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.infrastructure.pdf.PdfService;
+import giuseppetavella.zero_chiamate.domain.business.reports.operators_by_company.OperatorsByCompanyReportGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 public class PdfRunner implements CommandLineRunner {
     
     @Autowired
-    private PdfService pdfService;
+    private OperatorsByCompanyReportGenerator operatorsByCompanyReportGenerator;
     
     @Override
     public void run(String... args) throws Exception {
+        
+        // operatorsByCompanyReportGenerator.generate();
         
         // this.pdfGenerationService.generateInvoice();
         

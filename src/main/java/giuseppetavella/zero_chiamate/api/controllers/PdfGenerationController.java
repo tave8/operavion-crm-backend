@@ -1,6 +1,5 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pdf-generation")
 public class PdfGenerationController {
 
-    @Autowired
-    private AppPdfService appPdfGenerationService;
+
     
     // @PostMapping("/upload-invoice")
     // public String uploadInvoice() {

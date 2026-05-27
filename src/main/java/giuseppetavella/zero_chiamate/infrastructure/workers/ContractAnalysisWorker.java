@@ -10,7 +10,7 @@ import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddress;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
-import giuseppetavella.zero_chiamate.domain.business.contract_discrepancy.ContractDiscrepancyAIDetectionService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyAIDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

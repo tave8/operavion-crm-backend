@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.runners;
 
 import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
-import giuseppetavella.zero_chiamate.infrastructure.csv.UsersCsvGenerationService;
+import giuseppetavella.zero_chiamate.domain.business.reports.operators_by_company.OperatorsByCompanyReportGenerator;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class CsvDemoRunner implements CommandLineRunner {
 
     @Autowired
-    private UsersCsvGenerationService usersCsvGenerationService;
+    private OperatorsByCompanyReportGenerator operatorsByCompanyReportGenerator;
     
     @Autowired
     private EmailService emailService;
@@ -24,17 +24,17 @@ public class CsvDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // var company = companiesService.getById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
+        var company = companiesService.getById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
         
-
-        // var csv = usersCsvGenerationService.generateReportOperatorsByCompany(company);
-        //
-        // emailService.sendEmail(
-        //         "giuseppetavella8@gmail.com",
-        //         "Your report",
-        //         "Your report",
-        //         new EmailAttachment(csv, "report")
-        // );
+        var csv = operatorsByCompanyReportGenerator.generate(company);
+        
+        
+        emailService.sendEmail(
+                "giuseppetavella8@gmail.com",
+                "Your report",
+                "Your report",
+                new EmailAttachment(csv, "report")
+        );
         
         // CSV GENERATION
 

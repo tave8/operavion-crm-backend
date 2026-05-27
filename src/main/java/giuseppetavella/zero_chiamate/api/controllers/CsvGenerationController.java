@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
-import giuseppetavella.zero_chiamate.infrastructure.csv.UsersCsvGenerationService;
+import giuseppetavella.zero_chiamate.domain.business.reports.operators_by_company.OperatorsByCompanyReportGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CsvGenerationController {
 
     @Autowired
-    private UsersCsvGenerationService appCsvGenerationService;
+    private OperatorsByCompanyReportGenerator appCsvGenerationService;
     
     // @PostMapping("/upload-invoice")
     // public String uploadInvoice() {

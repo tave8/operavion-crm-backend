@@ -12,7 +12,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
-import giuseppetavella.zero_chiamate.domain.business.contract_discrepancy.ContractDiscrepancyEmailService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyEmailSender;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
@@ -20,7 +20,7 @@ import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor
 import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.to_send.ClientAddressToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
-import giuseppetavella.zero_chiamate.domain.business.contract_discrepancy.ContractDiscrepancyAIDetectionService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyAIDetectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +55,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
     private ClientAddressesService clientAddressesService;
     
     @Autowired
-    private ContractDiscrepancyEmailService contractDiscrepancyEmailService;
+    private ContractDiscrepancyEmailSender contractDiscrepancyEmailSender;
     
     
     public SendAdminDiscrepancies_JobExecutor() {
@@ -198,7 +198,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         
         // send email 
         
-        contractDiscrepancyEmailService.sendAdminDiscrepancies(
+        contractDiscrepancyEmailSender.sendAdminDiscrepancies(
                 admin,
                 discrepanciesList,
                 lastMonday,

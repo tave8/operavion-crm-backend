@@ -1,10 +1,9 @@
-package giuseppetavella.zero_chiamate.domain.business.admin_weekly_report;
+package giuseppetavella.zero_chiamate.domain.business.reports.admin_weekly_report;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AdminWeeklyReportEmailService {
+public class AdminWeeklyReportEmailSender {
 
     @Autowired
     private EmailService emailService;
     
     @Autowired
-    private AppPdfService appPdfService;
+    private AdminWeeklyReportGenerator reportGenerator;
     
 
     public void sendAdminWeeklyReport(User admin,
@@ -45,11 +44,12 @@ public class AdminWeeklyReportEmailService {
         );
 
         // generate the pdf 
-        Pdf pdf = this.appPdfService.generateAdminWeeklyReport(newPdfVars);
-        String pdfAttachment = pdf.toAttachment();
-        String pdfAttachmentName = "report_settimanale_turni.pdf";
+        Pdf pdf = reportGenerator.generate(newPdfVars);
 
-        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
+        EmailAttachment attachment = new EmailAttachment(
+                pdf, 
+                "report_settimanale_turni"
+        );
 
         // *****************
         // BUILD THE EMAIL

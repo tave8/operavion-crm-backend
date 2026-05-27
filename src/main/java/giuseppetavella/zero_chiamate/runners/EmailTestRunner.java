@@ -5,7 +5,6 @@ import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,7 @@ public class EmailTestRunner implements CommandLineRunner {
     @Autowired
     private EmailService appEmailService;
     
-    @Autowired
-    private AppPdfService appPdfGenerationService;
+
     
     @Autowired
     private CompaniesService companiesService;

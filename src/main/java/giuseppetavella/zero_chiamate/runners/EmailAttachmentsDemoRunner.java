@@ -1,7 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,9 +13,7 @@ public class EmailAttachmentsDemoRunner implements CommandLineRunner {
 
     @Autowired
     private EmailService appEmailService;
-
-    @Autowired
-    private AppPdfService appPdfGenerationService;
+    
 
     @Override
     public void run(String... args) throws Exception {

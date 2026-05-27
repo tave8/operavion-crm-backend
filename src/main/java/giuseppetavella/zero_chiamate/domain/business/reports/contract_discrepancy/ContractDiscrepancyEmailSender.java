@@ -1,11 +1,10 @@
-package giuseppetavella.zero_chiamate.domain.business.contract_discrepancy;
+package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ContractDiscrepancyEmailService {
+public class ContractDiscrepancyEmailSender {
 
     @Autowired
     private EmailService emailService;
     
     @Autowired
-    private AppPdfService appPdfService;
+    private ContractDiscrepancyReportGenerator reportGenerator;
 
 
     /**
@@ -53,11 +52,13 @@ public class ContractDiscrepancyEmailService {
 
 
         // generate the pdf 
-        Pdf pdf = this.appPdfService.generateAdminDiscrepancyReport(newPdfVars);
-        String pdfAttachment = pdf.toAttachment();
-        String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate + ".pdf";
+        Pdf pdf = reportGenerator.generate(newPdfVars);
+        String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate;
 
-        EmailAttachment attachment = new EmailAttachment(pdfAttachment, pdfAttachmentName);
+        EmailAttachment attachment = new EmailAttachment(
+                pdf, 
+                pdfAttachmentName
+        );
 
         // *****************
         // BUILD THE EMAIL

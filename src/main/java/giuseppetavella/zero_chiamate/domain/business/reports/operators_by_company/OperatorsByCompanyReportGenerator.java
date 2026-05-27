@@ -1,10 +1,10 @@
-package giuseppetavella.zero_chiamate.infrastructure.csv;
+package giuseppetavella.zero_chiamate.domain.business.reports.operators_by_company;
 
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
-import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.UserRole;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
+import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UsersCsvGenerationService {
+public class OperatorsByCompanyReportGenerator {
     
     
     @Autowired
@@ -31,7 +31,7 @@ public class UsersCsvGenerationService {
      *    
      * @return
      */
-    public Csv generateReportOperatorsByCompany(Company company) {
+    public Csv generate(Company company) {
         
         List<ProfileToSendDTO> users = usersService
                             .findUsersByRole(company, UserRole.OPERATOR)
@@ -56,26 +56,5 @@ public class UsersCsvGenerationService {
     }
     
     
-    // this should return a Csv instance
-    // public Csv generateArticlesReport() {
-    //
-    //     List<Article> articles = this.articlesService.findAll();
-    //
-    //     String[] fields = {"Author", "Title", "Content"};
-    //
-    //     CsvGeneratorService csv = new CsvGeneratorService(fields);
-    //
-    //     for (Article article : articles) {
-    //         csv.addRow(
-    //             article.getUser().getFirstname(),
-    //             article.getTitle(),
-    //             article.getContent()
-    //         );
-    //     }
-    //
-    //     return new Csv(csv);
-    //
-    // }
-    //
     
 }

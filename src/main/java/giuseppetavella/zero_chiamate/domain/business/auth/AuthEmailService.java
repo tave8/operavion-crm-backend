@@ -5,7 +5,6 @@ import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
-import giuseppetavella.zero_chiamate.infrastructure.pdf.AppPdfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,7 @@ public class AuthEmailService {
 
     @Autowired
     private AuthEmailVerificationService authEmailVerificationService;
-
-    @Autowired
-    private AppPdfService appPdfService;
+    
     
     @Autowired
     private ProblemsEmailService problemsEmailService;

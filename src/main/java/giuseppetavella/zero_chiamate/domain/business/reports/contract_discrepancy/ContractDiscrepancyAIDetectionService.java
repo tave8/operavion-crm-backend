@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.domain.business.contract_discrepancy;
+package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
