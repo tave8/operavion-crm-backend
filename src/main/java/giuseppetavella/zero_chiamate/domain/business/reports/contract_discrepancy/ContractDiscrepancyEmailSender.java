@@ -29,29 +29,14 @@ public class ContractDiscrepancyEmailSender {
      * for each client address of their company.
      *
      */
-    public void sendAdminDiscrepancies(User admin,
-                                       List<ClientAddressDiscrepancyDTO> discrepancies,
-                                       LocalDate startDate,
-                                       LocalDate endDate)
+    public void send(User admin,
+                       List<ClientAddressDiscrepancyDTO> discrepancies,
+                       LocalDate startDate,
+                       LocalDate endDate)
     {
-
-        // *****************
-        // BUILD THE PDF
-        // *****************
         
-        Pdf pdf = reportGenerator.generate(new ContractDiscrepancyReportParams(
-                discrepancies,
-                startDate,
-                endDate
-        ));
+        var attachment = generateReportAttachment(discrepancies, startDate, endDate);
         
-        String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate;
-        
-        EmailAttachment attachment = new EmailAttachment(
-                pdf, 
-                pdfAttachmentName
-        );
-
         // *****************
         // BUILD THE EMAIL
         // **************
@@ -63,9 +48,9 @@ public class ContractDiscrepancyEmailSender {
         );
 
         // the html template for the email, this will be filled
-        String emailTemplate = "emails/admin_discrepancy_report";
+        var emailTemplate = "emails/admin_discrepancy_report";
         // the email subject
-        String emailSubject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
+        var emailSubject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
 
 
         // right before sending email, make sure you didn't forget
@@ -84,6 +69,33 @@ public class ContractDiscrepancyEmailSender {
                 attachment
         );
 
+    }
+
+    /**
+     * Generate the report attachment.
+     * 
+     * @return
+     */
+    private EmailAttachment generateReportAttachment(List<ClientAddressDiscrepancyDTO> discrepancies,
+                                                     LocalDate startDate,
+                                                     LocalDate endDate)
+    {
+        
+        var pdfParams = new ContractDiscrepancyReportParams(
+                discrepancies,
+                startDate,
+                endDate
+        );
+        
+        var pdf = reportGenerator.generate(pdfParams);
+
+        var pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate;
+
+        return new EmailAttachment(
+                pdf,
+                pdfAttachmentName
+        );
+        
     }
 
 

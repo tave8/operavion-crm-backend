@@ -203,7 +203,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         
         // send email 
         
-        contractDiscrepancyEmailSender.sendAdminDiscrepancies(
+        contractDiscrepancyEmailSender.send(
                 admin,
                 discrepanciesList,
                 lastMonday,
