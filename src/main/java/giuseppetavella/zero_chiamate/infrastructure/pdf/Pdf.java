@@ -15,6 +15,10 @@ public class Pdf implements EmailAttachable {
     public String toAttachment() {
         return FileHelper.toBase64(this.getBytes());
     }
+    
+    public byte[] toBytes() {
+        return getBytes();
+    }
 
     public byte[] getBytes() {
         return bytes;
