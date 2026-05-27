@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.exceptions.HtmlTemplateException;
 import giuseppetavella.zero_chiamate.helpers.LanguageHelper;
 import giuseppetavella.zero_chiamate.helpers.StringHelper;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
+import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachable;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.template.HtmlTemplateService;
@@ -132,6 +133,7 @@ public class EmailService {
         return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of(attachment));
 
     }
+
 
 
     /**

@@ -38,23 +38,15 @@ public class ContractDiscrepancyEmailSender {
         // *****************
         // BUILD THE PDF
         // *****************
-
-        // build the hashmap that gets passed to the html template
-        // that will be turned into pdf
-
-        // generate email attachment from pdf
-
-        Map<String, Object> newPdfVars = Map.of(
-                "discrepancies", discrepancies,
-                "startDate", startDate,
-                "endDate", endDate
-        );
-
-
-        // generate the pdf 
-        Pdf pdf = reportGenerator.generate(newPdfVars);
+        
+        Pdf pdf = reportGenerator.generate(new ContractDiscrepancyReportParams(
+                discrepancies,
+                startDate,
+                endDate
+        ));
+        
         String pdfAttachmentName = "report_discrepanze_" + startDate + "_" + endDate;
-
+        
         EmailAttachment attachment = new EmailAttachment(
                 pdf, 
                 pdfAttachmentName

@@ -20,21 +20,26 @@ public class ContractDiscrepancyReportGenerator {
     /**
      * Generate contract discrepancy report.
      * 
-     * @param vars
      * @return
      * @throws PdfGenerationException
      */
-    public Pdf generate(Map<String, ? extends Object> vars) throws PdfGenerationException
+    public Pdf generate(ContractDiscrepancyReportParams params) throws PdfGenerationException
     {
 
-        // require that the vars passed have these keys
-        ValidationHelper.requireMapContainsOnlyKeys(
-                vars,
-                List.of("discrepancies", "startDate", "endDate")
+        return pdfService.templateToPdf(
+                "business/admin_discrepancy_report", 
+                toTemplateVars(params)
         );
 
-        return pdfService.templateToPdf("business/admin_discrepancy_report", vars);
+    }
+    
 
+    private Map<String, Object> toTemplateVars(ContractDiscrepancyReportParams params) {
+        return Map.of(
+                "discrepancies", params.discrepancies(),
+                "startDate", params.startDate(),
+                "endDate", params.endDate()
+        );
     }
 
 
