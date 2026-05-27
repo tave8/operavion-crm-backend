@@ -3,7 +3,6 @@ package giuseppetavella.zero_chiamate.api.webhooks;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIProperties;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIService;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIValidator;
@@ -11,7 +10,6 @@ import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPIWebhookHandler
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -32,7 +32,10 @@ public class AuthService {
     private TokenTools tokenTools;
     
     @Autowired
-    private AuthEmailService authEmailService;
+    private ForgotPasswordAuthorizationMailer forgotPasswordAuthorizationMailer;
+    
+    @Autowired
+    private VerifyEmailMailer verifyEmailMailer;
     
     @Autowired
     private AuthEmailVerificationService authEmailVerificationService;
@@ -86,7 +89,8 @@ public class AuthService {
         if(!userFound.isVerifiedEmail()) {
             
             String verificationUrl = this.authEmailVerificationService.generateNewEmailVerificationUrl(userFound);
-            authEmailService.sendVerifyEmail(userFound, verificationUrl);
+            
+            verifyEmailMailer.send(userFound, verificationUrl);
             
             // System.out.println("USER HAS NOT VERIFIED THEIR EMAIL");
             throw new EmailVerificationException("User can login only after verifying their email. "
@@ -189,7 +193,7 @@ public class AuthService {
         String verificationUrl = this.authEmailVerificationService.generateNewEmailVerificationUrl(newUserFromDB);
 
         // send email
-        authEmailService.sendVerifyEmail(newUserFromDB, verificationUrl);
+        verifyEmailMailer.send(newUserFromDB, verificationUrl);
         
         // ************************
         // SEED COMPANY DATA

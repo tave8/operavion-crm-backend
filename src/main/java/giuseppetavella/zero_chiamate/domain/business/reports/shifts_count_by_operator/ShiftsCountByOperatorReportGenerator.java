@@ -1,10 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
-import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
+import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorReportParams;
-import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
-import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
@@ -12,7 +9,6 @@ import giuseppetavella.zero_chiamate.infrastructure.pdf.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 

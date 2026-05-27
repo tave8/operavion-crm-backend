@@ -1,11 +1,11 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
+import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.domain.business.auth.params.VerifyEmailEmailParams;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +15,17 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class AuthEmailService {
+public class VerifyEmailMailer {
 
     @Autowired
     private EmailService emailService;
 
     @Autowired
-    private AuthEmailVerificationService authEmailVerificationService;
-    
-    
-    @Autowired
     private ProblemsEmailService problemsEmailService;
 
     // logger
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthEmailService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyEmailMailer.class);
+
     
 
     /**
@@ -36,24 +33,24 @@ public class AuthEmailService {
      * Should be sent only after signup or to verify a user's email.
      */
     @Async
-    public void sendVerifyEmail(User user, String verificationUrl) throws EmailSendingException
+    public void send(User user, String verificationUrl) throws EmailSendingException
     {
-
-        Map<String, Object> vars = Map.of(
-                "firstname", user.getFirstname(),
-                "verificationUrl", verificationUrl
+        
+        var emailParams = new VerifyEmailEmailParams(
+                user.getFirstname(), 
+                verificationUrl
         );
         
-        // throw new RuntimeException("just throwing an exception to see if async exception handling works");
-
+        var subject = "Conferma la tua email";
+        
         // we are running async, so must log/alert
         try {
 
             emailService.sendEmailFromTemplate(
                     Template.EMAIL_VERIFY_EMAIL,
-                    vars,
+                    toTemplateVars(emailParams),
                     user.getEmail(),
-                    "Conferma la tua email"
+                    subject
             );
 
         } catch (RuntimeException ex) {
@@ -74,26 +71,21 @@ public class AuthEmailService {
         }
 
     }
-    
+
 
 
     /**
-     * Send forgot password authorization email.
+     * Generate the email params.
+     *
+     * @return
      */
-    public void sendForgotPasswordAuthorization(User user, String verificationUrl) throws EmailSendingException
-    {
-
-        Map<String, Object> vars = Map.of(
-                "verificationUrl", verificationUrl
+    private Map<String, Object> toTemplateVars(VerifyEmailEmailParams params) {
+        return Map.of(
+                "firstname", params.firstname(),
+                "verificationUrl", params.verificationUrl()
         );
-
-        emailService.sendEmailFromTemplate(
-                Template.EMAIL_FORGOT_PASSWORD_AUTHORIZATION,
-                vars,
-                user.getEmail(),
-                "Reset your password"
-        );
-
     }
+
+
 
 }

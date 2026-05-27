@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
+import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.BrowserContentDispositionHeader;
 import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;

@@ -1,11 +1,10 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
+import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyEmailParams;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
-import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

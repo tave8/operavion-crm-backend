@@ -1,12 +1,9 @@
 package giuseppetavella.zero_chiamate.runners;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
 import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 public class TemplateTestRunner implements CommandLineRunner {

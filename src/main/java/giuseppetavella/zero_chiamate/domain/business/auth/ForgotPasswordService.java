@@ -27,7 +27,7 @@ public class ForgotPasswordService {
     private UsersService usersService;
     
     @Autowired
-    private AuthEmailService authEmailService;
+    private ForgotPasswordAuthorizationMailer forgotPasswordAuthorizationMailer;
     
     @Autowired
     private UsersRepository usersRepository;
@@ -89,7 +89,7 @@ public class ForgotPasswordService {
             String authorizationUrl = this.buildForgotPasswordAuthorizationUrl(newCode.getCode());
             //
             // // send an email to the user, with this code     
-            authEmailService.sendForgotPasswordAuthorization(emailOwner, authorizationUrl);
+            forgotPasswordAuthorizationMailer.send(emailOwner, authorizationUrl);
             
         } catch(NotFoundException ex) {
             

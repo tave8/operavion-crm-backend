@@ -1,7 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.entities.users;
 
 import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
-import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
 import giuseppetavella.zero_chiamate.exceptions.*;
@@ -10,7 +9,7 @@ import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.SignupSentDTO
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.UpdatedProfileSentDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.reset_password.ResetPasswordOldPasswordSentDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
-import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailService;
+import giuseppetavella.zero_chiamate.domain.business.auth.ForgotPasswordAuthorizationMailer;
 import giuseppetavella.zero_chiamate.infrastructure.storage.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,7 @@ public class UsersService {
     private UsersRepository usersRepository;
     
     @Autowired
-    private AuthEmailService authEmailService;
+    private ForgotPasswordAuthorizationMailer forgotPasswordAuthorizationMailer;
 
     @Autowired
     private PasswordEncoder bcrypt;
@@ -237,7 +236,7 @@ public class UsersService {
 
             String verificationUrl = authEmailVerificationService.generateNewEmailVerificationUrl(userFromDB);
 
-            authEmailService.sendVerifyEmail(userFromDB, verificationUrl);
+            forgotPasswordAuthorizationMailer.send(userFromDB, verificationUrl);
             
             
             return userFromDB;

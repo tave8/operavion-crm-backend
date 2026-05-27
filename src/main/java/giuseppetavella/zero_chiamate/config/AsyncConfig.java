@@ -1,6 +1,5 @@
 package giuseppetavella.zero_chiamate.config;
 
-import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableAsync

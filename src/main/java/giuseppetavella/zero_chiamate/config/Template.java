@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.domain.business;
+package giuseppetavella.zero_chiamate.config;
 
 public enum Template {
     // emails

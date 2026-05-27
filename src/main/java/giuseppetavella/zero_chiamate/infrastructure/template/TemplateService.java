@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.template;
 
-import giuseppetavella.zero_chiamate.domain.business.Template;
+import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
