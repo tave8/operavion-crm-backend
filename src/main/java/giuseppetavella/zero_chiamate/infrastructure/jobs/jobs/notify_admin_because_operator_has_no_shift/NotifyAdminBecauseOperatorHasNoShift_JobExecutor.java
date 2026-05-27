@@ -73,8 +73,7 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
             Notification newNotification = new Notification(
                     admin,
                     NotificationType.OPERATOR_HAS_NO_SHIFT,
-                    "L'operatore " + operator.getFullname() + " non ha un turno per domani.",
-                    "<added by background job>"
+                    "L'operatore " + operator.getFullname() + " non ha un turno per domani."
             );
             
             //

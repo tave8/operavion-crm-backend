@@ -95,6 +95,13 @@ public class Notification {
         this(user, type, title, body, new NotificationData(), null);
     }
 
+    public Notification(User user,
+                        NotificationType type,
+                        String title)
+    {
+        this(user, type, title, "", new NotificationData(), null);
+    }
+
 
     public void setData(NotificationData data) {
         this.data = data;
