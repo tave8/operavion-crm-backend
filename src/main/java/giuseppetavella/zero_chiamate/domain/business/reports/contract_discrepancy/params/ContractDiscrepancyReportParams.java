@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
+package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params;
 
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
 

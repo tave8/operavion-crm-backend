@@ -28,6 +28,8 @@ public class HtmlTemplateService {
     public String fillTemplate(String template, Map<String, ? extends Object> vars) 
     {
 
+        // TODO: make sure the template path exists
+        
         Context context = new Context();
 
         // populate the template with the given vars

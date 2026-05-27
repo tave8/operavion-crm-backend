@@ -12,7 +12,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
-import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyEmailSender;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyMailer;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
@@ -20,7 +20,7 @@ import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor
 import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.to_send.ClientAddressToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
-import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyAIDetectionService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,13 +49,13 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
     private CompaniesService companiesService;
     
     @Autowired
-    private ContractDiscrepancyAIDetectionService contractDiscrepancyAIDetectionService;
+    private ContractDiscrepancyDetector contractDiscrepancyDetector;
     
     @Autowired
     private ClientAddressesService clientAddressesService;
     
     @Autowired
-    private ContractDiscrepancyEmailSender contractDiscrepancyEmailSender;
+    private ContractDiscrepancyMailer contractDiscrepancyMailer;
     
     
     public SendAdminDiscrepancies_JobExecutor() {
@@ -128,7 +128,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                 String expectations = ca.getContractExpectation().getDetail().getExpectations();
                 
                 // the AI generates the summary "expectation vs reality"
-                String discrepancyText = contractDiscrepancyAIDetectionService.findDiscrepancies(
+                String discrepancyText = contractDiscrepancyDetector.findDiscrepancies(
                         expectations,
                         shiftsInfo
                 );
@@ -203,7 +203,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         
         // send email 
         
-        contractDiscrepancyEmailSender.send(
+        contractDiscrepancyMailer.send(
                 admin,
                 discrepanciesList,
                 lastMonday,

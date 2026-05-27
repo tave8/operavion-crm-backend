@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.runners;
 
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
-import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyAIDetectionService;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 public class AIDemoRunner implements CommandLineRunner {
     
     @Autowired
-    private ContractDiscrepancyAIDetectionService contractDiscrepancyAIDetectionService;
+    private ContractDiscrepancyDetector contractDiscrepancyDetector;
 
     
     @Autowired
