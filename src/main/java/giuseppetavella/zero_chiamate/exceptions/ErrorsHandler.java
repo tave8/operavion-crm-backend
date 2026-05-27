@@ -277,7 +277,7 @@ public class ErrorsHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorsToSendDTO handleHTTPMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-        String msg = "Questo metodo HTTP non è supportato. DETTAGLI: " + ex.getMessage();
+        String msg = "The endpoint does not support this HTTP method. DETAILS: " + ex.getMessage();
         return new ErrorsToSendDTO(msg);
     }
 
