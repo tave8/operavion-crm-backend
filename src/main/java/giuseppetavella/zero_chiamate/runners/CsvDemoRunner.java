@@ -24,17 +24,17 @@ public class CsvDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        var company = companiesService.getById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
+        // var company = companiesService.getById("922fb7dd-95cd-4266-aad9-c6f734f8386c");
         
 
-        var csv = usersCsvGenerationService.generateOperatorsByCompanyReport(company);
-        
-        emailService.sendEmail(
-                "giuseppetavella8@gmail.com",
-                "Your report",
-                "Your report",
-                new EmailAttachment(csv, "report")
-        );
+        // var csv = usersCsvGenerationService.generateReportOperatorsByCompany(company);
+        //
+        // emailService.sendEmail(
+        //         "giuseppetavella8@gmail.com",
+        //         "Your report",
+        //         "Your report",
+        //         new EmailAttachment(csv, "report")
+        // );
         
         // CSV GENERATION
 

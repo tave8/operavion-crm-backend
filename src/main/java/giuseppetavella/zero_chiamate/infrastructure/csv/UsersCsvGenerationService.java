@@ -31,7 +31,7 @@ public class UsersCsvGenerationService {
      *    
      * @return
      */
-    public Csv generateOperatorsByCompanyReport(Company company) {
+    public Csv generateReportOperatorsByCompany(Company company) {
         
         List<ProfileToSendDTO> users = usersService
                             .findUsersByRole(company, UserRole.OPERATOR)
