@@ -96,6 +96,11 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         // get all client addresess of this company
         List<ClientAddressToSendDTO> clientAddresses = clientAddressesService.findAllClientAddressesByCompany(company);
         
+        // if this company has no client addresses, move on
+        if(clientAddresses.isEmpty()) {
+            return;
+        }
+        
         // for each client address:
         //      get their contract expectation
         //      if contract expectation is success:

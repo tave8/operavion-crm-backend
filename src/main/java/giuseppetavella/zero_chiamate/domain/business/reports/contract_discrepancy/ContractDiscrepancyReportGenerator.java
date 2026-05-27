@@ -25,12 +25,12 @@ public class ContractDiscrepancyReportGenerator {
      */
     public Pdf generate(ContractDiscrepancyReportParams params) throws PdfGenerationException
     {
-
+        
         return pdfService.templateToPdf(
                 "business/admin_discrepancy_report", 
                 toTemplateVars(params)
         );
-
+ 
     }
     
 
