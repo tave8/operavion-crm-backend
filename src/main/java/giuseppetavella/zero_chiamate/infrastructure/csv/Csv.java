@@ -21,8 +21,8 @@ public class Csv implements EmailAttachable {
     // what separator are we using, for example comma or semicolon
     private final CsvSeparator separator;
     // what to replace null with, when a cell value is null
-    // if nullReplacement is still null, error will be thrown
-    private final String nullReplacement;
+    // default to empty string, so no error is thrown because of null values
+    private String nullReplacement = "";
     // add a hint that indicates which csv separator are we using?
     // only excel suports this, so should  be used with care
     private final boolean addSeparatorHint;
@@ -40,7 +40,7 @@ public class Csv implements EmailAttachable {
      * </ul>
      */
     public Csv(List<String> fields,
-               String nullReplacement,
+               @NonNull String nullReplacement,
                CsvSeparator separator,
                boolean addSeparatorHint) throws CsvGenerationException
     {
@@ -63,42 +63,42 @@ public class Csv implements EmailAttachable {
      * <ul>
      *     <li>custom null replacement</li>
      *     <li>custom separator</li>
-     *     <li>no separator hint</li>
+     *     <li>default separator hint: none</li>
      * </ul>
      */
     public Csv(List<String> fields, 
-               String nullReplacement, 
+               @NonNull String nullReplacement, 
                CsvSeparator separator) throws CsvGenerationException
     {
         this(fields, nullReplacement, separator, false);
     }
-    
+
     /**
      * CSV has:
      * <ul>
      *     <li>custom null replacement</li>
-     *     <li>comma as separator</li>
-     *     <li>no separator hint</li>
+     *     <li>default separator: comma</li>
+     *     <li>default separator hint: none</li>
      * </ul>
      */
-    public Csv(List<String> fields, 
-               String nullReplacement) throws CsvGenerationException
+    public Csv(List<String> fields,
+               @NonNull String nullReplacement) throws CsvGenerationException
     {
         this(fields, nullReplacement, CsvSeparator.COMMA);
     }
 
 
     /**
-     * The simplest CSV has:
+     * CSV has:
      * <ul>
-     *     <li>no null replacement (having null as value will throw error)</li>
-     *     <li>comma as separator</li>
-     *     <li>no separator hint</li>
+     *     <li>default null replacement: empty string</li>
+     *     <li>default separator: comma</li>
+     *     <li>default separator hint: none</li>
      * </ul>
      */
     public Csv(List<String> fields) throws CsvGenerationException
     {
-        this(fields, null);
+        this(fields, "");
     }
     
 

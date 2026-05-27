@@ -39,9 +39,9 @@ public class UsersCsvGenerationService {
                             .map(usersService::toProfileDTO)
                             .toList();
         
-        List<String> fields = List.of("Name", "Email");
+        List<String> fields = List.of("Name", "Email", "Company email");
         
-        var csv = new Csv(fields, "mis\"\"sin,g");
+        var csv = new Csv(fields);
         
         
         for (var user : users) {

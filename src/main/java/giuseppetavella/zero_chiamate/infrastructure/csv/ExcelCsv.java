@@ -24,10 +24,6 @@ public class ExcelCsv extends Csv {
     {
         this(fields, nullReplacement, CsvSeparator.COMMA);
     }
-
-    public ExcelCsv(List<String> fields) throws CsvGenerationException
-    {
-        this(fields, null);
-    }
+    
 
 }
