@@ -40,11 +40,13 @@ public class TemplateService {
         );
         
         
-        Context context = new Context();
+        var context = new Context();
 
         // populate the template with the given vars
         for(String key : vars.keySet()) {
-            Object value = vars.get(key);
+            
+            var value = vars.get(key);
+            
             context.setVariable(key, value);
         }
 

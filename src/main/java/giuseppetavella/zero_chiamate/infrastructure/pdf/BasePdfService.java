@@ -32,14 +32,15 @@ public class BasePdfService {
     public byte[] htmlToPdf(String html) throws PdfGenerationException
     {
         // Generate PDF into memory
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ITextRenderer renderer = new ITextRenderer();
+        var baos = new ByteArrayOutputStream();
+        var renderer = new ITextRenderer();
 
         try {
 
             renderer.setDocumentFromString(html, null);
             renderer.layout();
             renderer.createPDF(baos);
+            
             return baos.toByteArray();
 
         } catch (Exception ex) {
@@ -58,44 +59,12 @@ public class BasePdfService {
                                 Map<String, ? extends Object> vars) throws PdfGenerationException
     {
         // template -> html 
-        String html = this.templateService.fillTemplate(template, vars);
+        var html = this.templateService.fillTemplate(template, vars);
         // html -> pdf 
         return this.htmlToPdf(html);
     }
-
     
-    /**
-     * template + vars -> HTTP response entity 
-     */
-    public ResponseEntity<byte[]> templateToHttpResponse(Template template,
-                                                         Map<String, Object> vars,
-                                                         String outputFilename,
-                                                         BrowserContentDispositionHeader contentDispositionHeader)
-    {
-        // template -> html
-        String html = this.templateService.fillTemplate(template, vars);
-        // html -> pdf
-        byte[] bytes = this.htmlToPdf(html);
-        // pdf -> http response
-        return this.pdfToHttpResponse(bytes, outputFilename, contentDispositionHeader);
-    }
     
-
-    /**
-     * PDF -> HTTP response entity
-     */
-    public ResponseEntity<byte[]> pdfToHttpResponse(byte[] pdf,
-                                                    String outputFilename,
-                                                    BrowserContentDispositionHeader contentDispositionHeader)
-    {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData(contentDispositionHeader.getValue(), outputFilename);
-
-        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
-    }
-
 
 
     /**
