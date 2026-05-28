@@ -6,7 +6,7 @@ package giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send;
  * It is therefore API-agnostic.
  */
 
-public class GeocodingAutocompleteResultItemToSendDTO {
+public class GeocodingAutocompleteResultItem {
     private final double lat;
     private final double lon;
     private final String displayName;
@@ -16,7 +16,7 @@ public class GeocodingAutocompleteResultItemToSendDTO {
     private final String county;
     private final String resultType;
 
-    public GeocodingAutocompleteResultItemToSendDTO(double confidence, double lat, double lon, String displayName, String country, String state, String county, String resultType) {
+    public GeocodingAutocompleteResultItem(double confidence, double lat, double lon, String displayName, String country, String state, String county, String resultType) {
         this.confidence = confidence;
         this.lat = lat;
         this.lon = lon;

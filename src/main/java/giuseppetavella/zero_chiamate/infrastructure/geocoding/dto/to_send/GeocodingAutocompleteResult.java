@@ -9,15 +9,15 @@ import java.util.List;
  * of the geocoding API used. 
  * It is therefore API-agnostic.
  */
-public class GeocodingAutocompleteToSendDTO {
+public class GeocodingAutocompleteResult {
     
-    private final List<GeocodingAutocompleteResultItemToSendDTO> results;
+    private final List<GeocodingAutocompleteResultItem> results;
     
-    public GeocodingAutocompleteToSendDTO(List<GeocodingAutocompleteResultItemToSendDTO> results) {
+    public GeocodingAutocompleteResult(List<GeocodingAutocompleteResultItem> results) {
         this.results = results;
     }
 
-    public List<GeocodingAutocompleteResultItemToSendDTO> getResults() {
+    public List<GeocodingAutocompleteResultItem> getResults() {
         return results;
     }
 }

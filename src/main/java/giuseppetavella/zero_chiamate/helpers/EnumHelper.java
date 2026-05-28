@@ -9,12 +9,16 @@ import java.util.Map;
 public class EnumHelper {
 
     /**
-     * Parse a string into its enum, if you can.
+     * 
+     * Try parsing a string into an enum constant, given the enum class.
+     * Use this when:
+     * - you get a string and want to convert it to the relevant enum constant
+     * - want to test whether a string matches exactly an enum constant
      * 
      * @example 
      * <pre>
      *     
-     *     UserRole desiredRole = EnumHelper.parseEnum(UserRole.class);
+     *       UserRole desiredRole = EnumHelper.parseEnum(UserRole.class, body.role());
      *     
      * </pre>
      */

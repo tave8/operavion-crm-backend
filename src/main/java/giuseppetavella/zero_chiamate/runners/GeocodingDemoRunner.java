@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.runners;
 
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.GeocodingService;
-import giuseppetavella.zero_chiamate.integrations.geoapify.GeoapifyAPIService;
+import giuseppetavella.zero_chiamate.integrations.geoapify.GeoapifyAPIGeocodingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class GeocodingDemoRunner implements CommandLineRunner {
     private GeocodingService appGeocodingService;
     
     @Autowired
-    private GeoapifyAPIService geoapifyAPIService;
+    private GeoapifyAPIGeocodingService geoapifyAPIGeocodingService;
     
     @Override
     public void run(String... args) throws Exception {

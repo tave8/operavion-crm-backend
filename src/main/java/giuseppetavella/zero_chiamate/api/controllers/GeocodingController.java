@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
-import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.GeocodingAutocompleteToSendDTO;
+import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.GeocodingAutocompleteResult;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.GeocodingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GeocodingController {
     
     @Autowired
-    private GeocodingService appGeocodingService;
+    private GeocodingService geocodingService;
 
     /**
      * Get the geocoding autocompletion.
@@ -23,14 +23,14 @@ public class GeocodingController {
      * @return
      */
     @GetMapping("/autocomplete")
-    public GeocodingAutocompleteToSendDTO geocode(
+    public GeocodingAutocompleteResult geocode(
             @RequestParam(value = "q") String query,
             @RequestParam(value = "lang", defaultValue = "en") String language
     ) 
     {
         // TODO: should check that the language is valid
         //  also, could give some flexibility into how many results are returned
-        return this.appGeocodingService.doGeocodeRequest(query, language, 10);
+        return geocodingService.doRequest(query, language, 10);
         
     }
     

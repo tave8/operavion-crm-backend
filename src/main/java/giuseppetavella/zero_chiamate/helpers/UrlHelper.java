@@ -2,10 +2,12 @@ package giuseppetavella.zero_chiamate.helpers;
 
 import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
+import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Helper class for working with URLs,
@@ -94,6 +96,33 @@ public class UrlHelper {
     public static boolean isValidUrl(String url) 
     {
         return UrlHelper.isValidUrl(url, "");
+    }
+
+
+    /**
+     * Build URI from url, else throw.
+     * 
+     * This solution solved the following problem description:
+     * 
+     * "
+     *       // bug fix: url was double encoded.
+     *         // make sure that url is encoded once.
+     *         // using uri prevents double encoding
+     * "
+     * 
+     * @return
+     */
+    public static URI buildURIElseThrow(String url,
+                                        Supplier<? extends RuntimeException> supplier) {
+
+        try {
+
+            return new URI(url);
+
+        } catch(URISyntaxException ex) {
+            throw supplier.get();
+        }
+        
     }
     
 }
