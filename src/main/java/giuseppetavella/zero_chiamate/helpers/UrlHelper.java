@@ -100,32 +100,7 @@ public class UrlHelper {
         return UrlHelper.isValidUrl(url, "");
     }
 
-
-    /**
-     * Build URI from url, else throw.
-     * 
-     * This solution solved the following problem description:
-     * 
-     * "
-     *       // bug fix: url was double encoded.
-     *         // make sure that url is encoded once.
-     *         // using uri prevents double encoding
-     * "
-     * 
-     * @return
-     */
-    public static URI buildURIElseThrow(String url,
-                                        Supplier<? extends RuntimeException> supplier) {
-
-        try {
-
-            return new URI(url);
-
-        } catch(URISyntaxException ex) {
-            throw supplier.get();
-        }
-        
-    }
+    
 
     
 }

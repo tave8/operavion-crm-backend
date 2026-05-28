@@ -1,6 +1,5 @@
 package giuseppetavella.zero_chiamate.config;
 
-import giuseppetavella.zero_chiamate.helpers.HttpUrlHelper;
 import giuseppetavella.zero_chiamate.helpers.UrlHelper;
 import giuseppetavella.zero_chiamate.integrations.geoapify.exceptions.GeoapifyAPIException;
 import okhttp3.HttpUrl;

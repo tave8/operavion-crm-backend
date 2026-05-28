@@ -1,7 +1,6 @@
 package giuseppetavella.zero_chiamate.integrations.geoapify;
 
 import giuseppetavella.zero_chiamate.config.GeoapifyAPIConfig;
-import giuseppetavella.zero_chiamate.helpers.HttpUrlHelper;
 import giuseppetavella.zero_chiamate.helpers.UrlHelper;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonResultItemDTO;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,133 +35,86 @@ import java.util.Map;
  */
 @Service
 public class GeoapifyAPIGeocodingService {
-    
+
     private final String apiKey;
     private final String geocodingUrl;
-    
+    private final RestTemplate restTemplate;
+
     public GeoapifyAPIGeocodingService(
             @Qualifier("geoapifyAPIkey") String apiKey,
-            @Qualifier("geoapifyAPIGeocodingUrl") String geocodingUrl) 
-    {
+            @Qualifier("geoapifyAPIGeocodingUrl") String geocodingUrl) {
         this.apiKey = apiKey;
         this.geocodingUrl = geocodingUrl;
+        // instantiate once, not per request
+        this.restTemplate = new RestTemplate();
     }
-    
-    
-    /**
-     * API-agnostic geocoding call.
-     * Call this from outside.
-     */
-    public GeoapifyJsonSentDTO doRequest(GeoapifyAPIRequestParams params) 
-    {
-        
-        ResponseEntity<GeoapifyJsonSentDTO> responseEntity = this.doRequestInternal(params);
-        
-        GeoapifyJsonSentDTO body = responseEntity.getBody();
-        
-        if(body == null) {
-            throw new GeoapifyAPIException(
-                    params.query(), 
-                    "The body of the API response is null."
-            );
-        }
-        
-        return body;
-        
-    }
-    
-    
-    /**
-     * Do request to API.
-     * 
-     */
-    private ResponseEntity<GeoapifyJsonSentDTO> doRequestInternal(GeoapifyAPIRequestParams params) 
-    {
-        
-        var url = HttpUrlHelper.buildUrl(
-                getHttpUrlBuilder(),
-                paramsToMap(params)
-        );
-        
-        var restTemplate = new RestTemplate();
-        
-        
-        var uri = UrlHelper.buildURIElseThrow(
-                url,
-                () -> new GeocodingAPIException(params.query(), "Error while parsing URL into URI. URL was: " + url)
-        );
-
-        // System.out.println(uri.toString());
-        
-        try {
-
-            // System.out.println("BODY AS STRING: " + restTemplate.getForEntity(uri, String.class).getBody());
-            
-            // do a GET request and deserialize payload as the class
-            return restTemplate.getForEntity(
-                    uri, 
-                    GeoapifyJsonSentDTO.class
-            );
-            
-        } catch(RestClientException ex) {
-            
-            throw new GeocodingAPIException(
-                    params.query(), 
-                    ex.getMessage()
-            );
-            
-        }
-    }
-    
-
 
     /**
-     * Convert typed params to a map of those params.
-     * 
-     * @param params
-     * @return
+     * Do request to Geoapify geocoding API.
      */
-    public Map<String, Object> paramsToMap(GeoapifyAPIRequestParams params) {
-        
+    public GeoapifyJsonSentDTO doRequest(GeoapifyAPIRequestParams params) {
+
+        // query cannot be blank
         ValidationHelper.requireStringNotBlankElseThrowWith(
                 params.query(),
                 "Query cannot be null or empty."
         );
-        
-        Map<String, Object> map = new HashMap<>();
 
-        // this is what the API will search for, for example "rome, italy"
-        map.put("text", params.query());
-        
-        map.put("format", params.format());
+        // build the URI from params
+        URI uri = buildUri(params);
 
-        // add keys if specified 
-        if(params.limit() != null) {
-            map.put("limit", params.limit());
+        try {
+            // do a GET request and deserialize payload as the class
+            ResponseEntity<GeoapifyJsonSentDTO> response = restTemplate.getForEntity(
+                    uri,
+                    GeoapifyJsonSentDTO.class
+            );
+
+            GeoapifyJsonSentDTO body = response.getBody();
+
+            // body should never be null on a successful response
+            if (body == null) {
+                throw new GeoapifyAPIException(
+                        params.query(),
+                        "The body of the API response is null. URI was: " + uri
+                );
+            }
+
+            return body;
+
+        } catch (RestClientException ex) {
+            throw new GeocodingAPIException(params.query(), ex.getMessage());
         }
-
-        if(params.lang() != null) {
-            map.put("lang", params.lang());
-        }
-        return map;
     }
 
     /**
-     *
-     * @return
+     * Build the URI for the geocoding API request.
+     * Uses Spring's UriComponentsBuilder to handle
+     * query param encoding and URL construction.
      */
-    public HttpUrl.Builder getHttpUrlBuilder()
-    {
+    private URI buildUri(GeoapifyAPIRequestParams params) {
 
-        var httpUrl = HttpUrlHelper.buildHttpUrlElseThrow(
-                geocodingUrl,
-                () -> new GeoapifyAPIException("Parsing of Geoapify API URL threw error. API URL was: " + geocodingUrl)
-        );
-        
-        return httpUrl
-                .newBuilder()
-                .addQueryParameter("apiKey", apiKey);
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(geocodingUrl)
+                // API authentication key
+                .queryParam("apiKey", apiKey)
+                // this is what the API will search for, for example "rome, italy"
+                .queryParam("text", params.query())
+                // response format, defaults to "json"
+                .queryParam("format", params.format());
 
+        // add optional params if specified
+        if (params.limit() != null) {
+            // the number of items we want back, at most
+            builder.queryParam("limit", params.limit());
+        }
+
+        if (params.lang() != null) {
+            // language of results (en, it, de, es, fr etc.)
+            builder.queryParam("lang", params.lang());
+        }
+
+        return builder.build().toUri();
     }
     
 }
