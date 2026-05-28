@@ -1,3 +1,22 @@
+# Railway CLI
+
+`railway login` (then login)
+
+`railway link` (then choose project, environment, service etc.)
+
+`railway logs` (stream service deployment logs)
+
+`railway deployment list` (see list of service deployments)
+
+`railway logs --build`
+
+`railway link --project zerochiamate --environment preview --service server`
+
+`railway link --project zerochiamate --environment production --service server`
+
+`railway agent -p "can you see anything wrong with my deployment for my 'server' service?"`
+
+
 ****
 
 # Endpoints - overview

@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,9 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private AppEnvironment appEnvironment;
+    
     /**
      * CORS
      * 
@@ -39,6 +43,7 @@ public class SecurityConfig {
                                           @Value("${frontend.preview.url-pattern}") String frontendPreviewUrlPattern,
                                           @Value("${frontend.local.url}") String frontendLocalUrl)
     {
+        
         
         return List.of(
                 // frontend: production
@@ -109,6 +114,9 @@ public class SecurityConfig {
 
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
+        // Cache preflight (OPTIONS) responses for 6 hours.
+        // Without this, the browser sends a preflight before every request.
+        configuration.setMaxAge(21600L); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
