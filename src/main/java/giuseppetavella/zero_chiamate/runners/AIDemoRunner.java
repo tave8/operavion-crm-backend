@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.runners;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
+import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,8 @@ public class AIDemoRunner implements CommandLineRunner {
     @Autowired
     private ContractDiscrepancyDetector contractDiscrepancyDetector;
 
+    @Autowired
+    private AIService aiService;
     
     @Autowired
     private ShiftsService shiftsService;
@@ -25,6 +28,10 @@ public class AIDemoRunner implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
+        
+        var answer = aiService.ask("how are you?");
+
+        System.out.println(answer);
         
         // ClientAddress clientAddress = clientAddressesService.findById("03dd36c2-68f2-41ac-859d-47e8ba9923bc");
         // ClientAddressToSendDTO clientAddressToSendDTO = clientAddressesService.toClientAddressDTO(clientAddress);

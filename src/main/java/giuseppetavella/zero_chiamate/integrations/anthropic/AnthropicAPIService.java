@@ -3,6 +3,10 @@ package giuseppetavella.zero_chiamate.integrations.anthropic;
 import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.helpers.PayloadValidationHelper;
+import giuseppetavella.zero_chiamate.integrations.anthropic.dto.to_send.AnthropicMessageToSendDTO;
+import giuseppetavella.zero_chiamate.integrations.anthropic.dto.to_send.AnthropicRequestDTO;
+import giuseppetavella.zero_chiamate.integrations.anthropic.dto.sent.AnthropicResponseDTO;
+import giuseppetavella.zero_chiamate.integrations.anthropic.exceptions.AnthropicAPIException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -37,47 +41,57 @@ public class AnthropicAPIService {
     /**
      * Send a prompt, get a text response.
      */
-    public String ask(String prompt) throws AIException {
-        try {
-            Map<String, Object> body = Map.of(
-                    "model", MODEL,
-                    "max_tokens", MAX_TOKENS,
-                    "messages", List.of(
-                            Map.of("role", "user", "content", prompt)
-                    )
-            );
+    public String ask(String prompt) 
+    {
+            
+        var request = buildRequest(prompt);
 
-            Request request = new Request.Builder()
-                    .url(ANTHROPIC_URL)
-                    .post(RequestBody.create(
-                            MediaType.parse("application/json"),
-                            mapper.writeValueAsString(body)
-                    ))
-                    .addHeader("x-api-key", apiKey)
-                    .addHeader("anthropic-version", ANTHROPIC_VERSION)
-                    .addHeader("content-type", "application/json")
-                    .build();
-
-            try (Response response = http.newCall(request).execute()) {
-                String responseBody = response.body().string();
-
-                if (!response.isSuccessful()) {
-                    throw new AIException("While calling Anthropic API, got non-ok status code. Response body: " + responseBody);
-                }
-
-                Map<String, Object> parsed = mapper.readValue(responseBody, Map.class);
-                List<Map<String, Object>> content = (List<Map<String, Object>>) parsed.get("content");
-
-                return (String) content.get(0).get("text");
+        try (Response response = http.newCall(request).execute()) {
+            
+            var body = response.body();
+            
+            if(response.body() == null) {
+                throw new AnthropicAPIException("Response body was null.");
+            }
+            
+            var responseBody = body.string();
+            
+            if (!response.isSuccessful()) {
+                throw new AnthropicAPIException("Non-ok status code from Anthropic API. Response: " + responseBody);
             }
 
-        } catch (AIException ex) {
-            throw ex;
+            // deserialize
+            var parsed = mapper.readValue(responseBody, AnthropicResponseDTO.class);
+            
+            return parsed.content().getFirst().text();
+            
         } catch (Exception ex) {
-            throw new AIException("Failed to call Anthropic API. DETAILS: " + ex.getMessage());
+            throw new AnthropicAPIException("Failed to call Anthropic API. DETAILS: " + ex.getMessage());
         }
+        
     }
+    
+    
+    private Request buildRequest(String prompt)
+    {
+        AnthropicRequestDTO body = new AnthropicRequestDTO(
+                MODEL,
+                MAX_TOKENS,
+                List.of(new AnthropicMessageToSendDTO("user", prompt))
+        );
 
+        return new Request.Builder()
+                .url(ANTHROPIC_URL)
+                .post(RequestBody.create(
+                        MediaType.parse("application/json"),
+                        mapper.writeValueAsString(body)
+                ))
+                .addHeader("x-api-key", apiKey)
+                .addHeader("anthropic-version", ANTHROPIC_VERSION)
+                .addHeader("content-type", "application/json")
+                .build();
+    }
+    
 
     /**
      * Send a PDF and a prompt, get a text response.
