@@ -8,6 +8,7 @@ import com.resend.services.emails.model.CreateEmailResponse;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
+import giuseppetavella.zero_chiamate.integrations.resend.exceptions.ResendAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +61,7 @@ public class ResendAPIService {
 
         } catch (ResendException e) {
         
-            throw new EmailSendingException(e.getMessage());
+            throw new ResendAPIException(e.getMessage());
         
         }
     }
