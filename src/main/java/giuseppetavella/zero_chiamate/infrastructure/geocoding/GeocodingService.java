@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GeocodingService extends GeoapifyAPIService {
+public class GeocodingService {
     
     @Autowired
     private GeoapifyAPIService geoapifyAPIService;
@@ -21,7 +21,7 @@ public class GeocodingService extends GeoapifyAPIService {
      */
     public GeocodingAutocompleteToSendDTO doGeocodeRequest(String query, String lang, Integer limit) 
     {
-        GeocodingAutocompleteToSendDTO payload = this.geoapifyAPIService.doGeocodeRequest(query, lang, limit);
+        GeocodingAutocompleteToSendDTO payload = geoapifyAPIService.doGeocodeRequest(query, lang, limit);
     
         return payload;
     }

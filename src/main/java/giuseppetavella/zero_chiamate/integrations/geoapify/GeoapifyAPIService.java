@@ -2,11 +2,12 @@ package giuseppetavella.zero_chiamate.integrations.geoapify;
 
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonResultItemDTO;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonSentDTO;
-import giuseppetavella.zero_chiamate.exceptions.GeocodingAPIException;
+import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.GeocodingAutocompleteResultItemToSendDTO;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.GeocodingAutocompleteToSendDTO;
+import giuseppetavella.zero_chiamate.integrations.geoapify.exceptions.GeoapifyAPIException;
 import okhttp3.HttpUrl;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,13 +21,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * API-dependent Geocoding service.
+ * API service.
+ * API name: Geoapify.
+ * 
  */
 @Service
 public class GeoapifyAPIService {
 
-    @Value("${geoapify-apikey}")
-    private String GEOAPIFY_API_KEY;
+    private final String GEOAPIFY_API_KEY;
+    
+    public GeoapifyAPIService(@Qualifier("geoapifyAPIkey") String apiKey) {
+        this.GEOAPIFY_API_KEY = apiKey;
+    }
     
     private final String API_URL = "https://api.geoapify.com/v1/geocode/search";
     
@@ -55,7 +61,7 @@ public class GeoapifyAPIService {
         GeoapifyJsonSentDTO body = responseEntity.getBody();
         
         if(body == null) {
-            throw new GeocodingAPIException(query, "The body of the API response is null.");
+            throw new GeoapifyAPIException(query, "The body of the API response is null.");
         }
 
         // ************************
@@ -189,12 +195,12 @@ public class GeoapifyAPIService {
             httpUrl = HttpUrl.parse(API_URL);
             
             if(httpUrl == null) {
-                throw new GeocodingAPIException("After parsing API URL, result was null.");
+                throw new GeoapifyAPIException("After parsing API URL, result was null.");
             }
             
         } catch(RuntimeException ex) {
             
-            throw new GeocodingAPIException("Could not parse URL correctly. DETAILS: " + ex.getMessage());
+            throw new GeoapifyAPIException("Could not parse URL correctly. DETAILS: " + ex.getMessage());
             
         }
         

@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.exceptions;
+package giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions;
 
 public class GeocodingAPIException extends RuntimeException {
     public GeocodingAPIException(String message) {

@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.exceptions;
 import giuseppetavella.zero_chiamate.exceptions.integrations.stripe.StripeAPIException;
 import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
+import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import jakarta.servlet.http.HttpServletRequest;
