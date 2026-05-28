@@ -3,6 +3,8 @@ package giuseppetavella.zero_chiamate.helpers;
 import giuseppetavella.zero_chiamate.exceptions.AppConfigurationException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
+import giuseppetavella.zero_chiamate.integrations.geoapify.exceptions.GeoapifyAPIException;
+import okhttp3.HttpUrl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -124,5 +126,6 @@ public class UrlHelper {
         }
         
     }
+
     
 }

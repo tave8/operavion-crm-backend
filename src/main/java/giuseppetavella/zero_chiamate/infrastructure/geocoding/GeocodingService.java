@@ -5,6 +5,7 @@ import giuseppetavella.zero_chiamate.integrations.geoapify.GeoapifyAPIGeocodingS
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.GeocodingAutocompleteResult;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonResultItemDTO;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonSentDTO;
+import giuseppetavella.zero_chiamate.integrations.geoapify.params.GeoapifyAPIRequestParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,10 +41,15 @@ public class GeocodingService {
                                                  String lang,
                                                  Integer limit) 
     {
-        
+
+        // the request typed params
+        var params = new GeoapifyAPIRequestParams(
+                query, lang, limit
+        );
+
         // check that the integer is > 0 
 
-        GeoapifyJsonSentDTO body = geoapifyAPIGeocodingService.doRequest(query, lang, limit);
+        GeoapifyJsonSentDTO body = geoapifyAPIGeocodingService.doRequest(params);
 
 
         // map the API-specific item, to the API-agnostic item

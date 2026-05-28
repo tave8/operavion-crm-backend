@@ -1,6 +1,9 @@
 package giuseppetavella.zero_chiamate.integrations.geoapify;
 
+import giuseppetavella.zero_chiamate.config.GeoapifyAPIConfig;
+import giuseppetavella.zero_chiamate.helpers.HttpUrlHelper;
 import giuseppetavella.zero_chiamate.helpers.UrlHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonResultItemDTO;
 import giuseppetavella.zero_chiamate.integrations.geoapify.dto.GeoapifyJsonSentDTO;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
@@ -9,10 +12,13 @@ import giuseppetavella.zero_chiamate.infrastructure.geocoding.dto.to_send.Geocod
 import giuseppetavella.zero_chiamate.integrations.geoapify.exceptions.GeoapifyAPIException;
 import giuseppetavella.zero_chiamate.integrations.geoapify.params.GeoapifyAPIRequestParams;
 import okhttp3.HttpUrl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -29,36 +35,35 @@ import java.util.Map;
  */
 @Service
 public class GeoapifyAPIGeocodingService {
-
-    private final String GEOAPIFY_API_KEY;
     
-    public GeoapifyAPIGeocodingService(@Qualifier("geoapifyAPIkey") String apiKey) {
-        this.GEOAPIFY_API_KEY = apiKey;
+    private final String apiKey;
+    private final String geocodingUrl;
+    
+    public GeoapifyAPIGeocodingService(
+            @Qualifier("geoapifyAPIkey") String apiKey,
+            @Qualifier("geoapifyAPIGeocodingUrl") String geocodingUrl) 
+    {
+        this.apiKey = apiKey;
+        this.geocodingUrl = geocodingUrl;
     }
     
-    private final String API_URL = "https://api.geoapify.com/v1/geocode/search";
     
-
     /**
      * API-agnostic geocoding call.
      * Call this from outside.
      */
-    public GeoapifyJsonSentDTO doRequest(String query,
-                                        String lang,
-                                        Integer limit) 
+    public GeoapifyJsonSentDTO doRequest(GeoapifyAPIRequestParams params) 
     {
-        
-        // the request typed params
-        var params = new GeoapifyAPIRequestParams(
-                query, lang, limit
-        );        
         
         ResponseEntity<GeoapifyJsonSentDTO> responseEntity = this.doRequestInternal(params);
         
         GeoapifyJsonSentDTO body = responseEntity.getBody();
         
         if(body == null) {
-            throw new GeoapifyAPIException(query, "The body of the API response is null.");
+            throw new GeoapifyAPIException(
+                    params.query(), 
+                    "The body of the API response is null."
+            );
         }
         
         return body;
@@ -72,19 +77,21 @@ public class GeoapifyAPIGeocodingService {
      */
     private ResponseEntity<GeoapifyJsonSentDTO> doRequestInternal(GeoapifyAPIRequestParams params) 
     {
-        // build the url 
-        var url = buildUrl(
+        
+        var url = HttpUrlHelper.buildUrl(
+                getHttpUrlBuilder(),
                 paramsToMap(params)
         );
-
         
         var restTemplate = new RestTemplate();
+        
         
         var uri = UrlHelper.buildURIElseThrow(
                 url,
                 () -> new GeocodingAPIException(params.query(), "Error while parsing URL into URI. URL was: " + url)
         );
-        
+
+        // System.out.println(uri.toString());
         
         try {
 
@@ -96,7 +103,7 @@ public class GeoapifyAPIGeocodingService {
                     GeoapifyJsonSentDTO.class
             );
             
-        } catch(HttpClientErrorException ex) {
+        } catch(RestClientException ex) {
             
             throw new GeocodingAPIException(
                     params.query(), 
@@ -116,11 +123,17 @@ public class GeoapifyAPIGeocodingService {
      */
     public Map<String, Object> paramsToMap(GeoapifyAPIRequestParams params) {
         
+        ValidationHelper.requireStringNotBlankElseThrowWith(
+                params.query(),
+                "Query cannot be null or empty."
+        );
+        
         Map<String, Object> map = new HashMap<>();
 
-        map.put("format", params.format());
         // this is what the API will search for, for example "rome, italy"
         map.put("text", params.query());
+        
+        map.put("format", params.format());
 
         // add keys if specified 
         if(params.limit() != null) {
@@ -132,41 +145,23 @@ public class GeoapifyAPIGeocodingService {
         }
         return map;
     }
-    
 
     /**
-     * Build the query
-     * 
-     * @param queryParams
+     *
      * @return
      */
-    private String buildUrl(Map<String, Object> queryParams) {
+    public HttpUrl.Builder getHttpUrlBuilder()
+    {
 
-        HttpUrl httpUrl;
+        var httpUrl = HttpUrlHelper.buildHttpUrlElseThrow(
+                geocodingUrl,
+                () -> new GeoapifyAPIException("Parsing of Geoapify API URL threw error. API URL was: " + geocodingUrl)
+        );
         
-        try {
-            
-            httpUrl = HttpUrl.parse(API_URL);
-            
-            if(httpUrl == null) {
-                throw new GeoapifyAPIException("After parsing API URL, result was null.");
-            }
-            
-        } catch(RuntimeException ex) {
-            
-            throw new GeoapifyAPIException("Could not parse URL correctly. DETAILS: " + ex.getMessage());
-            
-        }
-        
-        HttpUrl.Builder builder = httpUrl
-                                .newBuilder()
-                                .addQueryParameter("apiKey", GEOAPIFY_API_KEY);
+        return httpUrl
+                .newBuilder()
+                .addQueryParameter("apiKey", apiKey);
 
-        queryParams.forEach((key, value) -> builder.addQueryParameter(key, String.valueOf(value)));
-
-        return builder.build().toString();
-    
     }
-    
     
 }

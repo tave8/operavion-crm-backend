@@ -84,6 +84,17 @@ public class ValidationHelper {
         }
     }
 
+    public static void requireStringNotBlankElseThrowWith(@Nullable String s,
+                                                        String customMsg)
+    {
+        try {
+            ValidationHelper.requireStringNotBlank(s);
+        } catch (InvalidDataException e) {
+            throw new InvalidDataException(customMsg);
+        }
+    }
+
+
     /**
      * Require valid email.
      *

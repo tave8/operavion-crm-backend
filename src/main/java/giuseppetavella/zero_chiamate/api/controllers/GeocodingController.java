@@ -30,6 +30,7 @@ public class GeocodingController {
     {
         // TODO: should check that the language is valid
         //  also, could give some flexibility into how many results are returned
+        
         return geocodingService.doRequest(query, language, 10);
         
     }
