@@ -1,45 +1,37 @@
 package giuseppetavella.zero_chiamate.infrastructure.storage;
 
-import giuseppetavella.zero_chiamate.exceptions.FileUploadException;
-import giuseppetavella.zero_chiamate.exceptions.InvalidFileUploadedException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
+import giuseppetavella.zero_chiamate.integrations.cloudinary.CloudinaryAPIService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class ImageUploadService extends MediaUploadService {
+public class ImageUploadService {
 
-
+    @Autowired
+    private CloudinaryAPIService cloudinaryAPIService;
+    
+    
     /**
      * Upload an image.
      * 
      * @return URL of the uploaded image
      */
-    public String uploadImage(MultipartFile image)  throws InvalidFileUploadedException,
-                                                            FileUploadException
+    public String upload(MultipartFile image) 
     {
         // if file is not an image
-        if(!FileHelper.isImage(image)) {
-            throw new InvalidFileUploadedException("The file uploaded is not an image.");
-        }
-        
-        return this.uploadFile(image);
-    }
+        ValidationHelper.requireFileImageElseThrow(
+                image,
+                () -> new InvalidFileUploadedException("File is not an image.")
+        );
 
-    /**
-     * Upload avatar image.
-     */
-    public String uploadAvatarImage(MultipartFile image) throws InvalidFileUploadedException,
-                                                                FileUploadException
-    {
-        // if image is too big
-        if(!FileHelper.isWithinAvatarSize(image)) {
-            throw new InvalidFileUploadedException("The file uploaded ("
-                                                    +FileHelper.getFileSizeInMB(image)
-                                                    +"MB) is too big. Max file size is 2MB.");
-        }
+        var bytes = FileHelper.getBytes(image);
 
-        return this.uploadImage(image);
+        return cloudinaryAPIService.upload(bytes);
     }
+    
     
 }

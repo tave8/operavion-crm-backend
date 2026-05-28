@@ -25,9 +25,11 @@ public class CloudinaryAPIConfig {
             @Value("${cloudinary.secret}") String apiSecret)
     {
         Map<String, String> config = new HashMap<>();
+        
         config.put("cloud_name", cloudName);
         config.put("api_key", apiKey);
         config.put("api_secret", apiSecret);
+        
         return new Cloudinary(config);
     }
     

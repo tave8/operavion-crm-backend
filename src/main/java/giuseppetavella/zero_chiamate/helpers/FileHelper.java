@@ -12,17 +12,24 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FileHelper {
 
-    private static final Map<String, String> MIME_TO_EXTENSION = Map.of(
+    private static final Map<String, String> MIME_TO_EXTENSION = new HashMap<>(Map.of(
+            // MIME TYPE       ->   FILE TYPE 
             "application/pdf",  "pdf",
             "text/csv",         "csv",
             "image/png",        "png",
-            "image/jpeg",       "jpg"
-    );
-
+            "image/jpeg",       "jpg",
+            "image/gif",        "gif",
+            "image/webp",       "webp",
+            "image/svg+xml",    "svg",
+            "image/bmp",        "bmp",
+            "image/tiff",       "tiff"
+    ));
+    
     // dependency to extract file extension from bytes
     private static final Tika TIKA = new Tika();
 
@@ -33,13 +40,13 @@ public class FileHelper {
      * Is the uploaded file an image?
      */
     public static boolean isImage(MultipartFile file) {
-        String contentType = file.getContentType();
-        if(contentType == null) {
+        var mimeType = getMimeType(file);
+        if(mimeType == null) {
             return false;
         }
-        // the file is an image if its content type 
+        // the file is an image if its mime type 
         // starts with image/
-        return contentType.startsWith("image/");
+        return mimeType.startsWith("image/");
     }
 
     /**
@@ -93,21 +100,13 @@ public class FileHelper {
     }
 
     /**
-     * Get the file extension from bytes.
-     * The file extension is without the dot, for example "pdf" or "jpg".
+     * Mime type is something like image/png, 
+     * whereas file type is the file extension, like png.
      */
     public static String getFileType(byte[] bytes) throws UnknownFileTypeException
     {
 
-        // if bytes are empty, there's no point getting file extension
-        if(bytes.length == 0) {
-
-            throw new UnknownFileTypeException("No bytes found in this file, it means the file is empty. "
-                                                +"So cannot determine its extension.");
-
-        }
-        
-        String mimeType = TIKA.detect(bytes);
+        var mimeType = getMimeType(bytes);
 
         // recognized is a synonim for "supported or known"
         boolean filenameIsInternallyRecognized = MIME_TO_EXTENSION.containsKey(mimeType);
@@ -118,6 +117,31 @@ public class FileHelper {
 
         return MIME_TO_EXTENSION.get(mimeType);
     }
+
+
+    /**
+     * Mime type is something like image/png, 
+     * whereas file type is the file extension, like png
+     * @return
+     */
+    public static String getMimeType(byte[] bytes)
+    {
+        // if bytes are empty, there's no point getting file extension
+        if(bytes.length == 0) {
+
+            throw new UnknownFileTypeException("No bytes found in this file, it means the file is empty. "
+                    +"So cannot determine its extension.");
+
+        }
+
+        return TIKA.detect(bytes);
+    }
+    
+    public static String getMimeType(MultipartFile file)
+    {
+        return getMimeType(FileHelper.getBytes(file));
+    }
+    
 
     /**
      * Get the file extension from a file.
@@ -130,7 +154,9 @@ public class FileHelper {
     {
         try {
             
-            return FileHelper.getFileType(file.getBytes());
+            var bytes = file.getBytes();
+            
+            return FileHelper.getFileType(bytes);
             
         } catch (IOException e) {
             throw new FileException(e.getMessage());

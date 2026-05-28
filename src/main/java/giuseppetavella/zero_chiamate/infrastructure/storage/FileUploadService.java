@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.storage;
 
-import giuseppetavella.zero_chiamate.exceptions.FileUploadException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

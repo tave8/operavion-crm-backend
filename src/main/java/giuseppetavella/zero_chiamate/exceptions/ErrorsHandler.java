@@ -5,6 +5,8 @@ import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
 import giuseppetavella.zero_chiamate.infrastructure.geocoding.exceptions.GeocodingAPIException;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

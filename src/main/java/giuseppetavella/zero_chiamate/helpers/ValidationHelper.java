@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
 import org.jspecify.annotations.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +38,25 @@ import java.util.function.Supplier;
  */
 public class ValidationHelper {
 
+    
+    public static void requireFileImage(MultipartFile file)
+    {
+        if(!FileHelper.isImage(file)) {
+            throw new InvalidDataException("File with original filaname '"+file.getOriginalFilename()+"' is not an image");
+        }
+    }
+    
+    
+    public static void requireFileImageElseThrow(MultipartFile file,
+                                                 Supplier<? extends RuntimeException> supplier)
+    {
+        try {
+            ValidationHelper.requireFileImage(file);
+        } catch (InvalidDataException ex) {
+            throw supplier.get();
+        }
+    }
+    
 
     /**
      * Require that html template exists.

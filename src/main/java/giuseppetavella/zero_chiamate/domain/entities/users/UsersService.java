@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.entities.users;
 
+import giuseppetavella.zero_chiamate.domain.business.AppImageUploadService;
 import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
@@ -11,6 +12,8 @@ import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.reset_passwor
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.ForgotPasswordAuthorizationMailer;
 import giuseppetavella.zero_chiamate.infrastructure.storage.ImageUploadService;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +44,9 @@ public class UsersService {
     
     @Autowired
     private AuthEmailVerificationService authEmailVerificationService;
+    
+    @Autowired
+    private AppImageUploadService appImageUploadService;
    
 
     /**
@@ -283,12 +289,12 @@ public class UsersService {
     /**
      * Upload my new avatar image.
      */
-    public User uploadMyAvatarImage(User user, MultipartFile avatarImage) throws InvalidFileUploadedException, 
-                                                                                 FileUploadException
+    public User uploadMyAvatarImage(User user, MultipartFile avatarImage) throws InvalidFileUploadedException,
+            FileUploadException
     {
         
         // get URL of uploaded image
-        String avatarUrl = this.imageUploadService.uploadAvatarImage(avatarImage);
+        String avatarUrl = appImageUploadService.uploadAvatar(avatarImage);
 
         // update author
         user.setAvatarUrl(avatarUrl);
