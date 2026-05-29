@@ -1,0 +1,2 @@
+ALTER TABLE revinfo ALTER COLUMN rev DROP DEFAULT;
+ALTER TABLE revinfo ALTER COLUMN rev SET DEFAULT nextval('revinfo_seq');

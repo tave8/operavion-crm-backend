@@ -6,6 +6,8 @@ import giuseppetavella.zero_chiamate.exceptions.EmailVerificationException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataFormatException;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(name="users")
 // this annotation allows us to never send these fields in a response
 @JsonIgnoreProperties({"password", "accountNonExpired",
@@ -40,6 +43,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
     
+    @NotAudited
     @Column(nullable = false)
     private String password;
     

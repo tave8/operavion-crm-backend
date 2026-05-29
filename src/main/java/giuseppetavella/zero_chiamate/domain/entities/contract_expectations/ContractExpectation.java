@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddr
 import giuseppetavella.zero_chiamate.infrastructure.ContractExpectationState;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(name = "contract_expectations")
 public class ContractExpectation {
     

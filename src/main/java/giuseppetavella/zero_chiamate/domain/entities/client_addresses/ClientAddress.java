@@ -3,10 +3,12 @@ package giuseppetavella.zero_chiamate.domain.entities.client_addresses;
 import giuseppetavella.zero_chiamate.domain.entities.addresses.Address;
 import giuseppetavella.zero_chiamate.domain.entities.clients.Client;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(
         name = "client_addresses",
         uniqueConstraints = {
