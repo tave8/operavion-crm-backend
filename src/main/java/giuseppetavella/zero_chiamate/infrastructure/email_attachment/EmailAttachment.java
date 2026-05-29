@@ -7,7 +7,9 @@ import giuseppetavella.zero_chiamate.infrastructure.pdf.Pdf;
 import org.jspecify.annotations.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class EmailAttachment {
     
@@ -24,21 +26,44 @@ public class EmailAttachment {
     public EmailAttachment(byte[] bytes, String filename) {
         this(FileHelper.toBase64(bytes), filename);
     }
+
+    /**
+     * The file extension will be automatically determined.
+     * @param bytes
+     */
+    public EmailAttachment(byte[] bytes) {
+        this(bytes, UUID.randomUUID() + "." + FileHelper.getFileType(bytes));
+    }
     
-    public EmailAttachment(@NonNull MultipartFile file, String filename) throws FileException
+    
+    public EmailAttachment(@NonNull MultipartFile file, String filename)
     {
         this(FileHelper.getBytes(file), filename);
     }
+
+
+    public EmailAttachment(@NonNull MultipartFile file)
+    {
+        this(file, UUID.randomUUID() + "." + FileHelper.getFileType(file));
+    }
     
-    public EmailAttachment(@NonNull Csv csv, String filenameWithoutExt) {
-        this(csv.toAttachment(), filenameWithoutExt + ".csv");
+    public EmailAttachment(@NonNull Csv csv, String filenameNoExt) {
+        this(csv.toAttachment(), filenameNoExt + ".csv");
+    }
+    
+    public EmailAttachment(@NonNull Csv csv) {
+        this(csv, UUID.randomUUID() + ".csv");
+    }
+    
+    public EmailAttachment(@NonNull Pdf pdf, String filenameNoExt) {
+        this(pdf.toAttachment(), filenameNoExt + ".pdf");
     }
 
-    public EmailAttachment(@NonNull Pdf pdf, String filenameWithoutExt) {
-        this(pdf.toAttachment(), filenameWithoutExt + ".pdf");
+    public EmailAttachment(@NonNull Pdf pdf) {
+        this(pdf, UUID.randomUUID() + ".pdf");
     }
 
-    
+
     public String getBase64Content() {
         return base64Content;
     }

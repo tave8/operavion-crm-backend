@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.integrations.cloudflare_r2;
 
+import giuseppetavella.zero_chiamate.exceptions.FileNotFoundException;
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.integrations.cloudflare_r2.exceptions.CloudflareR2APIException;
@@ -62,6 +63,27 @@ public class CloudflareR2APIService {
         // return the public URL of this file
         return buildFileUrlFrom(filename);
         
+    }
+
+
+    /**
+     * Download a file by its filename.
+     * Returns the file bytes.
+     */
+    public byte[] download(String filename) {
+        try {
+          
+            return s3Client.getObjectAsBytes(
+                    GetObjectRequest.builder().bucket(bucket).key(filename).build()
+            ).asByteArray();
+            
+        } catch (NoSuchKeyException ex) {
+          
+            throw new FileNotFoundException(filename);
+        
+        } catch (S3Exception ex) {
+            throw new CloudflareR2APIException(ex.getMessage());
+        }
     }
     
     
