@@ -6,6 +6,7 @@ import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -38,6 +39,23 @@ import java.util.function.Supplier;
  */
 public class ValidationHelper {
 
+    public static void requireFilePdf(byte[] bytes)
+    {
+        if(!FileHelper.isPdf(bytes)) {
+            throw new InvalidDataException("File is not a pdf.");
+        }
+    }
+
+    public static void requireFilePdfElseThrow(byte[] bytes,
+                                               Supplier<? extends RuntimeException> supplier)
+    {
+        try {
+            ValidationHelper.requireFilePdf(bytes);
+        } catch (InvalidDataException ex) {
+            throw supplier.get();
+        }
+    }
+    
     
     public static void requireFileImage(MultipartFile file)
     {

@@ -33,7 +33,7 @@ public class CvExtractionService {
     public CvDataModel extractCv(byte[] cvBytes) throws AIException
     {
 
-        String jsonStr = aiService.askWithPdf("""
+        String jsonStr = aiService.askWithPdf(cvBytes, """
                      Extract the following fields from this CV and return ONLY a JSON object,
                         no markdown, no backticks, no preamble. If a field is not found, set it to null.
                         For arrays, return an empty array if nothing is found.
@@ -70,7 +70,7 @@ public class CvExtractionService {
                     "certifications": []
                 }
                     Return ONLY the JSON object, no markdown, no backticks, no preamble.
-                """, cvBytes);
+                """);
 
         // 2. JSON string → Java object (to parse the response)
 

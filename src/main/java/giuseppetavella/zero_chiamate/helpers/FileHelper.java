@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +53,26 @@ public class FileHelper {
         return mimeType.startsWith("image/");
     }
 
+    /**
+     * Is this file a pdf?
+     */
+    public static boolean isPdf(byte[] bytes) {
+        var mimeType = getMimeType(bytes);
+        if(mimeType == null) {
+            return false;
+        }
+        return mimeType.equals("application/pdf");
+    }
+
+
+    /**
+     * Is this file a pdf?
+     */
+    public static boolean isPdf(MultipartFile file) {
+        return isPdf(FileHelper.getBytes(file));
+    }
+    
+    
     /**
      * Get the file size in MB.
      */
@@ -175,13 +199,22 @@ public class FileHelper {
     }
 
     /**
-     * Read a pdf into bytes.
+     * Read a file from /resources directory.
+     * 
+     * Use forward slashes, something like:  extra/invoice.pdf;
      */
-    public static byte[] readPdf(String filepath) throws IOException {
-        ClassPathResource resource = new ClassPathResource(filepath);
-        try (InputStream is = resource.getInputStream()) {
-            return is.readAllBytes();
+    public static byte[] readFile(String filepath) {
+        
+        try {
+            ClassPathResource resource = new ClassPathResource(filepath);
+            try (InputStream is = resource.getInputStream()) {
+                return is.readAllBytes();
+            }
+        } catch (IOException ex) {
+            throw new FileException("File not found or unreadable: " + filepath + ". DETAILS: " + ex.getMessage());
         }
+            
+        
     }
     
 }

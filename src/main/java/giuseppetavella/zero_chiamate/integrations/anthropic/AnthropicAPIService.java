@@ -57,11 +57,11 @@ public class AnthropicAPIService {
         return execute(body);
     }
 
-    public String askWithPdf(byte[] pdfBytes, String prompt) {
-        return askWithPdf(pdfBytes, prompt, DEFAULT_SYSTEM_PROMPT);
+    public String askWithPdf(byte[] pdfBytes, String userPrompt) {
+        return askWithPdf(pdfBytes, userPrompt, DEFAULT_SYSTEM_PROMPT);
     }
 
-    public String askWithPdf(byte[] pdfBytes, String prompt, String systemPrompt) {
+    public String askWithPdf(byte[] pdfBytes, String userPrompt, String systemPrompt) {
         PayloadValidationHelper.requiredPdf(pdfBytes);
 
         String base64Pdf = FileHelper.toBase64(pdfBytes);
@@ -81,7 +81,7 @@ public class AnthropicAPIService {
                                                 "data", base64Pdf
                                         )
                                 ),
-                                Map.of("type", "text", "text", prompt)
+                                Map.of("type", "text", "text", userPrompt)
                         )
                 ))
         );

@@ -87,7 +87,7 @@ public class ContractDiscrepancyDetector {
                 "### CONTRACT TEXT TO ANALYZE\n" +
                 "[see contract in attachment]";
 
-        String contractExpectationsFromAI = aiService.askWithPdf(prompt, contractPdf);
+        String contractExpectationsFromAI = aiService.askWithPdf(contractPdf, prompt);
 
         return contractExpectationsFromAI;
     }
