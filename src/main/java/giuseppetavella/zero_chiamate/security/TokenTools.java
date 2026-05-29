@@ -44,17 +44,18 @@ public class TokenTools {
     }
     
 
-    public void verifyToken(String token) {
+    public void verifyToken(String token) throws UnauthorizedException {
 
         try {
-            SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+            var secretKey = Keys.hmacShaKeyFor(secret.getBytes());
             Jwts
-                    .parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parse(token);
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parse(token);
+        
         } catch (Exception ex) {
-            throw new UnauthorizedException("Token is invalid. You must login again.");
+            throw new UnauthorizedException("Token is invalid.");
         }
     }
 

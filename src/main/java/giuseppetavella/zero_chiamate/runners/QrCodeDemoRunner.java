@@ -58,7 +58,7 @@ public class QrCodeDemoRunner implements CommandLineRunner {
 
         // System.out.println(tokenTools.generateToken("hello"));
         
-        startOperatorShift();
+        // startOperatorShift();
     }
     
     
@@ -74,6 +74,9 @@ public class QrCodeDemoRunner implements CommandLineRunner {
         ));
         
     }
+    
+    
+    
     
     
 }
