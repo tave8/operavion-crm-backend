@@ -33,9 +33,9 @@ public class UploadedFilesController {
     /**
      * Download a file by its public ID.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<byte[]> download(@PathVariable UUID id) {
-        return uploadedFilesService.download(id);
+    @GetMapping("/{fileIdInDB}")
+    public ResponseEntity<byte[]> download(@PathVariable UUID fileIdInDB) {
+        return uploadedFilesService.download(fileIdInDB);
     }
 
 

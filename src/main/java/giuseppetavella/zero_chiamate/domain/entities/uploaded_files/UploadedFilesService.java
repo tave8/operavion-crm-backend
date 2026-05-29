@@ -105,7 +105,7 @@ public class UploadedFilesService {
      */
     public UploadedFile getById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Uploaded file not found: " + id));
+                .orElseThrow(() -> new NotFoundException(id, "uploaded file"));
     }
 
 

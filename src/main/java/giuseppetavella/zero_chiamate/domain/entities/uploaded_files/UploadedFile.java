@@ -27,6 +27,8 @@ public class UploadedFile {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+    
+    protected UploadedFile() {}
 
     public UploadedFile(String storageKey,
                         String originalFilename,

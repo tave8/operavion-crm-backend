@@ -81,7 +81,8 @@ public class CloudflareR2APIService {
             
         } catch (NoSuchKeyException ex) {
           
-            throw new FileNotFoundException("Filename was: " + filename);
+            // must not share filename, which is publicly accessible
+            throw new FileNotFoundException();
         
         } catch (S3Exception ex) {
             throw new CloudflareR2APIException(ex.getMessage());
