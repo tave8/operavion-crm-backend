@@ -11,8 +11,10 @@ public class FileStorageService {
     
     @Autowired
     private CloudflareR2APIService cloudflareR2APIService;
-
-
+    
+    public record FileUploadResult(String filename, String url) {}
+    
+    
     /**
      * Upload a file. Return the unique filename.
      * 
@@ -20,15 +22,18 @@ public class FileStorageService {
      * @param fileType
      * @return
      */
-    public String upload(byte[] bytes, String fileType)
+    public FileUploadResult upload(byte[] bytes, String fileType)
     {
         
-        return cloudflareR2APIService.upload(bytes, fileType);
+        var filename = cloudflareR2APIService.upload(bytes, fileType);
 
+        return new FileUploadResult(
+                filename,
+                buildUrl(filename)
+        );
+        
     }
     
-    
-    // public String upload
 
 
     /**
@@ -37,7 +42,7 @@ public class FileStorageService {
      * @param bytes
      * @return
      */
-    public String upload(byte[] bytes)
+    public FileUploadResult upload(byte[] bytes)
     {
         
         // extract the file extension/type, without dot
@@ -54,7 +59,7 @@ public class FileStorageService {
      * @param file
      * @return
      */
-    public String upload(MultipartFile file)
+    public FileUploadResult upload(MultipartFile file)
     {
        
         var bytes = FileHelper.getBytes(file);

@@ -22,7 +22,7 @@ public class FileUploadController {
 
         PayloadValidationHelper.requiredPdf(file);
         
-        return fileStorageService.upload(file);
+        return fileStorageService.upload(file).url();
         
     }
     
