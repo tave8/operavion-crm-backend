@@ -29,20 +29,20 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         
         
-        // var invoicePath = "extra/invoice.pdf";
-        // var linkedinBannerPath = "extra/linkedin.png";
-        // var reportTurniPath = "extra/report_turni.csv";
-        // var jwtPath = "extra/report_turni.csv";
-        //
-        // var invoiceBytes = FileHelper.readFile(invoicePath);
-        // var linkedinBannerBytes = FileHelper.readFile(linkedinBannerPath);
-        // var reportTurniBytes = FileHelper.readFile(reportTurniPath);
-        // var jwtBytes = FileHelper.readFile(jwtPath);
-        //
-        // var fileTypeInvoice = FileHelper.getFileType(invoiceBytes, "invoice.pdf");
-        // var linkedinBannerFileType = FileHelper.getFileType(linkedinBannerBytes, "linkedin.png");
-        // var reportTurniFileType = FileHelper.getFileType(reportTurniBytes, "report_turni.csv");
-        // var jwtFileType = FileHelper.getFileType(jwtBytes, "jwt.txt");
+        var invoicePath = "extra/invoice.pdf";
+        var linkedinBannerPath = "extra/linkedin.png";
+        var reportTurniPath = "extra/report_turni.csv";
+        var jwtPath = "extra/report_turni.csv";
+
+        var invoiceBytes = FileHelper.readFile(invoicePath);
+        var linkedinBannerBytes = FileHelper.readFile(linkedinBannerPath);
+        var reportTurniBytes = FileHelper.readFile(reportTurniPath);
+        var jwtBytes = FileHelper.readFile(jwtPath);
+
+        var fileTypeInvoice = FileHelper.getFileType(invoiceBytes, "invoice.pdf");
+        var linkedinBannerFileType = FileHelper.getFileType(linkedinBannerBytes, "linkedin.png");
+        var reportTurniFileType = FileHelper.getFileType(reportTurniBytes, "report_turni.csv");
+        var jwtFileType = FileHelper.getFileType(jwtBytes, "jwt.txt");
         //
         // System.out.println(fileTypeInvoice);
         // System.out.println(linkedinBannerFileType);
@@ -57,17 +57,18 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
         
         // var reportTurniBytes = FileHelper.readFile("extra/report_turni.csv");
         //
-        // var reportTurniFilename = fileStorageService.upload(reportTurniBytes, "csv");
+        // var reportTurniFilenames = fileStorageService.upload(reportTurniBytes, "csv");
+        // //
+        // var reportTurniBytesDownloaded = fileStorageService.download(reportTurniFilenames.filename());
+        // //
+        // System.out.println(reportTurniFilenames.filename());
+        // System.out.println(reportTurniFilenames.url());
         //
-        // var reportTurniBytesDownloaded = fileStorageService.download(reportTurniFilename+"w");
         //
-        // System.out.println(reportTurniFilename);
-        
-
         // emailService.send(new EmailParams(
         //         "giuseppetavella8@gmail.com",
         //         "my linkedin",
-        //         "something",
+        //         "...",
         //         new EmailAttachment(reportTurniBytesDownloaded, "report.csv")
         // ));
         

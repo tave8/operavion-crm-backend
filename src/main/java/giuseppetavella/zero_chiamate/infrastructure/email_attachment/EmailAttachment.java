@@ -29,11 +29,11 @@ public class EmailAttachment {
 
     /**
      * The file extension will be automatically determined.
-     * @param bytes
+     // * @param bytes
      */
-    public EmailAttachment(byte[] bytes) {
-        this(bytes, UUID.randomUUID() + "." + FileHelper.getFileType(bytes));
-    }
+    // public EmailAttachment(byte[] bytes) {
+    //     this(bytes, UUID.randomUUID() + "." + FileHelper.getFileType(bytes));
+    // }
     
     
     public EmailAttachment(@NonNull MultipartFile file, String filename)
