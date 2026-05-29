@@ -33,19 +33,19 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
         // var invoicePath = "extra/invoice.pdf";
         // var linkedinBannerPath = "extra/linkedin.png";
         // var reportTurniPath = "extra/report_turni.csv";
-        var reportTurniExcelPath = "extra/report.xlsx";
+        // var reportTurniExcelPath = "extra/report.xlsx";
         // var jwtPath = "extra/report_turni.csv";
         //
         // var invoiceBytes = FileHelper.readFile(invoicePath);
         // var linkedinBannerBytes = FileHelper.readFile(linkedinBannerPath);
         // var reportTurniBytes = FileHelper.readFile(reportTurniPath);
-        var reportTurniExcelBytes = FileHelper.readFile(reportTurniExcelPath);
+        // var reportTurniExcelBytes = FileHelper.readFile(reportTurniExcelPath);
         // var jwtBytes = FileHelper.readFile(jwtPath);
         //
         // var fileTypeInvoice = FileHelper.getFileType(invoiceBytes, "invoice.pdf");
         // var linkedinBannerFileType = FileHelper.getFileType(linkedinBannerBytes, "linkedin.png");
         // var reportTurniFileType = FileHelper.getFileType(reportTurniBytes, "report_turni.csv");
-        var reportTurniExcelFileType = FileHelper.getFileType(reportTurniExcelBytes, "report.xlsx");
+        // var reportTurniExcelFileType = FileHelper.getFileType(reportTurniExcelBytes, "report.xlsx");
         // var jwtFileType = FileHelper.getFileType(jwtBytes, "jwt.txt");
         // //
         // System.out.println(fileTypeInvoice);

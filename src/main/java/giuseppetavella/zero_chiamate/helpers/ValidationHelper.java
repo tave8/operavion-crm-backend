@@ -46,11 +46,29 @@ public class ValidationHelper {
         }
     }
 
+    public static void requireFilePdf(MultipartFile file)
+    {
+        if(!FileHelper.isPdf(FileHelper.getBytes(file))) {
+            throw new InvalidDataException("File is not a pdf.");
+        }
+    }
+
+
     public static void requireFilePdfElseThrow(byte[] bytes,
                                                Supplier<? extends RuntimeException> supplier)
     {
         try {
             ValidationHelper.requireFilePdf(bytes);
+        } catch (InvalidDataException ex) {
+            throw supplier.get();
+        }
+    }
+
+    public static void requireFilePdfElseThrow(MultipartFile file,
+                                               Supplier<? extends RuntimeException> supplier)
+    {
+        try {
+            ValidationHelper.requireFilePdf(FileHelper.getBytes(file));
         } catch (InvalidDataException ex) {
             throw supplier.get();
         }
