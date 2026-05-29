@@ -30,7 +30,7 @@ public class UploadedFilesController {
 
 
     /**
-     * Download a file by its public ID.
+     * Download a file by its database ID (thus, public).
      */
     @GetMapping("/{fileIdInDB}")
     public ResponseEntity<byte[]> download(@PathVariable UUID fileIdInDB) {

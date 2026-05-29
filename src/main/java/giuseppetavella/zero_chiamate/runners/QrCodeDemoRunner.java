@@ -8,6 +8,7 @@ import giuseppetavella.zero_chiamate.infrastructure.email.params.TestEmailParams
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.infrastructure.qr_code.QrCodeService;
 import giuseppetavella.zero_chiamate.infrastructure.storage.FileStorageService;
+import giuseppetavella.zero_chiamate.security.TokenTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,9 @@ public class QrCodeDemoRunner implements CommandLineRunner {
     
     @Autowired
     private AppQrCodeGenerator appQrCodeGenerator;
+    
+    @Autowired
+    private TokenTools tokenTools;
 
     @Override
     public void run(String... args) throws Exception {
@@ -51,8 +55,23 @@ public class QrCodeDemoRunner implements CommandLineRunner {
         //         "<a href='"+publicQrCode.url()+"'>see qr code</a>",
         //         new EmailAttachment(publicQrCode.bytes(), publicQrCode.originalFilename())
         // ));
+
+        // System.out.println(tokenTools.generateToken("hello"));
         
+        startOperatorShift();
+    }
+    
+    
+    public void startOperatorShift() {
         
+        var qrCode = appQrCodeGenerator.generatePrivateForStartOperatorShift();
+        
+        // qrCode.fileId();
+
+        emailService.send(new TestEmailParams(
+                        "file ID: " + qrCode.fileId(),
+                new EmailAttachment(qrCode.bytes(), qrCode.originalFilename())
+        ));
         
     }
     

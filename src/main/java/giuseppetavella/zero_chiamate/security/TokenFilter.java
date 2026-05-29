@@ -228,8 +228,11 @@ public class TokenFilter extends OncePerRequestFilter {
         UUID userId;
 
         try {
+            
             // 1. extract user's ID from token
-            userId = this.tokenTools.extractIdFromToken(accessToken);
+            // we don't make a distinction between 
+            // parsing string into UUID or problem during subject extraction
+            userId = UUID.fromString(tokenTools.extractSubjectFromToken(accessToken));
 
         } catch(RuntimeException ex) {
             this.sendUnauthorizedErrorResponse(response, "Access token is not valid (error 3).");

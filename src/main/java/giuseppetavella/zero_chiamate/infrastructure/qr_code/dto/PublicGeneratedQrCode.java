@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.qr_code;
+package giuseppetavella.zero_chiamate.infrastructure.qr_code.dto;
 
 import java.util.UUID;
 

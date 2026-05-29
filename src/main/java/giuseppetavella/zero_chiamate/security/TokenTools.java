@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.UUID;
 
@@ -23,24 +24,25 @@ public class TokenTools {
     }
 
 
-    public String generateToken(String userId) {
-        Date now = new Date(System.currentTimeMillis());
-        int _7DaysMillis = 1000 * 60 * 60 * 24 * 7;
-        Date futureTime = new Date(System.currentTimeMillis() + _7DaysMillis);
-        String subject = userId;
-        Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-        // here we build the JWT
+    // default: 7 days
+    public String generateToken(String subject) {
+        return generateToken(subject, Duration.ofDays(7));
+    }
+
+    // explicit duration
+    public String generateToken(String subject, Duration expiry) {
+        var now       = new Date();
+        var expiresAt = new Date(now.getTime() + expiry.toMillis());
+        var secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+
         return Jwts.builder()
                 .issuedAt(now)
-                .expiration(futureTime)
+                .expiration(expiresAt)
                 .subject(subject)
                 .signWith(secretKey)
                 .compact();
     }
-
-    public String generateToken(User user) {
-        return this.generateToken(user.getId().toString());
-    }
+    
 
     public void verifyToken(String token) {
 
@@ -57,15 +59,13 @@ public class TokenTools {
     }
 
 
-    public UUID extractIdFromToken(String token) {
-        return UUID.fromString(
-                Jwts.parser()
-                        .verifyWith(Keys.hmacShaKeyFor(this.secret.getBytes()))
+    public String extractSubjectFromToken(String token) {
+        return Jwts.parser()
+                        .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                         .build()
                         .parseSignedClaims(token)
                         .getPayload()
-                        .getSubject()
-        );
+                        .getSubject();
     }
 
 }

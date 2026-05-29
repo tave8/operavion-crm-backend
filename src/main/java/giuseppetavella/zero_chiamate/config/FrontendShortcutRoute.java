@@ -4,7 +4,8 @@ public enum FrontendShortcutRoute {
 
     DASHBOARD("dashboard"),
     EMAIL_VERIFICATION_SUCCESS("emailverification.success"),
-    EMAIL_VERIFICATION_INVALID("emailverification.invalid");
+    EMAIL_VERIFICATION_INVALID("emailverification.invalid"),
+    START_OPERATOR_SHIFT("operator.shift.start");
 
     private final String value;
 

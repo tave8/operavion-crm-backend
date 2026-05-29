@@ -74,7 +74,7 @@ public class AuthService {
             // con successo, quindi crea il token
             if (isPasswordMatch) {
                 
-                accessToken = this.tokenTools.generateToken(userFound);
+                accessToken = this.tokenTools.generateToken(userFound.getId().toString());
                 
             } else {
                 throw new UnauthorizedException("Wrong credentials.");
@@ -130,7 +130,7 @@ public class AuthService {
             // con successo, quindi crea il token
             if (isPasswordMatch) {
 
-                accessToken = this.tokenTools.generateToken(userFound);
+                accessToken = this.tokenTools.generateToken(userFound.getId().toString());
 
             } else {
                 throw new UnauthorizedException("Wrong credentials.");

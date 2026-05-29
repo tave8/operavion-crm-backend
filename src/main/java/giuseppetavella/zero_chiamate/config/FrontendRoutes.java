@@ -71,19 +71,37 @@ public class FrontendRoutes {
         return buildShortcut(FrontendShortcutRoute.EMAIL_VERIFICATION_INVALID);
     }
     
+    public String startOperatorShift(String token) {
+        return buildShortcut(FrontendShortcutRoute.START_OPERATOR_SHIFT, token);
+    }
+    
     // add more pre-built frontend routes here...     
 
     
     
     /**
-     * Shortcuts URL and the ? symbol.
+     * Generate a URL at the <code>/shortcut</code> endpoint 
+     * that points to the frontend 
+     * of the current app's environment.
      * 
+     * If the server is running in production, the frontend URL
+     * will point to production frontend.
+     * 
+     * If the server is running local, the frontend URL will point 
+     * to the local frontend, and so on.
+     * 
+     * The URL contains specific, predictable query parameters that the frontend
+     * will have to interpret, to determine where to re-route the user, 
+     * and/or what actions to perform.
      * 
      * @return
      */
     private String buildShortcut(FrontendShortcutRoute route) {
         return appEnvironment.buildFrontendUrl("/shortcut?for=" + route.getValue());
     }
-    
+
+    private String buildShortcut(FrontendShortcutRoute route, String token) {
+        return appEnvironment.buildFrontendUrl("/shortcut?for=" + route.getValue() + "&token="+token);
+    }
     
 }
