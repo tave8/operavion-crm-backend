@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.email;
 import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.TestEmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
@@ -63,7 +64,22 @@ public class EmailService {
        return resendAPIService.sendEmail(params); 
        
     }
-    
+
+    /**
+     * Send test email to developer.
+     * Useful for protopying.
+     * 
+     * @param params
+     * @return
+     */
+    public String send(TestEmailParams params) {
+        return send(new EmailParams(
+                params.recipient(),
+                params.subject(),
+                params.htmlBody(),
+                params.attachments()
+        ));
+    }
      
     /**
      * Send email from a HTML template.
@@ -86,6 +102,16 @@ public class EmailService {
         
         return send(params);
         
+    }
+
+    
+    /**
+     * Send email to developer.
+     * Useful for experiments.
+     * @return
+     */
+    public String sendTestEmail(EmailParams params) {
+        return send(params);
     }
     
     
