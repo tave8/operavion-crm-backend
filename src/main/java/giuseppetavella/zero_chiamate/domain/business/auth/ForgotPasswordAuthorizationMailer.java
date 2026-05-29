@@ -6,6 +6,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,12 @@ public class ForgotPasswordAuthorizationMailer {
         
         var subject = "Reset your password";
 
-        emailService.sendEmailFromTemplate(
+        emailService.sendTemplate(new EmailTemplateParams(
                 EmailTemplate.FORGOT_PASSWORD_AUTHORIZATION,
                 toTemplateVars(emailParams),
                 user.getEmail(),
                 subject
-        );
+        ));
 
     }
 

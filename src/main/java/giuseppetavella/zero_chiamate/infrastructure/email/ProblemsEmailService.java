@@ -2,6 +2,7 @@ package giuseppetavella.zero_chiamate.infrastructure.email;
 
 import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.config.EmailTemplate;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +47,12 @@ public class ProblemsEmailService {
                 "environment", appEnvironment.getEnv()
         );
 
-        emailService.sendEmailFromTemplate(
+        emailService.sendTemplate(new EmailTemplateParams(
                 EmailTemplate.DEV_ERROR,
                 vars,
                 "giuseppetavella8@gmail.com",
                 newSubject
-        );
+        ));
     }
     
 
@@ -150,12 +151,13 @@ public class ProblemsEmailService {
         vars.put("reason",      reason);
         vars.put("stackTrace",  stackTrace);
 
-        emailService.sendEmailFromTemplate(
+        emailService.sendTemplate(new EmailTemplateParams(
                 EmailTemplate.DEV_UNSUCCESSFUL_BACKGROUND_JOB,
                 vars,
                 "giuseppetavella8@gmail.com",
                 subject
-        );
+        ));
+        
     }
     
 }

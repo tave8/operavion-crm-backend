@@ -1,6 +1,8 @@
 package giuseppetavella.zero_chiamate.infrastructure.email;
 
 import giuseppetavella.zero_chiamate.config.EmailTemplate;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
@@ -33,123 +35,60 @@ public class EmailService {
      * 
      * @throws EmailSendingException if any problem occurred during email sending
      */
-    public String sendEmail(String recipient, 
-                            String subject, 
-                            String html,
-                            List<EmailAttachment> attachments) throws EmailSendingException 
+    public String send(EmailParams params) throws EmailSendingException 
     {
         
         // TODO: rate limit emails. max 5 emails per second based on Resend API limit
         
         // check that the email is a valid email
         ValidationHelper.requireValidEmailElseThrow(
-                recipient,
+                params.recipient(),
                 () -> new EmailSendingException("Before sending an email, "
                                                 +"recipient email is not valid. "
-                                                +"Email was '" + recipient+ "'. ")
+                                                +"Email was '" + params.recipient()+ "'. ")
         );
         
         // recipient and subject cannot be empty
         ValidationHelper.requireStringNotBlankElseThrow(
-                subject,
+                params.subject(),
                 () -> new EmailSendingException("Email subject cannot be empty")
         );
         
         // html cannot be empty
         ValidationHelper.requireStringNotBlankElseThrow(
-                html, 
+                params.htmlBody(), 
                 () -> new EmailSendingException("Html body cannot be empty")
         );
         
-       return resendAPIService.sendEmail(
-               recipient,
-               subject,
-               html,
-               attachments
-       ); 
+       return resendAPIService.sendEmail(params); 
        
     }
-
-    /**
-     * Send an email.
-     * One attachment.
-     */
-    public String sendEmail(String recipient,
-                               String subject,
-                               String html,
-                               EmailAttachment attachment) throws EmailSendingException
-    {
-
-        return this.sendEmail(recipient, subject, html, List.of(attachment));
-    }
-
     
-    /**
-     * Send an email.
-     * No attachments.
-     */
-    public String sendEmail(String recipient,
-                            String subject,
-                            String html) throws EmailSendingException
-    {
-        return this.sendEmail(recipient, subject, html, List.of());
-    }
-
      
     /**
      * Send email from a HTML template.
-     * Many attachments.
-     * 
-     * @throws TemplateException if input template is not found
+     *
      */
-    public String sendEmailFromTemplate(EmailTemplate template,
-                                        Map<String, Object> vars,
-                                        String recipient,
-                                        String subject,
-                                        List<EmailAttachment> attachments) 
+    public String sendTemplate(EmailTemplateParams tParams) 
     {
         
-        String html = this.templateService.fillTemplate(template, vars);
+        var htmlBody = templateService.fillTemplate(
+                tParams.template(),
+                tParams.templateVars()
+        );
         
-        return this.sendEmail(recipient, subject, html, attachments);
+        var params = new EmailParams(
+                tParams.recipient(),
+                tParams.subject(),
+                htmlBody,
+                tParams.attachments()
+        );
+        
+        return send(params);
         
     }
-
-    /**
-     * Send email from a HTML template.
-     * One attachment.
-     * 
-     * @throws TemplateException if input template is not found
-     */
-    public String sendEmailFromTemplate(EmailTemplate template,
-                                        Map<String, Object> vars,
-                                        String recipient,
-                                        String subject,
-                                        EmailAttachment attachment) throws TemplateException
-    {
-
-        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of(attachment));
-
-    }
-
-
-
-    /**
-     * Send email from a HTML template.
-     * No attachments.
-     * 
-     * @throws TemplateException if input template is not found
-     */
-    public String sendEmailFromTemplate(EmailTemplate template,
-                                        Map<String, Object> vars,
-                                        String recipient,
-                                        String subject) throws TemplateException
-    {
-
-        return this.sendEmailFromTemplate(template, vars, recipient, subject, List.of());
-
-    }
-
+    
+    
     // public String sendEmailFromTemplateWithDefaultLanguage(String template,
     //                                                 Map<String, Object> vars,
     //                                                 String recipient,
@@ -174,8 +113,6 @@ public class EmailService {
     //
     // }
     
-    
-
  
 
 }

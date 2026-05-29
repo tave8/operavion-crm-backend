@@ -6,6 +6,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +47,12 @@ public class VerifyEmailMailer {
         // we are running async, so must log/alert
         try {
 
-            emailService.sendEmailFromTemplate(
+            emailService.sendTemplate(new EmailTemplateParams(
                     EmailTemplate.VERIFY_EMAIL,
                     toTemplateVars(emailParams),
                     user.getEmail(),
                     subject
-            );
+            ));
 
         } catch (RuntimeException ex) {
 

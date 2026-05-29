@@ -6,6 +6,7 @@ import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepanc
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +48,13 @@ public class ContractDiscrepancyMailer {
         
         var subject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
 
-        emailService.sendEmailFromTemplate(
+        emailService.sendTemplate(new EmailTemplateParams(
                 EmailTemplate.CONTRACT_DISCREPANCY,
                 toTemplateVars(emailParams),
                 admin.getEmail(),
                 subject,
                 attachment
-        );
+        ));
 
     }
 

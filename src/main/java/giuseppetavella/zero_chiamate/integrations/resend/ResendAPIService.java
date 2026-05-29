@@ -6,6 +6,7 @@ import com.resend.services.emails.model.Attachment;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
 import giuseppetavella.zero_chiamate.integrations.resend.exceptions.ResendAPIException;
@@ -25,37 +26,34 @@ public class ResendAPIService {
     // Email API-specific options/params builder 
     @Autowired
     private CreateEmailOptions.Builder defaultParams;
+    
+    private static final String REPLY_TO_EMAIL = "giuseppetavella8@gmail.com";
 
 
 
     /**
      * Send an email.
-     * Many attachments.
      *
-     * @throws EmailSendingException if any problem occurred during email sending
      */
-    public String sendEmail(String recipient,
-                            String subject,
-                            String html,
-                            List<EmailAttachment> attachments) throws EmailSendingException
+    public String sendEmail(EmailParams params)
     {
         
         // these are the API-specific attachments
         // we translate from API-independent to API-specific
-        List<Attachment> attachmentsForAPI = this.toAPIAttachments(attachments);
+        var apiAttachments = toAPIAttachments(params.attachments());
         
-        CreateEmailOptions params = this.buildEmailParams(
-                recipient,
-                subject,
-                html,
-                attachmentsForAPI
+        var apiParams = buildEmailParams(
+                params.recipient(),
+                params.subject(),
+                params.htmlBody(),
+                apiAttachments
         );
 
         try {
 
             // this is where we send the email with the API,
             // and where the "journey" of email sending ends for our system
-            CreateEmailResponse data = resend.emails().send(params);
+            var data = resend.emails().send(apiParams);
             
             return data.getId();
 
@@ -77,31 +75,19 @@ public class ResendAPIService {
     private CreateEmailOptions buildEmailParams(String recipient,
                                                 String subject,
                                                 String html,
-                                                List<Attachment> attachments) throws TemplateException
+                                                List<Attachment> attachments) 
     {
-        return this.defaultParams
-                .to(recipient)
-                .subject(subject)
-                .html(html)
-                .attachments(attachments)
-                // for now i get the response
-                .replyTo("giuseppetavella8@gmail.com")
-                .build();
+        return defaultParams
+                    .to(recipient)
+                    .subject(subject)
+                    .html(html)
+                    .attachments(attachments)
+                    // for now i get the response
+                    .replyTo(REPLY_TO_EMAIL)
+                    .build();
     }
 
-
-
-    /**
-     * Build the email params.
-     * No attachments.
-     * API-specific.
-     */
-    private CreateEmailOptions buildEmailParams(String recipient,
-                                                String subject,
-                                                String html)
-    {
-        return this.buildEmailParams(recipient, subject, html, List.of());
-    }
+    
 
 
     /**
@@ -112,12 +98,12 @@ public class ResendAPIService {
     {
         List<Attachment> attachments = new ArrayList<>();
 
-        for(EmailAttachment emailAttachment : emailAttachments) {
+        for(var emailAttachment : emailAttachments) {
             // library-specific object
-            Attachment attachment = Attachment.builder()
-                    .fileName(emailAttachment.getFilename())
-                    .content(emailAttachment.getBase64Content())
-                    .build();
+            var attachment = Attachment.builder()
+                                    .fileName(emailAttachment.getFilename())
+                                    .content(emailAttachment.getBase64Content())
+                                    .build();
 
             attachments.add(attachment);
         }

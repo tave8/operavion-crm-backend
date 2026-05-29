@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.notify_admin_beca
 import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -27,7 +28,7 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
     private NotifyAdminBecauseOperatorHasNoShift_Repository thisRepository;
     
     @Autowired
-    private EmailService appEmailService;
+    private EmailService emailService;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -82,11 +83,11 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
             );
 
             // send an email to admin
-            this.appEmailService.sendEmail(
+            emailService.send(new EmailParams(
                     admin.getEmail(),
                     "Operatore non ha turno per domani",
                     "L'operatore " + operator.getFullname() + " non ha un turno per domani."
-            );
+            ));
 
             return;
             

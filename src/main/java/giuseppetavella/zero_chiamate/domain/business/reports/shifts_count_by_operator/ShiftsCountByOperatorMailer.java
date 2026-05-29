@@ -5,6 +5,7 @@ import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_ope
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorReportParams;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailTemplateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +40,13 @@ public class ShiftsCountByOperatorMailer {
         
         var subject = "Report turni | Settimana " + startDate + " - " + endDate;
 
-        emailService.sendEmailFromTemplate(
+        emailService.sendTemplate(new EmailTemplateParams(
                 EmailTemplate.SHIFTS_COUNT_BY_OPERATOR,
                 toTemplateVars(emailParams),
                 admin.getEmail(),
                 subject,
                 attachment
-        );
+        ));
         
 
     }
