@@ -36,6 +36,7 @@ public class UploadedFile {
         this.storageKey = storageKey;
         this.originalFilename = originalFilename;
         this.mimeType = mimeType;
+        this.createdAt = OffsetDateTime.now();
         
     }
 

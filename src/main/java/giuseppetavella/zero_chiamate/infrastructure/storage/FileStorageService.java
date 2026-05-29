@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.infrastructure.storage;
 
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.infrastructure.storage.dto.FileUploadResult;
 import giuseppetavella.zero_chiamate.integrations.cloudflare_r2.CloudflareR2APIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,6 @@ public class FileStorageService {
     
     @Autowired
     private CloudflareR2APIService cloudflareR2APIService;
-    
-    public record FileUploadResult(String filename, String url) {}
     
     
     /**

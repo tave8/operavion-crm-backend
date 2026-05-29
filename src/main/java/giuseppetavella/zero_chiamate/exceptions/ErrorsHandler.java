@@ -234,22 +234,22 @@ public class ErrorsHandler {
         String message = ex.getMessage();
 
         if (message.contains("duplicate key")) {
-            return new ErrorsToSendDTO("One or more values already exist and cannot be duplicated.");
+            return new ErrorsToSendDTO("Error in database. One or more values already exist and cannot be duplicated.");
         }
         if (message.contains("foreign key") && message.contains("insert")) {
-            return new ErrorsToSendDTO("One or more referenced resources do not exist.");
+            return new ErrorsToSendDTO("Error in database. One or more referenced resources do not exist.");
         }
         if (message.contains("foreign key") && message.contains("delete")) {
-            return new ErrorsToSendDTO("This resource cannot be deleted because it is referenced by other data.");
+            return new ErrorsToSendDTO("Error in database. This resource cannot be deleted because it is referenced by other data.");
         }
         if (message.contains("not-null") || message.contains("null value")) {
-            return new ErrorsToSendDTO("One or more required fields are missing.");
+            return new ErrorsToSendDTO("Error in database. One or more required fields are missing.");
         }
         if (message.contains("check constraint")) {
-            return new ErrorsToSendDTO("One or more values do not meet the required constraints.");
+            return new ErrorsToSendDTO("Error in database. One or more values do not meet the required constraints.");
         }
 
-        return new ErrorsToSendDTO("The request contains conflicting or invalid data.");
+        return new ErrorsToSendDTO("Error in database. The request contains conflicting or invalid data.");
     }
     
     
