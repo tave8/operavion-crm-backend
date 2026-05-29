@@ -3,10 +3,16 @@ package giuseppetavella.zero_chiamate.runners;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
+import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
+import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
+import giuseppetavella.zero_chiamate.integrations.anthropic.AnthropicAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class AIDemoRunner implements CommandLineRunner {
@@ -14,6 +20,8 @@ public class AIDemoRunner implements CommandLineRunner {
     @Autowired
     private ContractDiscrepancyDetector contractDiscrepancyDetector;
 
+    @Autowired
+    private AnthropicAPIService anthropicAPIService;
     
     @Autowired
     private ShiftsService shiftsService;
@@ -21,10 +29,36 @@ public class AIDemoRunner implements CommandLineRunner {
     @Autowired
     private ClientAddressesService clientAddressesService;
     
+    @Autowired
+    private EmailService emailService;
+    
+    
     private final ObjectMapper mapper = new ObjectMapper();
     
     @Override
     public void run(String... args) throws Exception {
+        
+        // var csv = new Csv(List.of("user_prompt", "system_prompt", "mixed"));
+        
+        // List<String> prompts = new ArrayList<>();
+        //
+        // prompts.add(List.of);
+        //
+        
+        // var answer1 = anthropicAPIService.ask("tell a joke. You are a CRM assistant. Extract structured data from user input. Always respond in JSON. Never add commentary.");
+        // var answer2 = anthropicAPIService.ask("tell a joke. You are a CRM assistant. Extract structured data from user input. Always respond in JSON. Never add commentary.");
+        // var answer3 = anthropicAPIService.ask("tell a joke.", "You are a CRM assistant. Extract structured data from user input. Always respond in JSON. Never add commentary.");
+        // var answer4 = anthropicAPIService.ask("tell a joke.", "You are a CRM assistant. Extract structured data from user input. Always respond in JSON. Never add commentary.");
+        //
+        // System.out.println("USER & SYSTEM MESSAGE MIXED: 1");
+        // System.out.println(answer1);
+        // System.out.println("USER & SYSTEM MESSAGE MIXED: 2");
+        // System.out.println(answer2);
+        // System.out.println("USER & SYSTEM MESSAGE SPLIT: 1");
+        // System.out.println(answer3);
+        // System.out.println("USER & SYSTEM MESSAGE SPLIT: 2");
+        // System.out.println(answer4);
+
         
         // ClientAddress clientAddress = clientAddressesService.findById("03dd36c2-68f2-41ac-859d-47e8ba9923bc");
         // ClientAddressToSendDTO clientAddressToSendDTO = clientAddressesService.toClientAddressDTO(clientAddress);

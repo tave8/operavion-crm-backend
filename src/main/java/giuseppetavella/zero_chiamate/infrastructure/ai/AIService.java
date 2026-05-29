@@ -33,7 +33,7 @@ public class AIService {
     public String askWithPdf(String prompt, byte[] pdf)
     {
         
-        return anthropicAPIService.askWithPdf(prompt, pdf);
+        return anthropicAPIService.askWithPdf(pdf, prompt);
         
     }
 
