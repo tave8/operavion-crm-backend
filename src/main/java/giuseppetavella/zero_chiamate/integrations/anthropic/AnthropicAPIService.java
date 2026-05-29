@@ -57,14 +57,33 @@ public class AnthropicAPIService {
         return execute(body);
     }
 
+
     public String askWithPdf(byte[] pdfBytes, String userPrompt) {
-        return askWithPdf(pdfBytes, userPrompt, DEFAULT_SYSTEM_PROMPT);
+        PayloadValidationHelper.requiredPdf(pdfBytes);
+        return askWithFile("document", "application/pdf", pdfBytes, userPrompt, DEFAULT_SYSTEM_PROMPT);
     }
+    
 
     public String askWithPdf(byte[] pdfBytes, String userPrompt, String systemPrompt) {
         PayloadValidationHelper.requiredPdf(pdfBytes);
+        return askWithFile("document", "application/pdf", pdfBytes, userPrompt, systemPrompt);
+    }
 
-        String base64Pdf = FileHelper.toBase64(pdfBytes);
+    /**
+     * 
+     * @param imageBytes
+     * @param mediaType the mime type, so image/png, image/jpeg etc.
+     * @param userPrompt
+     * @param systemPrompt
+     * @return
+     */
+    public String askWithImage(byte[] imageBytes, String mediaType, String userPrompt, String systemPrompt) {
+        return askWithFile("image", mediaType, imageBytes, userPrompt, systemPrompt);
+    }
+
+    
+    private String askWithFile(String type, String mediaType, byte[] fileBytes, String userPrompt, String systemPrompt) {
+        String base64 = FileHelper.toBase64(fileBytes);
 
         Map<String, Object> body = Map.of(
                 "model", MODEL,
@@ -73,21 +92,28 @@ public class AnthropicAPIService {
                 "messages", List.of(Map.of(
                         "role", "user",
                         "content", List.of(
+                                fileContentBlock(type, mediaType, base64),
                                 Map.of(
-                                        "type", "document",
-                                        "source", Map.of(
-                                                "type", "base64",
-                                                "media_type", "application/pdf",
-                                                "data", base64Pdf
-                                        )
-                                ),
-                                Map.of("type", "text", "text", userPrompt)
+                                        "type", "text", 
+                                        "text", userPrompt
+                                )
                         )
                 ))
         );
         return execute(body);
     }
 
+
+    private Map<String, Object> fileContentBlock(String type, String mediaType, String base64Data) {
+        return Map.of(
+                "type", type,
+                "source", Map.of(
+                        "type", "base64",
+                        "media_type", mediaType,
+                        "data", base64Data
+                )
+        );
+    }
 
     private String execute(Map<String, Object> body) {
         try {
