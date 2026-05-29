@@ -1,13 +1,11 @@
 package giuseppetavella.zero_chiamate.domain.entities.uploaded_files;
 
 import giuseppetavella.zero_chiamate.api.AttachmentResponseBuilder;
-import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFile;
-import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFilesRepository;
-import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.dto.to_send.UploadedFileToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.dto.sent.DownloadedFileDTO;
+import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.dto.to_send.UploadedFileDTO;
 import giuseppetavella.zero_chiamate.exceptions.NotFoundException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.storage.FileStorageService;
-import giuseppetavella.zero_chiamate.integrations.cloudflare_r2.CloudflareR2APIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,60 +30,101 @@ public class UploadedFilesService {
      * @param uploadedFile
      * @return
      */
-    public UploadedFileToSendDTO toUploadedFileDTO(UploadedFile uploadedFile) {
-        return new UploadedFileToSendDTO(
+    public UploadedFileDTO toUploadedFileDTO(UploadedFile uploadedFile) {
+        return new UploadedFileDTO(
                 uploadedFile.getId(),
                 uploadedFile.getMimeType(),
                 uploadedFile.getOriginalFilename(),
                 uploadedFile.getCreatedAt()
         );
     }
+
+
+    public UploadedFileDTO uploadDTO(byte[] bytes, String originalFilename) {
+        return toUploadedFileDTO(
+                upload(bytes, originalFilename)
+        );
+    }
+    
+    
+    /**
+     * Use the DTO to avoid exposing public url of file.
+     * @param file
+     * @return
+     */
+    public UploadedFileDTO uploadDTO(MultipartFile file) {
+       return uploadDTO(
+               FileHelper.getBytes(file),
+               file.getOriginalFilename()
+       );
+    }
     
 
     /**
-     * Upload a file to Cloudflare R2 and save the record to the database.
-     * Returns the saved uploaded file record.
+     * 
+     * 
+     * @param bytes
+     * @param originalFilename
+     * @return
      */
-    public UploadedFile upload(MultipartFile file) {
-
-        var bytes        = FileHelper.getBytes(file);
-        var originalName = file.getOriginalFilename();
-        if(originalName == null) {
-            originalName = "";
+    public UploadedFile upload(byte[] bytes, String originalFilename) {
+        
+        if(originalFilename == null) {
+            originalFilename = "";
         }
-        var mimeType     = FileHelper.getMimeType(bytes, originalName);
+        
+        var mimeType = FileHelper.getMimeType(bytes, originalFilename);
 
         // upload to R2, get back the storage key
-        var result = fileStorageService.upload(bytes, originalName);
+        var result = fileStorageService.upload(bytes, originalFilename);
 
         // save the record to the database
         var uploadedFile = new UploadedFile(
+                // this is the storage key
                 result.filename(),
-                originalName,
+                originalFilename,
                 mimeType
         );
 
         return repository.save(uploadedFile);
-    }
-
-    
-    public UploadedFileToSendDTO uploadDTO(MultipartFile file) {
-        return toUploadedFileDTO(
-                upload(file)
-        );
+        
     }
     
 
     /**
-     * Download a file from Cloudflare R2 by its public ID (in database).
-     * This is critical for security.
+     * Note: this method is private because it exposes storage key.
+     * Should use DTO wrapper, so that storage key is never exposed.
+     * 
+     * Upload a file to Cloudflare R2 and save the record to the database.
+     * Returns the saved uploaded file record.
      */
-    public ResponseEntity<byte[]> download(UUID fileIdInDB) {
-        var uploadedFile = getById(fileIdInDB);
-        var bytes        = fileStorageService.download(uploadedFile.getStorageKey());
-        return AttachmentResponseBuilder.anyFile(bytes, uploadedFile.getOriginalFilename());
+    private UploadedFile upload(MultipartFile file) {
+        return upload(FileHelper.getBytes(file), file.getOriginalFilename());
     }
 
+    
+
+    /**
+     * Download raw bytes from storage by file ID.
+     */
+    public DownloadedFileDTO downloadDTO(UUID fileId) {
+        // get the file from DB
+        var uploadedFile = getById(fileId);
+        // download file from cloud, using storage key found in DB
+        var bytes        = fileStorageService.download(uploadedFile.getStorageKey());
+        // wrap 
+        return new DownloadedFileDTO(bytes, uploadedFile.getOriginalFilename());
+    }
+    
+
+    /**
+     * Download and wrap as an HTTP response ready to stream to the client.
+     */
+    public ResponseEntity<byte[]> downloadAsResponse(UUID fileId) {
+        var file = downloadDTO(fileId);
+        return AttachmentResponseBuilder.anyFile(file.bytes(), file.originalFilename());
+    }
+    
 
     /**
      * Delete a file from Cloudflare R2 and remove the record from the database.

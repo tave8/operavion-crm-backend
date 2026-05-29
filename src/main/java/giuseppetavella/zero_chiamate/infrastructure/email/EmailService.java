@@ -68,6 +68,7 @@ public class EmailService {
     /**
      * Send test email to developer.
      * Useful for protopying.
+     * Defaults are: recipient, subject and html body.
      * 
      * @param params
      * @return
@@ -104,15 +105,6 @@ public class EmailService {
         
     }
 
-    
-    /**
-     * Send email to developer.
-     * Useful for experiments.
-     * @return
-     */
-    public String sendTestEmail(EmailParams params) {
-        return send(params);
-    }
     
     
     // public String sendEmailFromTemplateWithDefaultLanguage(String template,

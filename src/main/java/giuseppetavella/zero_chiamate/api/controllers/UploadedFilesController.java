@@ -1,8 +1,7 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
-import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFile;
 import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFilesService;
-import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.dto.to_send.UploadedFileToSendDTO;
+import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.dto.to_send.UploadedFileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ public class UploadedFilesController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UploadedFileToSendDTO upload(@RequestParam("file") MultipartFile file) {
+    public UploadedFileDTO upload(@RequestParam("file") MultipartFile file) {
         return uploadedFilesService.uploadDTO(file);
     }
 
@@ -35,7 +34,7 @@ public class UploadedFilesController {
      */
     @GetMapping("/{fileIdInDB}")
     public ResponseEntity<byte[]> download(@PathVariable UUID fileIdInDB) {
-        return uploadedFilesService.download(fileIdInDB);
+        return uploadedFilesService.downloadAsResponse(fileIdInDB);
     }
 
 

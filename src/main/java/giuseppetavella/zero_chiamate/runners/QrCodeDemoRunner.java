@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
+import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFilesService;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.TestEmailParams;
@@ -17,7 +18,7 @@ public class QrCodeDemoRunner implements CommandLineRunner {
     private QrCodeService qrCodeService;
     
     @Autowired
-    private FileStorageService fileStorageService;
+    private UploadedFilesService uploadedFilesService;
     
     @Autowired
     private EmailService emailService;
@@ -25,12 +26,24 @@ public class QrCodeDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
     
-        var qrBytes = qrCodeService.generate("secret content", "zerochiamate.com");
-
-        // System.out.println(qrBytes);
-        emailService.send(new TestEmailParams(
-                new EmailAttachment(qrBytes, "qrcode.png")
-        ));
+        // var qrBytes = qrCodeService.generate("secret content", "zerochiamate.com");
+        //
+        // var uploadedFileDTO = uploadedFilesService.uploadDTO(qrBytes, "qrcode.png");
+        //
+        // var downloadedFileDTO = uploadedFilesService.downloadDTO(uploadedFileDTO.id());
+        //
+        //
+        // // System.out.println(uploadedFileDTO.);
+        //
+        // // System.out.println(fileId);
+        //
+        // // uploadResult.filename();
+        // //
+        // // // System.out.println(qrBytes);
+        // emailService.send(new TestEmailParams(
+        //         new EmailAttachment(downloadedFileDTO.bytes(), downloadedFileDTO.originalFilename())
+        // ));
+        
         
         
     }
