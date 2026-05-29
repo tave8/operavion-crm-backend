@@ -4,6 +4,7 @@ import giuseppetavella.zero_chiamate.exceptions.FileDownloadException;
 import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.exceptions.UnknownFileTypeException;
 import org.apache.tika.Tika;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +48,104 @@ public class FileHelper {
     // 1 MB
     public static final long MB = 1024 * 1024;
 
+
+    /**
+     * Detect the MIME type of a file from its bytes.
+     * For example: "image/png", "application/pdf".
+     *
+     * @throws UnknownFileTypeException if the file is empty
+     */
+    public static String getMimeType(byte[] bytes) {
+        if (bytes.length == 0) {
+            throw new UnknownFileTypeException("File is empty, cannot determine MIME type.");
+        }
+        return TIKA.detect(bytes);
+    }
+
+
+    /**
+     * Detect the MIME type of a file from its bytes and filename.
+     * The filename is used as a hint to correctly detect CSV files,
+     * since Tika detects them as "text/plain" by content alone.
+     */
+    public static String getMimeType(byte[] bytes, String filename) {
+        var mimeType = getMimeType(bytes);
+        if (filename.endsWith(".csv") && mimeType.equals("text/plain")) {
+            return "text/csv";
+        }
+        return mimeType;
+    }
+
+
+    /**
+     * Detect the MIME type of a multipart file.
+     *
+     * @throws FileException if the file is null
+     */
+    public static String getMimeType(MultipartFile file) {
+        if (file == null) {
+            throw new FileException("File cannot be null.");
+        }
+        return getMimeType(getBytes(file), file.getOriginalFilename());
+    }
+
+
+    /**
+     * Get the file extension from bytes and filename.
+     * The extension is without the dot, for example "pdf" or "jpg".
+     *
+     * @throws UnknownFileTypeException if the file type is not supported
+     */
+    public static String getFileType(byte[] bytes, String filename) {
+        var mimeType = getMimeType(bytes, filename);
+        if (!MIME_TO_EXTENSION.containsKey(mimeType)) {
+            throw new UnknownFileTypeException(mimeType);
+        }
+        return MIME_TO_EXTENSION.get(mimeType);
+    }
+
+
+    /**
+     * Get the file extension from bytes only, without filename hint.
+     * The extension is without the dot, for example "pdf" or "jpg".
+     *
+     * @throws UnknownFileTypeException if the file type is not supported
+     */
+    public static String getFileType(byte[] bytes) {
+        return getFileType(bytes, "");
+    }
+
+
+    /**
+     * Get the file extension from a multipart file.
+     * The extension is without the dot, for example "pdf" or "jpg".
+     *
+     * @throws UnknownFileTypeException if the file type is not supported
+     * @throws FileException if any error while reading the file
+     */
+    public static String getFileType(MultipartFile file) {
+        if (file == null) {
+            throw new FileException("File cannot be null.");
+        }
+        return getFileType(getBytes(file), file.getOriginalFilename());
+    }
+
+
+    /**
+     * Read the bytes from a multipart file.
+     *
+     * @throws FileException if the file cannot be read
+     */
+    public static byte[] getBytes(MultipartFile file) {
+        try {
+            return file.getBytes();
+        } catch (IOException ex) {
+            throw new FileException(ex.getMessage());
+        }
+    }
+    
+
+
     /**
      * Is the uploaded file an image?
      */
@@ -59,7 +158,7 @@ public class FileHelper {
         // starts with image/
         return mimeType.startsWith("image/");
     }
-    
+
 
     /**
      * Is this file a pdf?
@@ -80,7 +179,55 @@ public class FileHelper {
         return isPdf(FileHelper.getBytes(file));
     }
     
-    
+
+
+    /**
+     * Read a file from /resources directory.
+     * 
+     * Use forward slashes, something like:  extra/invoice.pdf;
+     */
+    public static byte[] readFile(String filepath) {
+        
+        try {
+            ClassPathResource resource = new ClassPathResource(filepath);
+            try (InputStream is = resource.getInputStream()) {
+                return is.readAllBytes();
+            }
+        } catch (IOException ex) {
+            throw new FileException("File not found or unreadable: " + filepath + ". DETAILS: " + ex.getMessage());
+        }
+            
+        
+    }
+
+
+    /**
+     * byte array -> base64 
+     */
+    public static String toBase64(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * URL -> base64
+     * TODO: fix semantics. it's not url to base64, it's 
+     *  "download the content of the URL" and that is converted to base64
+     */
+    public static String urlToBase64(String url) throws FileDownloadException
+    {
+        try {
+
+            byte[] bytes = new URL(url).openStream().readAllBytes();
+            return FileHelper.toBase64(bytes);
+
+        } catch(MalformedURLException ex) {
+            throw new FileDownloadException("URL is malformed. DETAILS: " + ex.getMessage());
+        } catch(IOException ex) {
+            throw new FileDownloadException(ex.getMessage());
+        }
+
+    }
+
     /**
      * Get the file size in MB.
      */
@@ -102,127 +249,6 @@ public class FileHelper {
      */
     public static boolean isWithinAvatarSize(MultipartFile file) {
         return FileHelper.sizeIsSmallerThan(file, 2 * FileHelper.MB);
-    }
-
-    /**
-     * byte array -> base64 
-     */
-    public static String toBase64(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
-    }
-
-    /**
-     * URL -> base64
-     * TODO: fix semantics. it's not url to base64, it's 
-     *  "download the content of the URL" and that is converted to base64
-     */
-    public static String urlToBase64(String url) throws FileDownloadException 
-    {
-        try {
-            
-            byte[] bytes = new URL(url).openStream().readAllBytes();
-            return FileHelper.toBase64(bytes);
-        
-        } catch(MalformedURLException ex) {
-            throw new FileDownloadException("URL is malformed. DETAILS: " + ex.getMessage());  
-        } catch(IOException ex) {
-            throw new FileDownloadException(ex.getMessage());
-        }
-        
-    }
-
-    /**
-     * Mime type is something like image/png, 
-     * whereas file type is the file extension, like png.
-     */
-    public static String getFileType(byte[] bytes) throws UnknownFileTypeException
-    {
-
-        var mimeType = getMimeType(bytes);
-
-        // recognized is a synonim for "supported or known"
-        boolean filenameIsInternallyRecognized = MIME_TO_EXTENSION.containsKey(mimeType);
-        
-        if (!filenameIsInternallyRecognized) {
-            throw new UnknownFileTypeException(mimeType);
-        }
-
-        return MIME_TO_EXTENSION.get(mimeType);
-    }
-
-
-    /**
-     * Mime type is something like image/png, 
-     * whereas file type is the file extension, like png
-     * @return
-     */
-    public static String getMimeType(byte[] bytes)
-    {
-        // if bytes are empty, there's no point getting file extension
-        if(bytes.length == 0) {
-
-            throw new UnknownFileTypeException("No bytes found in this file, it means the file is empty. "
-                    +"So cannot determine its extension.");
-
-        }
-
-        return TIKA.detect(bytes);
-    }
-    
-    public static String getMimeType(MultipartFile file)
-    {
-        return getMimeType(FileHelper.getBytes(file));
-    }
-    
-
-    /**
-     * Get the file extension from a file.
-     * The file extension is without the dot, for example "pdf" or "jpg".
-     * 
-     * @throws UnknownFileTypeException if the type of the file was not mapped/not internally recognized
-     * @throws FileException if any error while getting bytes from file
-     */
-    public static String getFileType(MultipartFile file) throws UnknownFileTypeException, FileException
-    {
-        try {
-            
-            var bytes = file.getBytes();
-            
-            return FileHelper.getFileType(bytes);
-            
-        } catch (IOException e) {
-            throw new FileException(e.getMessage());
-        }
-        
-    }
-    
-    public static byte[] getBytes(MultipartFile file) throws FileException
-    {
-        try {
-            return file.getBytes();
-        } catch (IOException e) {
-            throw new FileException(e.getMessage());
-        }
-    
-    }
-
-    /**
-     * Read a file from /resources directory.
-     * 
-     * Use forward slashes, something like:  extra/invoice.pdf;
-     */
-    public static byte[] readFile(String filepath) {
-        
-        try {
-            ClassPathResource resource = new ClassPathResource(filepath);
-            try (InputStream is = resource.getInputStream()) {
-                return is.readAllBytes();
-            }
-        } catch (IOException ex) {
-            throw new FileException("File not found or unreadable: " + filepath + ". DETAILS: " + ex.getMessage());
-        }
-            
-        
     }
     
 }
