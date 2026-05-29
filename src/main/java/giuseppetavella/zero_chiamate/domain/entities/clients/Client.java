@@ -3,10 +3,12 @@ package giuseppetavella.zero_chiamate.domain.entities.clients;
 import giuseppetavella.zero_chiamate.domain.entities.addresses.Address;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(name = "clients")
 public class Client {
 

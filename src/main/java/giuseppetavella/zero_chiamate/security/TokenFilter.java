@@ -179,12 +179,7 @@ public class TokenFilter extends OncePerRequestFilter {
         // authorization header does not exist
         if(authHeaderNotExists) {
             
-            this.sendUnauthorizedErrorResponse(response,"Missing Authorization header. The requested resource was defined "
-                                                                 +"to require user authentication expressed "
-                                                                 +"through the Authorization header in the request, however "
-                                                                 +"no such header was found. Therefore this resource cannot be accessed."
-                                                                  +"Either this resource should not be protected, "
-                                                                    +"or the Authorization header is missing.");
+            this.sendUnauthorizedErrorResponse(response,"Missing Authorization header.");
             return;
         }
         

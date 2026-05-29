@@ -1,10 +1,12 @@
 package giuseppetavella.zero_chiamate.domain.entities.addresses;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(name = "addresses")
 public class Address {
     

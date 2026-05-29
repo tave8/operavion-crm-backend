@@ -7,6 +7,7 @@ import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPISubscriptionStatus;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@Audited
 @Table(name = "companies")
 public class Company {
     
