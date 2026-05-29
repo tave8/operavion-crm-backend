@@ -11,16 +11,36 @@ public class FileStorageService {
     
     @Autowired
     private CloudflareR2APIService cloudflareR2APIService;
-    
 
+
+    /**
+     * Upload a file. Return the unique filename.
+     * 
+     * @param bytes
+     * @param fileType
+     * @return
+     */
+    public String upload(byte[] bytes, String fileType)
+    {
+        
+        return cloudflareR2APIService.upload(bytes, fileType);
+
+    }
+
+
+    /**
+     * Upload a file. Return the unique filename.
+     *
+     * @param bytes
+     * @return
+     */
     public String upload(byte[] bytes)
     {
         
         // extract the file extension/type, without dot
         var fileType = FileHelper.getFileType(bytes);
         
-        return cloudflareR2APIService.upload(bytes, fileType);
-
+        return upload(bytes, fileType);
 
     }
 
@@ -39,8 +59,31 @@ public class FileStorageService {
         return upload(bytes);
         
     }
+
+
+    /**
+     * Download a file by its filename.
+     * 
+     * @return
+     */
+    public byte[] download(String filename)
+    {
+        
+        return cloudflareR2APIService.download(filename);
+
+    }
+
+
+    /**
+     * Build the file URL, given the filename.
+     * 
+     * @return
+     */
+    public String buildUrl(String filename) {
     
+        return cloudflareR2APIService.buildFileUrl(filename);
     
+    }
     
     
 }

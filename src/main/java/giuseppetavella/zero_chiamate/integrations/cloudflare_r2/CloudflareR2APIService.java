@@ -25,6 +25,7 @@ public class CloudflareR2APIService {
     private final String bucket;
 
     // this is a dependency
+    // the public domain where we store files, for example files.mydomain.com
     private final String publicUrl;
     
     // we use constructor dependency injection
@@ -39,7 +40,7 @@ public class CloudflareR2APIService {
     
     /**
      * Upload a file.
-     * Return the file public URL.
+     * Return the unique filename.
      * 
      * @param fileExtNoDot the file extension, for example "pdf" (without dot)
      */
@@ -61,7 +62,7 @@ public class CloudflareR2APIService {
         }
         
         // return the public URL of this file
-        return buildFileUrlFrom(filename);
+        return filename;
         
     }
 
@@ -71,6 +72,7 @@ public class CloudflareR2APIService {
      * Returns the file bytes.
      */
     public byte[] download(String filename) {
+        
         try {
           
             return s3Client.getObjectAsBytes(
@@ -94,7 +96,7 @@ public class CloudflareR2APIService {
         return filename;
     }
     
-    private String buildFileUrlFrom(String filename) {
+    public String buildFileUrl(String filename) {
         return publicUrl + "/" + filename;
     }
     

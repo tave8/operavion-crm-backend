@@ -48,6 +48,12 @@ public class ErrorsHandler {
     public ErrorsToSendDTO handleNotFoundException(NotFoundException ex) {
         return new ErrorsToSendDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorsToSendDTO handleFileNotFoundException(FileNotFoundException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
     
 
     @ExceptionHandler(UnauthorizedException.class)

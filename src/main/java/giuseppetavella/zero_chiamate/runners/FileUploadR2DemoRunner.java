@@ -26,13 +26,20 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        var bytes = cloudflareR2APIService.download("d5d29ab6-e558-4c93-b879-85a264b79ecf.png");
+        var reportTurniBytes = FileHelper.readFile("extra/report_turni.csv");
+        
+        var reportTurniFilename = fileStorageService.upload(reportTurniBytes, "csv");
+        
+        var reportTurniBytesDownloaded = fileStorageService.download(reportTurniFilename);
+
+        System.out.println(reportTurniFilename);
+        
 
         emailService.send(new EmailParams(
                 "giuseppetavella8@gmail.com",
                 "my linkedin",
                 "something",
-                new EmailAttachment(bytes)
+                new EmailAttachment(reportTurniBytesDownloaded, "report.csv")
         ));
         
         // System.out.println(bytes);
