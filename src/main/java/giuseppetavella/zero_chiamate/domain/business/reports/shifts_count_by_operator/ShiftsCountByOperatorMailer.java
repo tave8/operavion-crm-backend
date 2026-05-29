@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorEmailParams;
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorReportParams;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
@@ -40,7 +40,7 @@ public class ShiftsCountByOperatorMailer {
         var subject = "Report turni | Settimana " + startDate + " - " + endDate;
 
         emailService.sendEmailFromTemplate(
-                Template.EMAIL_SHIFTS_COUNT_BY_OPERATOR,
+                EmailTemplate.SHIFTS_COUNT_BY_OPERATOR,
                 toTemplateVars(emailParams),
                 admin.getEmail(),
                 subject,

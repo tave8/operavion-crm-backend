@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.email;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
@@ -102,7 +102,7 @@ public class EmailService {
      * 
      * @throws TemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(Template template,
+    public String sendEmailFromTemplate(EmailTemplate template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject,
@@ -121,7 +121,7 @@ public class EmailService {
      * 
      * @throws TemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(Template template,
+    public String sendEmailFromTemplate(EmailTemplate template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject,
@@ -140,7 +140,7 @@ public class EmailService {
      * 
      * @throws TemplateException if input template is not found
      */
-    public String sendEmailFromTemplate(Template template,
+    public String sendEmailFromTemplate(EmailTemplate template,
                                         Map<String, Object> vars,
                                         String recipient,
                                         String subject) throws TemplateException

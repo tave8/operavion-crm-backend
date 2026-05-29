@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.domain.business.auth.params.VerifyEmailEmailParams;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
@@ -47,7 +47,7 @@ public class VerifyEmailMailer {
         try {
 
             emailService.sendEmailFromTemplate(
-                    Template.EMAIL_VERIFY_EMAIL,
+                    EmailTemplate.VERIFY_EMAIL,
                     toTemplateVars(emailParams),
                     user.getEmail(),
                     subject

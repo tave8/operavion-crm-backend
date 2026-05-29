@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
+import giuseppetavella.zero_chiamate.config.ReportTemplate;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
@@ -28,7 +29,7 @@ public class ContractDiscrepancyReportGenerator {
     {
         
         return pdfService.templateToPdf(
-                Template.REPORT_CONTRACT_DISCREPANCY, 
+                ReportTemplate.CONTRACT_DISCREPANCY, 
                 toTemplateVars(params)
         );
  

@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.template;
 
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;

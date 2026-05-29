@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
+import giuseppetavella.zero_chiamate.config.ReportTemplate;
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.params.ShiftsCountByOperatorReportParams;
 import giuseppetavella.zero_chiamate.infrastructure.csv.Csv;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
@@ -51,7 +52,7 @@ public class ShiftsCountByOperatorReportGenerator {
     {
         
         return pdfService.templateToPdf(
-                Template.REPORT_SHIFTS_COUNT_BY_OPERATOR,
+                ReportTemplate.SHIFTS_COUNT_BY_OPERATOR,
                 toTemplateVars(params)
         );
     

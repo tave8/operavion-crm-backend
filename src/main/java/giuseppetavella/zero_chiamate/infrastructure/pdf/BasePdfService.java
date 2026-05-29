@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.pdf;
 
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGenerationException;
 import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;

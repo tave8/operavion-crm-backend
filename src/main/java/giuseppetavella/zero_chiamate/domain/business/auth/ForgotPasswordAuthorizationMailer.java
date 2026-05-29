@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.auth;
 
-import giuseppetavella.zero_chiamate.config.Template;
+import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.domain.business.auth.params.ForgotPasswordAuthorizationEmailParams;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
@@ -44,7 +44,7 @@ public class ForgotPasswordAuthorizationMailer {
         var subject = "Reset your password";
 
         emailService.sendEmailFromTemplate(
-                Template.EMAIL_FORGOT_PASSWORD_AUTHORIZATION,
+                EmailTemplate.FORGOT_PASSWORD_AUTHORIZATION,
                 toTemplateVars(emailParams),
                 user.getEmail(),
                 subject
