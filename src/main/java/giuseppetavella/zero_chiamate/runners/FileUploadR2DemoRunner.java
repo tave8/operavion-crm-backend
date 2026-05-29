@@ -33,19 +33,19 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
         // var invoicePath = "extra/invoice.pdf";
         // var linkedinBannerPath = "extra/linkedin.png";
         // var reportTurniPath = "extra/report_turni.csv";
-        // var reportTurniExcelPath = "extra/report.xlsx";
+        var reportTurniExcelPath = "extra/report.xlsx";
         // var jwtPath = "extra/report_turni.csv";
         //
         // var invoiceBytes = FileHelper.readFile(invoicePath);
         // var linkedinBannerBytes = FileHelper.readFile(linkedinBannerPath);
         // var reportTurniBytes = FileHelper.readFile(reportTurniPath);
-        // var reportTurniExcelBytes = FileHelper.readFile(reportTurniExcelPath);
+        var reportTurniExcelBytes = FileHelper.readFile(reportTurniExcelPath);
         // var jwtBytes = FileHelper.readFile(jwtPath);
         //
         // var fileTypeInvoice = FileHelper.getFileType(invoiceBytes, "invoice.pdf");
         // var linkedinBannerFileType = FileHelper.getFileType(linkedinBannerBytes, "linkedin.png");
         // var reportTurniFileType = FileHelper.getFileType(reportTurniBytes, "report_turni.csv");
-        // var reportTurniExcelFileType = FileHelper.getFileType(reportTurniExcelBytes, "report.xlsx");
+        var reportTurniExcelFileType = FileHelper.getFileType(reportTurniExcelBytes, "report.xlsx");
         // var jwtFileType = FileHelper.getFileType(jwtBytes, "jwt.txt");
         // //
         // System.out.println(fileTypeInvoice);
@@ -63,8 +63,14 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
         // var reportTurniBytes = FileHelper.readFile("extra/report_turni.csv");
         //
         // var reportTurniFilenames = fileStorageService.upload(reportTurniBytes, "csv");
+        // var reportTurniExcelFilenames = fileStorageService.upload(reportTurniExcelBytes, "report.xlsx");
+        
         // //
         // var reportTurniBytesDownloaded = fileStorageService.download(reportTurniFilenames.filename());
+        // var reportTurniExcelBytesDownloaded = fileStorageService.download(reportTurniExcelFilenames.filename());
+        //
+        // System.out.println(reportTurniExcelFilenames.filename());
+        
         // //
         // System.out.println(reportTurniFilenames.filename());
         // System.out.println(reportTurniFilenames.url());
@@ -72,9 +78,9 @@ public class FileUploadR2DemoRunner implements CommandLineRunner {
         //
         // emailService.send(new EmailParams(
         //         "giuseppetavella8@gmail.com",
-        //         "my linkedin",
+        //         "report excel",
         //         "...",
-        //         new EmailAttachment(reportTurniBytesDownloaded, "report.csv")
+        //         new EmailAttachment(reportTurniExcelBytesDownloaded, "report.xlsx")
         // ));
         
         // System.out.println(bytes);

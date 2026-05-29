@@ -19,11 +19,12 @@ public class FileStorageService {
      * Upload a file. Return the unique filename.
      * 
      * @param bytes
-     * @param fileType
      * @return
      */
-    public FileUploadResult upload(byte[] bytes, String fileType)
+    public FileUploadResult upload(byte[] bytes, String originalFilename)
     {
+        
+        var fileType = FileHelper.getFileType(bytes, originalFilename);
         
         var filename = cloudflareR2APIService.upload(bytes, fileType);
 
@@ -34,24 +35,6 @@ public class FileStorageService {
         
     }
     
-
-
-    /**
-     * Upload a file. Return the unique filename.
-     *
-     * @param bytes
-     * @return
-     */
-    public FileUploadResult upload(byte[] bytes)
-    {
-        
-        // extract the file extension/type, without dot
-        var fileType = FileHelper.getFileType(bytes);
-        
-        return upload(bytes, fileType);
-
-    }
-
 
     /**
      * 
@@ -64,7 +47,7 @@ public class FileStorageService {
        
         var bytes = FileHelper.getBytes(file);
  
-        return upload(bytes);
+        return upload(bytes, file.getOriginalFilename());
         
     }
 
