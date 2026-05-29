@@ -5,6 +5,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import giuseppetavella.zero_chiamate.infrastructure.qr_code.exceptions.QrCodeException;
+import giuseppetavella.zero_chiamate.infrastructure.storage.FileStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -14,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 
 @Component
 public class QrCodeService {
+    
 
     private static final int DEFAULT_WIDTH        = 300;
     private static final int DEFAULT_HEIGHT       = 300;
@@ -127,4 +130,7 @@ public class QrCodeService {
         return toPngBytes(composite);
     }
 
+    
+
+    
 }

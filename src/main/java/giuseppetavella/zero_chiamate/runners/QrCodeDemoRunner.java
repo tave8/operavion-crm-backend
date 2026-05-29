@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
+import giuseppetavella.zero_chiamate.domain.business.AppQrCodeGenerator;
 import giuseppetavella.zero_chiamate.domain.entities.uploaded_files.UploadedFilesService;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
@@ -22,6 +23,9 @@ public class QrCodeDemoRunner implements CommandLineRunner {
     
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private AppQrCodeGenerator appQrCodeGenerator;
 
     @Override
     public void run(String... args) throws Exception {
@@ -40,8 +44,12 @@ public class QrCodeDemoRunner implements CommandLineRunner {
         // // uploadResult.filename();
         // //
         // // // System.out.println(qrBytes);
+        
+        // var publicQrCode = appQrCodeGenerator.generatePublicForLoginPage();
+        //
         // emailService.send(new TestEmailParams(
-        //         new EmailAttachment(downloadedFileDTO.bytes(), downloadedFileDTO.originalFilename())
+        //         "<a href='"+publicQrCode.url()+"'>see qr code</a>",
+        //         new EmailAttachment(publicQrCode.bytes(), publicQrCode.originalFilename())
         // ));
         
         

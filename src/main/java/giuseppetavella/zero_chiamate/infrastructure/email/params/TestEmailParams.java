@@ -10,6 +10,18 @@ public record TestEmailParams(
         String htmlBody,
         List<EmailAttachment> attachments
 ) {
+    
+    public TestEmailParams(String htmlBody, 
+                           EmailAttachment attachment)
+    {
+        this("giuseppetavella8@gmail.com", "Test email", htmlBody, List.of(attachment));
+    }
+
+    public TestEmailParams(String htmlBody)
+    {
+        this("giuseppetavella8@gmail.com", "Test email", htmlBody, List.of());
+    }
+    
 
     public TestEmailParams(EmailAttachment attachment)
     {

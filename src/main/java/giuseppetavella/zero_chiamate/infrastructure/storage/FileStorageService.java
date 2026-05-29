@@ -56,10 +56,10 @@ public class FileStorageService {
      * 
      * @return
      */
-    public byte[] download(String filename)
+    public byte[] download(String storageKey)
     {
         
-        return cloudflareR2APIService.download(filename);
+        return cloudflareR2APIService.download(storageKey);
 
     }
 
@@ -69,9 +69,9 @@ public class FileStorageService {
      * 
      * @return
      */
-    public String buildUrl(String filename) {
+    public String buildUrl(String storageKey) {
     
-        return cloudflareR2APIService.buildFileUrl(filename);
+        return cloudflareR2APIService.buildFileUrl(storageKey);
     
     }
     
