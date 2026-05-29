@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.domain.business;
 
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
-import giuseppetavella.zero_chiamate.infrastructure.storage.ImageUploadService;
+import giuseppetavella.zero_chiamate.infrastructure.storage.ImageStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AppImageUploadService {
 
     @Autowired
-    private ImageUploadService imageUploadService;
+    private ImageStorageService imageStorageService;
 
     /**
      * Upload avatar image.
@@ -32,7 +32,7 @@ public class AppImageUploadService {
             );
         }
 
-        return imageUploadService.upload(image);
+        return imageStorageService.upload(image);
     }
     
     // add here an image upload specific of this app...     

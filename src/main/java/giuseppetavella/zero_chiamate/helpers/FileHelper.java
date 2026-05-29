@@ -22,9 +22,7 @@ import java.util.Map;
 public class FileHelper {
 
     private static final Map<String, String> MIME_TO_EXTENSION = new HashMap<>(Map.of(
-            // MIME TYPE       ->   FILE TYPE 
-            "application/pdf",  "pdf",
-            "text/csv",         "csv",
+            // images
             "image/png",        "png",
             "image/jpeg",       "jpg",
             "image/gif",        "gif",
@@ -33,6 +31,15 @@ public class FileHelper {
             "image/bmp",        "bmp",
             "image/tiff",       "tiff"
     ));
+
+    // add more mime type : file type mappings
+    static {
+        MIME_TO_EXTENSION.put("application/pdf",    "pdf");
+        MIME_TO_EXTENSION.put("text/csv",           "csv");
+        MIME_TO_EXTENSION.put("text/plain",         "txt");
+        MIME_TO_EXTENSION.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx");
+        MIME_TO_EXTENSION.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",       "xlsx");
+    }
     
     // dependency to extract file extension from bytes
     private static final Tika TIKA = new Tika();

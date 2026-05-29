@@ -11,7 +11,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.dto.sent.UpdatedProfi
 import giuseppetavella.zero_chiamate.domain.business.auth.dto.sent.reset_password.ResetPasswordOldPasswordSentDTO;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
 import giuseppetavella.zero_chiamate.domain.business.auth.ForgotPasswordAuthorizationMailer;
-import giuseppetavella.zero_chiamate.infrastructure.storage.ImageUploadService;
+import giuseppetavella.zero_chiamate.infrastructure.storage.ImageStorageService;
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class UsersService {
     private PasswordEncoder bcrypt;
 
     @Autowired
-    private ImageUploadService imageUploadService;
+    private ImageStorageService imageStorageService;
     
     @Autowired
     private AuthEmailVerificationService authEmailVerificationService;

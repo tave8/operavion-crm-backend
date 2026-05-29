@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class ImageUploadService {
+public class ImageStorageService {
 
     @Autowired
     private CloudinaryAPIService cloudinaryAPIService;
