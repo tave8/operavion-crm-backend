@@ -16,29 +16,24 @@ import org.springframework.http.ResponseEntity;
 public class AttachmentResponseBuilder {
 
     public static ResponseEntity<byte[]> anyFile(byte[] bytes, String filename) {
-        
         var mimeType = FileHelper.getMimeType(bytes, filename);
-        
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType(mimeType))
-                .body(bytes);
+        return download(bytes, filename, mimeType);
     }
-    
+
     public static ResponseEntity<byte[]> csv(Csv csv, String filenameWithoutExt) {
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + filenameWithoutExt + ".csv\"")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(csv.toBytes());
+        return download(csv.toBytes(), filenameWithoutExt + ".csv", "text/csv");
     }
 
     public static ResponseEntity<byte[]> pdf(Pdf pdf, String filenameWithoutExt) {
+        return download(pdf.toBytes(), filenameWithoutExt + ".pdf", "application/pdf");
+    }
+
+    // --- Private ---
+
+    private static ResponseEntity<byte[]> download(byte[] bytes, String filename, String mimeType) {
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + filenameWithoutExt + ".pdf\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdf.toBytes());
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(mimeType))
+                .body(bytes);
     }
 }
