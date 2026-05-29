@@ -55,13 +55,18 @@ public class ValidationHelper {
             throw supplier.get();
         }
     }
-    
+
+
+    public static void requireFileImage(byte[] bytes)
+    {
+        if(!FileHelper.isImage(bytes)) {
+            throw new InvalidDataException("File is not an image");
+        }
+    }
     
     public static void requireFileImage(MultipartFile file)
     {
-        if(!FileHelper.isImage(file)) {
-            throw new InvalidDataException("File with original filaname '"+file.getOriginalFilename()+"' is not an image");
-        }
+       requireFileImage(FileHelper.getBytes(file));
     }
     
     

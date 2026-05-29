@@ -20,16 +20,22 @@ public class FilesystemDemoRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
     
-        var bytes = FileHelper.readFile("extra/invoice.pdf");
-        //
-        var answer = aiService.askWithPdf(bytes, "summarize what's inside. be very concise. provide minimal information.");
-        //
-        emailService.sendEmail(
-                "giuseppetavella8@gmail.com",
-                "hi",
-                answer
+        // var bytes = FileHelper.readFile("extra/invoice.pdf");
+        
+        // var linkedinBanner = FileHelper.readFile("extra/linkedin.png");
+        
+        
+        // var answer = aiService.askWithImage(linkedinBanner, "summarize what's inside. ","be very concise. provide minimal information.");
 
-        );
+        // System.out.println(answer);
+        
+        //
+        // emailService.sendEmail(
+        //         "giuseppetavella8@gmail.com",
+        //         "hi",
+        //         answer
+        //
+        // );
         
         
         // System.out.println(bytes);

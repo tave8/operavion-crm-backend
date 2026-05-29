@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.integrations.anthropic;
 
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.infrastructure.ai.exceptions.AIException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.helpers.PayloadValidationHelper;
@@ -59,26 +60,34 @@ public class AnthropicAPIService {
 
 
     public String askWithPdf(byte[] pdfBytes, String userPrompt) {
-        PayloadValidationHelper.requiredPdf(pdfBytes);
+        ValidationHelper.requireFilePdf(pdfBytes);
         return askWithFile("document", "application/pdf", pdfBytes, userPrompt, DEFAULT_SYSTEM_PROMPT);
     }
     
 
     public String askWithPdf(byte[] pdfBytes, String userPrompt, String systemPrompt) {
-        PayloadValidationHelper.requiredPdf(pdfBytes);
+        ValidationHelper.requireFilePdf(pdfBytes);
         return askWithFile("document", "application/pdf", pdfBytes, userPrompt, systemPrompt);
     }
 
     /**
-     * 
-     * @param imageBytes
+     *
      * @param mediaType the mime type, so image/png, image/jpeg etc.
-     * @param userPrompt
-     * @param systemPrompt
      * @return
      */
     public String askWithImage(byte[] imageBytes, String mediaType, String userPrompt, String systemPrompt) {
+        ValidationHelper.requireFileImage(imageBytes);
         return askWithFile("image", mediaType, imageBytes, userPrompt, systemPrompt);
+    }
+
+
+    /**
+     * 
+     * @param mediaType the mime type, so image/png, image/jpeg etc.
+     */
+    public String askWithImage(byte[] imageBytes, String mediaType, String userPrompt) {
+        ValidationHelper.requireFileImage(imageBytes);
+        return askWithFile("image", mediaType, imageBytes, userPrompt, DEFAULT_SYSTEM_PROMPT);
     }
 
     

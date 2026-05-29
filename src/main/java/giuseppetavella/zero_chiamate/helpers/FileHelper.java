@@ -39,12 +39,12 @@ public class FileHelper {
 
     // 1 MB
     public static final long MB = 1024 * 1024;
-    
+
     /**
      * Is the uploaded file an image?
      */
-    public static boolean isImage(MultipartFile file) {
-        var mimeType = getMimeType(file);
+    public static boolean isImage(byte[] bytes) {
+        var mimeType = getMimeType(bytes);
         if(mimeType == null) {
             return false;
         }
@@ -52,6 +52,7 @@ public class FileHelper {
         // starts with image/
         return mimeType.startsWith("image/");
     }
+    
 
     /**
      * Is this file a pdf?

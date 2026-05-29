@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.ai;
 
+import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.anthropic.AnthropicAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,32 @@ public class AIService {
         return anthropicAPIService.askWithPdf(pdfBytes, userPrompt, systemPrompt);
 
     }
+
+    
+
+    public String askWithImage(byte[] imageBytes, String userPrompt, String systemPrompt)
+    {
+
+        ValidationHelper.requireFileImage(imageBytes);
+        
+        var mediaType = FileHelper.getMimeType(imageBytes);
+
+        return anthropicAPIService.askWithImage(imageBytes, mediaType, userPrompt, systemPrompt);
+
+    }
+
+
+    public String askWithImage(byte[] imageBytes, String userPrompt)
+    {
+
+        ValidationHelper.requireFileImage(imageBytes);
+
+        var mediaType = FileHelper.getMimeType(imageBytes);
+
+        return anthropicAPIService.askWithImage(imageBytes, mediaType, userPrompt);
+
+    }
+    
     
 }
  
