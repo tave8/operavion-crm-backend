@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs;
+package giuseppetavella.zero_chiamate.domain.business.jobs;
 
 /**
  * All possible jobs.
@@ -11,5 +11,6 @@ public enum JobName {
     EMAIL_OPERATOR_TOMORROW_SHIFT,
     NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT,
     SEND_ADMIN_WEEKLY_REPORT,
-    SEND_ADMIN_DISCREPANCIES
+    SEND_ADMIN_DISCREPANCIES,
+    SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT
 }

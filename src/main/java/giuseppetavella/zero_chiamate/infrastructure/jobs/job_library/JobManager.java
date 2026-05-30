@@ -2,18 +2,16 @@ package giuseppetavella.zero_chiamate.infrastructure.jobs.job_library;
 
 import giuseppetavella.zero_chiamate.infrastructure.email.ProblemsEmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.enums.JobExecutionState;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobException;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionException;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionGetNextItemException;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionGetNextIncompleteExecutionException;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobExecutors;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Cron Job Manager defines the HOW to run a specific job,
@@ -30,7 +28,7 @@ public class JobManager {
     private JobExecutionService jobExecutionService;
     
     @Autowired
-    private JobManagerRepository jobManagerRepository;
+    private JobManagerRepository repo;
     
     @Autowired
     private ProblemsEmailService problemsEmailService;
@@ -62,7 +60,7 @@ public class JobManager {
             // GET JOB-SPECIFIC JOB EXECUTOR
             // ********************
             
-            JobExecutor<?> executor = this.jobExecutors.getJobExecutor(jobName);
+            var executor = jobExecutors.getJobExecutor(jobName);
     
             // ********************
             // START JOB 
@@ -117,6 +115,8 @@ public class JobManager {
 
     }
     
+    // TODO: refactor this booleans. should be clearer when
+    //  process incomplete executions or not, not rely on parameter  order
     public void executeJob(JobName jobName,
                            boolean processIncompleteExecutions) 
     {
@@ -198,7 +198,7 @@ public class JobManager {
         
         int countNextItems = 0;
         
-        JobExecutionItem<?> nextItem = executor.getNextItem();
+        var nextItem = executor.getNextItem();
 
         // if there's no next item to process, we stop the entire job
         while(nextItem != null) {
@@ -209,7 +209,7 @@ public class JobManager {
 
             // add a job execution to the DB, before 
             // processing this item
-            JobExecution currentJobExecution = this.jobExecutionService.addNewJobExecution(
+            var currentJobExecution = jobExecutionService.addNewJobExecution(
                     jobName,
                     nextItem.getItemId()
             );
@@ -241,7 +241,7 @@ public class JobManager {
             if(errorDuringProcessing == null) {
 
                 // update the job execution state
-                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                jobExecutionService.updateJobExecutionStateAndFinish(
                         currentJobExecution,
                         JobExecutionState.SUCCESS
                 );
@@ -259,7 +259,7 @@ public class JobManager {
                 //  from job to job. same situation for process incomplete job executions in JobManager
                 
                 // update the job execution state
-                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                jobExecutionService.updateJobExecutionStateAndFinish(
                         currentJobExecution,
                         JobExecutionState.FAILED,
                         "Error during processing of next item. "
@@ -359,10 +359,10 @@ public class JobManager {
     private int processIncompleteJobExecutions(JobName jobName, JobExecutor<?> executor) 
     {
         
-        int countIncompleteJobExecutions = 0;
+        var countIncompleteJobExecutions = 0;
 
         // i get the first incomplete job execution, if any
-        Optional<JobExecution> maybeNextIncompleteJobExecution = this.jobManagerRepository.getNextIncompleteJobExecution(jobName.name());
+        var maybeNextIncompleteJobExecution = repo.getNextIncompleteJobExecution(jobName.name());
         
         // as long as there are incomplete job executions
         while(maybeNextIncompleteJobExecution.isPresent()) {
@@ -370,11 +370,11 @@ public class JobManager {
             // this is the incomplete job execution,
             // which therefore also contains the item that 
             // is in a incomplete state
-            JobExecution incompleteJobExecution = maybeNextIncompleteJobExecution.get();
+            var incompleteJobExecution = maybeNextIncompleteJobExecution.get();
             
             // this item was probably not processed or 
             // its processin was interrupted
-            JobExecutionItem<?> nextItem = executor.getItemByIdOnIncompleteExecution(
+            var nextItem = executor.getItemByIdOnIncompleteExecution(
                     // the last processed item ID is searched, to get the  
                     // business-logic specific item
                     incompleteJobExecution.getLastProcessedItemId()
@@ -390,7 +390,7 @@ public class JobManager {
             // if the number of times that this job execution was retried
             // is >= than the allowed number of retries set by this executor,
             // then we must not run this job execution and must mark it somehow 
-            boolean isRetryCountExceeded = incompleteJobExecution.getRetryCount() >= executor.getMaxRetries();
+            var isRetryCountExceeded = incompleteJobExecution.getRetryCount() >= executor.getMaxRetries();
             
             RuntimeException errorDuringProcessing = null;
 
@@ -406,7 +406,7 @@ public class JobManager {
                 // it wouldn't make sense to do it after the processing,
                 // because at that point the job execution state
                 // will soon be changed and won't be incomplete anymore
-                this.jobExecutionService.incrementRetryCount(incompleteJobExecution);
+                jobExecutionService.incrementRetryCount(incompleteJobExecution);
     
                 try {
                     
@@ -433,7 +433,7 @@ public class JobManager {
             // having exceed max retries allowed
             if(isRetryCountExceeded) {
                 
-                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.ABANDONED,
                         "This job execution was abandoned because "
@@ -445,7 +445,7 @@ public class JobManager {
             // if this execution did not throw error
             else if(errorDuringProcessing == null) {
 
-                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.SUCCESS
                 );
@@ -454,7 +454,7 @@ public class JobManager {
             // if this execution did throw error
             else {
 
-                this.jobExecutionService.updateJobExecutionStateAndFinish(
+                jobExecutionService.updateJobExecutionStateAndFinish(
                         incompleteJobExecution,
                         JobExecutionState.FAILED,
                         "Error during processing of incomplete job execution. "
@@ -493,7 +493,7 @@ public class JobManager {
 
             try {
 
-                maybeNextIncompleteJobExecution = this.jobManagerRepository.getNextIncompleteJobExecution(jobName.name());
+                maybeNextIncompleteJobExecution = repo.getNextIncompleteJobExecution(jobName.name());
 
             } catch (RuntimeException ex) {
                 

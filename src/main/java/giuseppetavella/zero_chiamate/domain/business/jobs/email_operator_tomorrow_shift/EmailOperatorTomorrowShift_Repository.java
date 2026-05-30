@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_discrepancies;
+package giuseppetavella.zero_chiamate.domain.business.jobs.email_operator_tomorrow_shift;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,26 +14,20 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExecution, Long> {
+public interface EmailOperatorTomorrowShift_Repository extends JpaRepository<JobExecution, Long> {
 
     /**
-     * Get admins that follow this logic.
+     * Get the next operator that:
+     * - has not been processed today by this job 
      * 
-     * <pre>
-     * -----------------------------------------------
-     * STATEMENT                    |    IS NEXT ITEM?
-     * -----------------------------------------------
-     * admin was never processed          YES
-     * by this job 
-     * ------------------------------------------------
-     * admin has been processed           NO
-     * by this job this week 
-     * -----------------------------------------------
-     * admin has not been processed
-     * by this job this week             YES
-     * -----------------------------------------------
-     * </pre>
-     *
+     * Operator was never processed by this job?
+     *      -> get it
+     * 
+     * Operator was processed by this job but not today?
+     *      -> get it
+     *      
+     * Operator was processed by this job today?
+     *      -> skip it
      */
     @Query(nativeQuery = true, value = """
             
@@ -42,13 +35,10 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
         FROM 
             users u
         WHERE 
-            u.role = 'ADMIN' 
-            -- the admin must have verified their email  
-            AND u.verified_email = true  
-          
+            u.role = 'OPERATOR' 
+            
             AND NOT EXISTS (
-                -- the logic inside here must be positive
-                -- it will then be negated with NOT EXISTS
+            
                 SELECT 1
                 FROM 
                     job_executions j
@@ -57,7 +47,7 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
                     AND 
                         j.last_processed_item_id = u.id
                     AND 
-                         j.started_at >= :startDate
+                        DATE(j.started_at) = CURRENT_DATE
                 
             )
         
@@ -65,8 +55,7 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
 
 """)
     Optional<User> getNextItem(
-            @Param("jobName") String jobName,
-            LocalDate startDate
+            @Param("jobName") String jobName
     );
 
     
@@ -81,7 +70,8 @@ public interface SendAdminDiscrepancies_Repository extends JpaRepository<JobExec
         FROM 
             users
         WHERE 
-            id = :itemId
+            true
+            AND id = :itemId
 
     """)
     Optional<User> getItemByIdOnIncompleteExecution(

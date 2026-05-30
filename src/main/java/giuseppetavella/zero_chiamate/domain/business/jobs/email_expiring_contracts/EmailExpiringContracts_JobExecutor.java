@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_expiring_contracts;
+package giuseppetavella.zero_chiamate.domain.business.jobs.email_expiring_contracts;
 
 import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
@@ -6,7 +6,7 @@ import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationT
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationsService;
 import org.springframework.beans.factory.annotation.Autowired;

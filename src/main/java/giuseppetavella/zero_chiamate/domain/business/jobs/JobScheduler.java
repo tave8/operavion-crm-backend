@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs;
+package giuseppetavella.zero_chiamate.domain.business.jobs;
 
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.CronSchedule;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobManager;
@@ -18,21 +18,21 @@ public class JobScheduler {
     private JobManager jobManager;
     
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void sendMeInvoiceReport() {
         
         // this.appEmailService.sendMeInvoiceReport();
 
     }
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void emailEmployeesWithContractAboutToExpire() {
         
         // this.jobManager.executeJob(JobName.EMAIL_EMPLOYEES_WITH_CONTRACT_ABOUT_TO_EXPIRE);
 
     }
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void emailOperatorTomorrowShift() {
         
         this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT);
@@ -40,14 +40,14 @@ public class JobScheduler {
     }
 
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void notifyAdminBecauseOperatorHasNoShift() {
 
         this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
 
     }
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void sendAdminWeeklyReport() {
 
         // this.jobManager.executeJob(JobName.SEND_ADMIN_WEEKLY_REPORT);
@@ -57,7 +57,7 @@ public class JobScheduler {
     }
 
 
-    @Scheduled(cron = CronSchedule.EVERY_HOUR)
+    @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void sendAdminDiscrepancies() {
 
         // System.out.println("JOB SEND ADMIN DISCREPANCIES WAS CALLED");
@@ -67,7 +67,13 @@ public class JobScheduler {
 
     }
 
-
+    // @Scheduled(cron = CronSchedule.AT_8AM, zone = "Europe/Rome")
+    @Scheduled(cron = CronSchedule.EVERY_MINUTE, zone = "Europe/Rome")
+    public void sendQrCodeToOperatorsForStartShift() {
+        
+        this.jobManager.executeJob(JobName.SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT);
+        
+    }
 
 
 }

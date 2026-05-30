@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_operator_tomorrow_shift;
+package giuseppetavella.zero_chiamate.domain.business.jobs.notify_admin_because_operator_has_no_shift;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface EmailOperatorTomorrowShift_Repository extends JpaRepository<JobExecution, Long> {
+public interface NotifyAdminBecauseOperatorHasNoShift_Repository extends JpaRepository<JobExecution, Long> {
 
     /**
      * Get the next operator that:
@@ -70,8 +70,7 @@ public interface EmailOperatorTomorrowShift_Repository extends JpaRepository<Job
         FROM 
             users
         WHERE 
-            true
-            AND id = :itemId
+            id = :itemId
 
     """)
     Optional<User> getItemByIdOnIncompleteExecution(

@@ -14,5 +14,7 @@ public class CronSchedule {
     public static final String EVERY_DAY_NOON = "0 0 12 * * *";
     public static final String EVERY_MONDAY_MIDNIGHT = "0 0 0 * * MON";
     public static final String EVERY_FIRST_OF_MONTH = "0 0 0 1 * *";
+    // 8am
+    public static final String AT_8AM = "0 0 8 * * *";
     
 }

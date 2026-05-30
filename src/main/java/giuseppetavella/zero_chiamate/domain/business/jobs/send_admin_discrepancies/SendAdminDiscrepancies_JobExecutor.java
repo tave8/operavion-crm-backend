@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_discrepancies;
+package giuseppetavella.zero_chiamate.domain.business.jobs.send_admin_discrepancies;
 
 import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.ClientAddressesService;
@@ -7,7 +7,6 @@ import giuseppetavella.zero_chiamate.domain.entities.notifications.Notifications
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
 import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.ClientAddressDiscrepancyDTO;
-import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
@@ -18,7 +17,7 @@ import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.domain.entities.client_addresses.dto.to_send.ClientAddressToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;

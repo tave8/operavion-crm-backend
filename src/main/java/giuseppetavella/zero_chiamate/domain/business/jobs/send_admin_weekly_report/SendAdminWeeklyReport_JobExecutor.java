@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_weekly_report;
+package giuseppetavella.zero_chiamate.domain.business.jobs.send_admin_weekly_report;
 
 import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationsService;
@@ -12,11 +12,10 @@ import giuseppetavella.zero_chiamate.helpers.TimeHelper;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;

@@ -2,7 +2,7 @@ package giuseppetavella.zero_chiamate.infrastructure.jobs.job_library;
 
 import giuseppetavella.zero_chiamate.exceptions.NotFoundException;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.enums.JobExecutionState;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionException;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;

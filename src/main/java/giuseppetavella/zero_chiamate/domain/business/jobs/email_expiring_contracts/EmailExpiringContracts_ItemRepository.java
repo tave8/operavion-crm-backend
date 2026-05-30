@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_expiring_contracts;
+package giuseppetavella.zero_chiamate.domain.business.jobs.email_expiring_contracts;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItemRepository;

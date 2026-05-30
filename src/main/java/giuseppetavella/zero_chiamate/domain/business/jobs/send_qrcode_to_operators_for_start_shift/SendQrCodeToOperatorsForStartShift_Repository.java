@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.notify_admin_because_operator_has_no_shift;
+package giuseppetavella.zero_chiamate.domain.business.jobs.send_qrcode_to_operators_for_start_shift;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,20 +15,26 @@ import java.util.UUID;
  * Business logic specific queries.
  */
 @Repository
-public interface NotifyAdminBecauseOperatorHasNoShift_Repository extends JpaRepository<JobExecution, Long> {
+public interface SendQrCodeToOperatorsForStartShift_Repository extends JpaRepository<JobExecution, Long> {
 
     /**
-     * Get the next operator that:
-     * - has not been processed today by this job 
      * 
-     * Operator was never processed by this job?
-     *      -> get it
-     * 
-     * Operator was processed by this job but not today?
-     *      -> get it
-     *      
-     * Operator was processed by this job today?
-     *      -> skip it
+     * <h1>Get next item logic</h1>
+     * <pre>
+     * -----------------------------------------------
+     * STATEMENT                    |    IS NEXT ITEM?
+     * -----------------------------------------------
+     * operator was never processed          YES
+     * by this job 
+     * ------------------------------------------------
+     * operator has been processed           NO
+     * by this job today 
+     * -----------------------------------------------
+     * operator has not been processed
+     * by this today                         YES
+     * -----------------------------------------------
+     * </pre>
+     *
      */
     @Query(nativeQuery = true, value = """
             
@@ -36,9 +43,10 @@ public interface NotifyAdminBecauseOperatorHasNoShift_Repository extends JpaRepo
             users u
         WHERE 
             u.role = 'OPERATOR' 
-            
+          
             AND NOT EXISTS (
-            
+                -- the logic inside here must be positive
+                -- it will then be negated with NOT EXISTS
                 SELECT 1
                 FROM 
                     job_executions j
@@ -47,7 +55,7 @@ public interface NotifyAdminBecauseOperatorHasNoShift_Repository extends JpaRepo
                     AND 
                         j.last_processed_item_id = u.id
                     AND 
-                        DATE(j.started_at) = CURRENT_DATE
+                         j.started_at >= CURRENT_DATE
                 
             )
         

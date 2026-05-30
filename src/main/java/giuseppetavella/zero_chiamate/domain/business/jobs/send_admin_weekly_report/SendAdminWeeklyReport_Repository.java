@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_weekly_report;
+package giuseppetavella.zero_chiamate.domain.business.jobs.send_admin_weekly_report;
 
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;

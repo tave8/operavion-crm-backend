@@ -6,6 +6,7 @@ public enum EmailTemplate implements Template {
     FORGOT_PASSWORD_AUTHORIZATION("emails/forgot_password_authorization"),
     VERIFY_EMAIL("emails/verify_email"),
     SHIFTS_COUNT_BY_OPERATOR("emails/shifts_count_by_operator"),
+    QRCODE_OPERATOR_START_SHIFT("emails/qrcode_operator_start_shift"),
     // add more email templates here...
     
     // emails: dev

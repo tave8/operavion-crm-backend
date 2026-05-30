@@ -2,6 +2,12 @@ package giuseppetavella.zero_chiamate.infrastructure.jobs.job_library;
 
 import java.util.UUID;
 
+/**
+ * A JobExecutionItem is an abstraction, or rather a container,
+ * for an item.
+ * 
+ * @param <T>
+ */
 public class JobExecutionItem<T> {
     
     private final T item;

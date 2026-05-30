@@ -1,16 +1,19 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_operator_tomorrow_shift;
+package giuseppetavella.zero_chiamate.domain.business.jobs.notify_admin_because_operator_has_no_shift;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
+import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.JobName;
+import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.dto.to_send.ShiftToSendDTO;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationsService;
 import giuseppetavella.zero_chiamate.domain.entities.shifts.ShiftsService;
+import giuseppetavella.zero_chiamate.domain.entities.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +23,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
+public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecutor<User> {
     
     @Autowired
-    private EmailOperatorTomorrowShift_Repository thisRepository;
+    private NotifyAdminBecauseOperatorHasNoShift_Repository thisRepository;
     
     @Autowired
-    private EmailService appEmailService;
+    private EmailService emailService;
     
     @Autowired
     private NotificationsService notificationsService;
@@ -34,9 +37,15 @@ public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
     @Autowired
     private ShiftsService shiftsService;
     
+    @Autowired
+    private UsersService usersService;
     
-    public EmailOperatorTomorrowShift_JobExecutor() {
-        super(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT);
+    @Autowired
+    private AppEnvironment appEnvironment;
+    
+    
+    public NotifyAdminBecauseOperatorHasNoShift_JobExecutor() {
+        super(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
     }
     
     
@@ -47,61 +56,58 @@ public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
             return;
         }
         
-        // send email, do business-specific logic
-        User user = (User) itemToProcess.getItem();
+        User operator = (User) itemToProcess.getItem();
         
         // tomorrow
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         
         
         // get the shifts of this user
-        List<ShiftToSendDTO> shiftsDTO = this.shiftsService.findShiftsByOperatorBetweenDatesDTO(user, tomorrow, tomorrow);
+        List<ShiftToSendDTO> shiftsDTO = this.shiftsService.findShiftsByOperatorBetweenDatesDTO(operator, tomorrow, tomorrow);
 
         // if no shifts were found for this operator
         if(shiftsDTO.isEmpty()) {
 
             // add notification in DB
 
-            // Notification newNotification = new Notification(
-            //         user,
-            //         NotificationType.TOMORROW_SHIFT,
-            //         "Ecco il tuo turno di domani...",
-            //         "<added by background job>"
-            // );
-            //
-            // this.notificationsService.save(
-            //         newNotification
-            // );
+            // find admin of operator 
+            // operator -> company -> admin 
+            User admin = this.usersService.getAdminByCompany(operator.getCompany());
             
+            
+            Notification newNotification = new Notification(
+                    admin,
+                    NotificationType.OPERATOR_HAS_NO_SHIFT,
+                    "L'operatore " + operator.getFullname() + " non ha un turno per domani."
+            ); 
+            
+            //
+            this.notificationsService.save(
+                    newNotification
+            );
+
+            
+            if (appEnvironment.isLocal()) {
+                // send an email to admin
+                emailService.send(new EmailParams(
+                        admin.getEmail(),
+                        "Operatore non ha turno per domani [LOCAL ENV]",
+                        "L'operatore " + operator.getFullname() + " non ha un turno per domani."
+                ));
+                
+            } else {
+                emailService.send(new EmailParams(
+                        admin.getEmail(),
+                        "Operatore non ha turno per domani",
+                        "L'operatore " + operator.getFullname() + " non ha un turno per domani."
+                ));
+            }
+            
+
             return;
             
         }
         
-        // if a shift was found for this operator 
-        
-        // if it exists, get the first shift
-        ShiftToSendDTO shiftDTO = shiftsDTO.getFirst();
-        
-        // String clientName = shiftDTO.getClientAddress().getClientName();
-        
-        // add notification in DB
-
-        Notification newNotification = new Notification(
-                user,
-                NotificationType.TOMORROW_SHIFT,
-                "Il tuo turno per domani: " + shiftDTO.getName()
-        );
-        
-        this.notificationsService.save(
-                newNotification
-        );
-        
-        // send an email to the operator
-        // this.appEmailService.sendEmail(
-        //         user.getEmail(),
-        //         "Il tuo turno per domani",
-        //         "Ecco il tuo turno per domani: " + shiftDTO.getName()
-        // );
         
     }
 

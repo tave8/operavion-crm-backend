@@ -1,12 +1,13 @@
-package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs;
+package giuseppetavella.zero_chiamate.domain.business.jobs;
 
+import giuseppetavella.zero_chiamate.domain.business.jobs.send_qrcode_to_operators_for_start_shift.SendQrCodeToOperatorsForStartShift_JobExecutor;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
+import giuseppetavella.zero_chiamate.domain.business.jobs.email_expiring_contracts.EmailExpiringContracts_JobExecutor;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobException;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.email_operator_tomorrow_shift.EmailOperatorTomorrowShift_JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.notify_admin_because_operator_has_no_shift.NotifyAdminBecauseOperatorHasNoShift_JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_discrepancies.SendAdminDiscrepancies_JobExecutor;
-import giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.send_admin_weekly_report.SendAdminWeeklyReport_JobExecutor;
+import giuseppetavella.zero_chiamate.domain.business.jobs.email_operator_tomorrow_shift.EmailOperatorTomorrowShift_JobExecutor;
+import giuseppetavella.zero_chiamate.domain.business.jobs.notify_admin_because_operator_has_no_shift.NotifyAdminBecauseOperatorHasNoShift_JobExecutor;
+import giuseppetavella.zero_chiamate.domain.business.jobs.send_admin_discrepancies.SendAdminDiscrepancies_JobExecutor;
+import giuseppetavella.zero_chiamate.domain.business.jobs.send_admin_weekly_report.SendAdminWeeklyReport_JobExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,9 @@ public class JobExecutors {
     
     @Autowired
     private SendAdminDiscrepancies_JobExecutor sendAdminDiscrepancies_jobExecutor;
+    
+    @Autowired
+    private SendQrCodeToOperatorsForStartShift_JobExecutor sendQrCodeToOperatorsForStartShift_jobExecutor;
 
     // add more job executors here...
 
@@ -88,7 +92,9 @@ public class JobExecutors {
                 
                 JobName.SEND_ADMIN_WEEKLY_REPORT, this.sendAdminWeeklyReport_jobExecutor,
                 
-                JobName.SEND_ADMIN_DISCREPANCIES, this.sendAdminDiscrepancies_jobExecutor
+                JobName.SEND_ADMIN_DISCREPANCIES, this.sendAdminDiscrepancies_jobExecutor,
+                
+                JobName.SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT,  this.sendQrCodeToOperatorsForStartShift_jobExecutor
 
                 // add another mapping job name : job executor here...     
         );
