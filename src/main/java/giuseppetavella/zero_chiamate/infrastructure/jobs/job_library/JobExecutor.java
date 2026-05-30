@@ -2,7 +2,9 @@ package giuseppetavella.zero_chiamate.infrastructure.jobs.job_library;
 
 import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -18,6 +20,9 @@ import java.util.UUID;
  */
 @Service
 public abstract class JobExecutor<T> {
+    
+    @Autowired
+    private JobExecutionService jobExecutionService;
     
     private final JobName jobName;
 
@@ -67,9 +72,27 @@ public abstract class JobExecutor<T> {
     }
 
     /**
+     * Concrete class.
+     * Uses transaction.
+     * Must call transaction with concrete method.
+     * 
+     * @param itemToProcess
+     */
+    @Transactional
+    public void doProcessItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution) {
+        // if process item throws, transaction is rolled back
+        // this includes both business operations 
+        // and metadata
+        processItem(itemToProcess, jobExecution);
+        // if process item succeeds, we save both business operations
+        // and metadata
+        jobExecutionService.save(jobExecution);
+    }
+    
+    /**
      * Process the given item with business-specific logic.
      */
-    public abstract void processItem(JobExecutionItem<?> itemToProcess, JobExecutionMetadata jobExecutionMetadata);
+    public abstract void processItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution);
 
     /**
      * Get the next item with business-specific logic.

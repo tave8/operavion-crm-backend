@@ -21,6 +21,7 @@ import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
 import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttachment;
+import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -76,22 +77,35 @@ public class SendQrCodeToOperatorsForStartShift_JobExecutor extends JobExecutor<
     
     
     @Override
-    public void processItem(JobExecutionItem<?> itemToProcess, 
-                            JobExecutionMetadata jobExecutionMetadata) 
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution) 
     {
         
         if (itemToProcess == null) {
             return;
         }
+        
+        var metadata = jobExecution.getMetadata();
 
+        metadata.getExtra().put("name", "Giuseppe");
+        
+        jobExecution.setMetadata(metadata);
+        
+        var me = usersService.findById("6fb45429-c452-41f8-a214-e7d79d6c3e68");
+        
+        me.setFirstname("GIUSEPPE MODIFIED 3");
+        
+        
+        
         var operator = (User) itemToProcess.getItem();
         
-        var admin = usersService.getAdminByCompany(operator.getCompany());
-
-        qrCodeToOperatorsForStartShiftMailer.send(
-                operator,
-                admin
-        ); 
+        throw new RuntimeException("error on purpose");
+        
+        // var admin = usersService.getAdminByCompany(operator.getCompany());
+        //
+        // qrCodeToOperatorsForStartShiftMailer.send(
+        //         operator,
+        //         admin
+        // ); 
         
         
     }

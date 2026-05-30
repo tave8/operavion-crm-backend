@@ -14,6 +14,7 @@ import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyMailer;
 import giuseppetavella.zero_chiamate.infrastructure.email.EmailService;
+import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -67,8 +68,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
     
     
     @Override
-    public void processItem(JobExecutionItem<?> itemToProcess, 
-                            JobExecutionMetadata jobExecutionMetadata) 
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution) 
     {
         
         if (itemToProcess == null) {

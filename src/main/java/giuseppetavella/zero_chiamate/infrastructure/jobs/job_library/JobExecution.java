@@ -315,6 +315,10 @@ public class JobExecution {
         return metadata;
     }
 
+    public void setMetadata(JobExecutionMetadata metadata) {
+        this.metadata = metadata;
+    }
+
     @Override
     public String toString() {
         return "JobExecution{" +

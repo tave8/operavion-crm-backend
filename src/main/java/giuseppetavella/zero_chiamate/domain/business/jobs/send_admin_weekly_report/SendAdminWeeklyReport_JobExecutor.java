@@ -9,6 +9,7 @@ import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.helpers.AuthorizationHelper;
 import giuseppetavella.zero_chiamate.domain.business.reports.shifts_count_by_operator.ShiftsCountByOperatorMailer;
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
+import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -49,7 +50,7 @@ public class SendAdminWeeklyReport_JobExecutor extends JobExecutor<User> {
     
     
     @Override
-    public void processItem(JobExecutionItem<?> itemToProcess, JobExecutionMetadata jobExecutionMetadata) {
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution) {
         
         if (itemToProcess == null) {
             return;

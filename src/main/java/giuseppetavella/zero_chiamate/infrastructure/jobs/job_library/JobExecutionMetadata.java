@@ -30,4 +30,7 @@ public class JobExecutionMetadata {
     public List<String> getSkippedItemIds() {
         return skippedItemIds;
     }
+    
+    
+    
 }

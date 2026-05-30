@@ -5,6 +5,7 @@ import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
 import giuseppetavella.zero_chiamate.infrastructure.email.params.EmailParams;
+import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecution;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionItem;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutionMetadata;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.JobExecutor;
@@ -50,7 +51,7 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
     
     
     @Override
-    public void processItem(JobExecutionItem<?> itemToProcess, JobExecutionMetadata jobExecutionMetadata) {
+    public void processItem(JobExecutionItem<?> itemToProcess, JobExecution jobExecution) {
         
         if (itemToProcess == null) {
             return;

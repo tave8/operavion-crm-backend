@@ -41,21 +41,18 @@ public class JobExecutionService {
      * Set the desired state for the given job execution, and finish it.
      * 
      */
-    public JobExecution updateJobExecutionStateAndFinish(JobExecution jobExecution, 
+    public JobExecution updateJobExecutionStateAndFinish(Long jobExecutionId, 
                                                          JobExecutionState desiredState,
                                                          @Nullable String messageToConcatenate) throws JobExecutionException
     {
+        
+        var jobExecution = getById(jobExecutionId);
+        
         jobExecution.setStateAndFinish(desiredState, messageToConcatenate);
 
         return this.save(jobExecution);
     }
     
-
-    public JobExecution updateJobExecutionStateAndFinish(JobExecution jobExecution,
-                                                         JobExecutionState desiredState) throws JobExecutionException
-    {
-        return this.updateJobExecutionStateAndFinish(jobExecution, desiredState, null);
-    }
 
 
     /**
@@ -65,11 +62,12 @@ public class JobExecutionService {
         jobExecution.incrementRetryCount();
         return this.save(jobExecution);
     }
-
+    
+    
     /**
      * Get a job execution by ID.
      */
-    public JobExecution findById(Long jobExecutionId) throws NotFoundException
+    public JobExecution getById(Long jobExecutionId) throws NotFoundException
     {
         return this.jobManagerRepository
                 .findById(jobExecutionId)

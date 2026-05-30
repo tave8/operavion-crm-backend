@@ -216,7 +216,7 @@ public class JobManager {
             
             // holds the exception itself, 
             // if any was raised during processing
-            RuntimeException errorDuringProcessing = null;
+            RuntimeException processingError = null;
 
             // ********************
             // PROCESS ITEM
@@ -224,31 +224,31 @@ public class JobManager {
 
             try {
 
-                executor.processItem(
+                executor.doProcessItem(
                         nextItem, 
-                        currentJobExecution.getMetadata()
+                        currentJobExecution
                 );
 
-            } catch (RuntimeException ex) {
+            } 
+            // processing error
+            catch (RuntimeException err) {
                 
-                errorDuringProcessing = ex;
+                processingError = err;
 
             }
 
             // update job execution 
             updateJobExecutionState(
-                    currentJobExecution, 
-                    errorDuringProcessing
+                    currentJobExecution.getId(), 
+                    processingError
             );
             
             // do if error during processing
             doIfErrorDuringProcessing(
-                    currentJobExecution, 
-                    errorDuringProcessing, 
+                    currentJobExecution.getId(), 
+                    processingError, 
                     executor
             );
-            
-            // executor.
             
 
             // ********************
@@ -264,11 +264,13 @@ public class JobManager {
                 // at the next loop pass
                 nextItem = executor.getNextItem();
 
-            } catch (RuntimeException ex) {
+            } 
+            // system error
+            catch (RuntimeException err) {
 
                 // exit immediately: error while getting next item
                 // is system error, not domain error
-                throw new JobExecutionGetNextItemException(jobName, ex.getMessage());
+                throw new JobExecutionGetNextItemException(jobName, err.getMessage());
 
             }
 
@@ -282,48 +284,51 @@ public class JobManager {
     /**
      * Update job execution state (success, failed etc.).
      * 
-     * @param currentJobExecution
-     * @param errorDuringProcessing
+     * Why re-fetch the job execution when we could pass it directly. 
+     * Because processing the current job execution might have thrown error,
+     * and that has made the transaction rollback.
+     * Thus, if we were to pass the in-memory current job execution here,
+     * it would be like saying 
+     * "error during processing 
+     * -> rollback transaction 
+     * -> save the in-memory current job execution"
+     * which would flush the in-memory job execution as is, which means,
+     * it's as if we never rolled back.
+     * 
+     *
      */
-    public void updateJobExecutionState(JobExecution currentJobExecution, 
-                                        RuntimeException errorDuringProcessing) 
+    public void updateJobExecutionState(Long jobExecutionId, 
+                                        RuntimeException processingError) 
     {
         
         // no error during processing -> job execution
         // was successful
-        if(errorDuringProcessing == null) {
+        if(processingError == null) {
 
             // update the job execution state
             jobExecutionService.updateJobExecutionStateAndFinish(
-                    currentJobExecution,
-                    JobExecutionState.SUCCESS
+                    jobExecutionId,
+                    JobExecutionState.SUCCESS,
+                    null
             );
 
         }
         // error during processing
         else {
-
-            // TODO: because the job execution has thrown, 
-            //  we assume we want to rollback any changes made, unless
-            //  they were explicitly saved in the processItem concrete job method.
-            //  the assumption is that, even if the process item has thrown,
-            //  which means it failed, we still save everything to DB,
-            //  but this could include impartial data? not sure, it might depend 
-            //  from job to job. same situation for process incomplete job executions in JobManager
-
+            
             // update the job execution state
             jobExecutionService.updateJobExecutionStateAndFinish(
-                    currentJobExecution,
+                    jobExecutionId,
                     JobExecutionState.FAILED,
                     "Error during processing of next item. "
-                            +"DETAILS: " + errorDuringProcessing.getMessage()
+                            +"DETAILS: " + processingError.getMessage()
             );
 
         }
     }
     
     
-    public void doIfErrorDuringProcessing(JobExecution currentJobExecution,
+    public void doIfErrorDuringProcessing(Long jobExecutionId,
                                           RuntimeException errorDuringProcessing,
                                           JobExecutor<?> executor) 
     {
@@ -334,6 +339,8 @@ public class JobManager {
         // if the job execution throw an error 
         // we send an email to developer
         if (errorDuringProcessing != null) {
+            
+            var currentJobExecution = jobExecutionService.getById(jobExecutionId);
 
             // i get an email when job execution is unsuccessful
             problemsEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
@@ -434,7 +441,7 @@ public class JobManager {
     
                 try {
                     
-                    executor.processItem(nextItem, incompleteJobExecution.getMetadata());
+                    executor.doProcessItem(nextItem, incompleteJobExecution);
     
                 } catch (RuntimeException ex) {
     
@@ -458,7 +465,7 @@ public class JobManager {
             if(isRetryCountExceeded) {
                 
                 jobExecutionService.updateJobExecutionStateAndFinish(
-                        incompleteJobExecution,
+                        incompleteJobExecution.getId(),
                         JobExecutionState.ABANDONED,
                         "This job execution was abandoned because "
                                             +"its number of retries on incomplete state "
@@ -470,8 +477,9 @@ public class JobManager {
             else if(errorDuringProcessing == null) {
 
                 jobExecutionService.updateJobExecutionStateAndFinish(
-                        incompleteJobExecution,
-                        JobExecutionState.SUCCESS
+                        incompleteJobExecution.getId(),
+                        JobExecutionState.SUCCESS,
+                        null
                 );
 
             } 
@@ -479,7 +487,7 @@ public class JobManager {
             else {
 
                 jobExecutionService.updateJobExecutionStateAndFinish(
-                        incompleteJobExecution,
+                        incompleteJobExecution.getId(),
                         JobExecutionState.FAILED,
                         "Error during processing of incomplete job execution. "
                                             +"DETAILS: " + errorDuringProcessing.getMessage()
@@ -496,9 +504,11 @@ public class JobManager {
             // or it exceeded retries, we send an email to developer
             if (isRetryCountExceeded || errorDuringProcessing != null) {
                 
+                var currentJobExecution = jobExecutionService.getById(incompleteJobExecution.getId());
+                
                 // i get an email when job execution is unsuccessful
                 problemsEmailService.sendEmailToDevForUnsuccessfulBackgroundJobExecution(
-                        incompleteJobExecution,
+                        currentJobExecution,
                         executor.getMaxRetries(),
                         errorDuringProcessing
                 );
