@@ -84,28 +84,28 @@ public class SendQrCodeToOperatorsForStartShift_JobExecutor extends JobExecutor<
             return;
         }
         
-        var metadata = jobExecution.getMetadata();
-
-        metadata.getExtra().put("name", "Giuseppe");
-        
-        jobExecution.setMetadata(metadata);
-        
-        var me = usersService.findById("6fb45429-c452-41f8-a214-e7d79d6c3e68");
-        
-        me.setFirstname("GIUSEPPE MODIFIED 3");
-        
+        // var metadata = jobExecution.getMetadata();
+        //
+        // metadata.getExtra().put("name", "Giuseppe");
+        //
+        // jobExecution.setMetadata(metadata);
+        //
+        // var me = usersService.findById("6fb45429-c452-41f8-a214-e7d79d6c3e68");
+        //
+        // me.setFirstname("GIUSEPPE MODIFIED 3");
+        //
         
         
         var operator = (User) itemToProcess.getItem();
         
-        throw new RuntimeException("error on purpose");
+        // throw new RuntimeException("error on purpose");
         
-        // var admin = usersService.getAdminByCompany(operator.getCompany());
-        //
-        // qrCodeToOperatorsForStartShiftMailer.send(
-        //         operator,
-        //         admin
-        // ); 
+        var admin = usersService.getAdminByCompany(operator.getCompany());
+
+        qrCodeToOperatorsForStartShiftMailer.send(
+                operator,
+                admin
+        ); 
         
         
     }
