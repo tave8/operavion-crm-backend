@@ -97,6 +97,13 @@ public class TokenFilter extends OncePerRequestFilter {
         boolean isStripeWebhook = matcher.match("/webhooks/stripe", path);
         
         boolean isFileUpload = matcher.match("/file-upload/**", path);
+
+        boolean isSwaggerDocs1 = matcher.match("/swagger-ui.html", path);
+        boolean isSwaggerDocs2 = matcher.match("/swagger-ui/index.html", path);
+        boolean isSwaggerDocs3 = matcher.match("/swagger-ui/**", path);
+        boolean isSwaggerDocs4 = matcher.match("/v3/api-docs/**", path);
+
+        
         // boolean isNotificationsPath = matcher.match("/notifications/**", path);
         // boolean isAI = matcher.match("/ai/**", path);
         // boolean isPdfGeneration =  matcher.match("/pdf-generation/**", path);
@@ -107,6 +114,12 @@ public class TokenFilter extends OncePerRequestFilter {
         //     return;
         // }
         //
+
+        if(isSwaggerDocs1 || isSwaggerDocs2 || isSwaggerDocs3 || isSwaggerDocs4) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         if(isFileUpload || isExtractFile) {
             filterChain.doFilter(request, response);
             return;
