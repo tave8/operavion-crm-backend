@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.jobs.jobs.notify_admin_because_operator_has_no_shift;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.Notification;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationType;
@@ -39,6 +40,9 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
     @Autowired
     private UsersService usersService;
     
+    @Autowired
+    private AppEnvironment appEnvironment;
+    
     
     public NotifyAdminBecauseOperatorHasNoShift_JobExecutor() {
         super(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
@@ -75,19 +79,30 @@ public class NotifyAdminBecauseOperatorHasNoShift_JobExecutor extends JobExecuto
                     admin,
                     NotificationType.OPERATOR_HAS_NO_SHIFT,
                     "L'operatore " + operator.getFullname() + " non ha un turno per domani."
-            );
+            ); 
             
             //
             this.notificationsService.save(
                     newNotification
             );
 
-            // send an email to admin
-            emailService.send(new EmailParams(
-                    admin.getEmail(),
-                    "Operatore non ha turno per domani",
-                    "L'operatore " + operator.getFullname() + " non ha un turno per domani."
-            ));
+            
+            if (appEnvironment.isLocal()) {
+                // send an email to admin
+                emailService.send(new EmailParams(
+                        admin.getEmail(),
+                        "Operatore non ha turno per domani [LOCAL ENV]",
+                        "L'operatore " + operator.getFullname() + " non ha un turno per domani."
+                ));
+                
+            } else {
+                emailService.send(new EmailParams(
+                        admin.getEmail(),
+                        "Operatore non ha turno per domani",
+                        "L'operatore " + operator.getFullname() + " non ha un turno per domani."
+                ));
+            }
+            
 
             return;
             

@@ -80,18 +80,18 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         // CHECKS
         // ***************
         
-        User admin = (User) itemToProcess.getItem();
+        var admin = (User) itemToProcess.getItem();
         
         AuthorizationHelper.requireUserAdmin(admin);
         
-        Company company = admin.getCompany();
+        var company = admin.getCompany();
         
         // *******************
         // CORE LOGIC: FIND DISCREPANCIES BY CLIENT ADDRESS
         // *******************
 
-        LocalDate lastMonday = TimeHelper.lastMonday();
-        LocalDate lastFriday = TimeHelper.lastFriday();
+        var lastMonday = TimeHelper.lastMonday();
+        var lastFriday = TimeHelper.lastFriday();
 
         // contains the client addresses, along with the AI-generated
         // discrepancy summary, to be emailed to the admin in a single pdf report
@@ -112,7 +112,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         //          ask AI to find discrepancies between expected and actual 
         //      else:
         //          set the discrepancy for this client address as "non ci sono aspettative di contratto"
-        for (ClientAddressToSendDTO ca : clientAddresses) {
+        for (var ca : clientAddresses) {
             
             // the contract expectation for this client address exists 
             // and is successful (was successfully processed)
@@ -126,13 +126,13 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                 );
         
                 // the shifts for this client address in date range, stringified
-                String shiftsInfo = shiftsService.stringifyShifts(shiftsDTO);
+                var shiftsInfo = shiftsService.stringifyShifts(shiftsDTO);
                 
                 // the expectations of this client address' contract
-                String expectations = ca.getContractExpectation().getDetail().getExpectations();
+                var expectations = ca.getContractExpectation().getDetail().getExpectations();
                 
                 // the AI generates the summary "expectation vs reality"
-                String discrepancyText = contractDiscrepancyDetector.findDiscrepancies(
+                var discrepancyText = contractDiscrepancyDetector.findDiscrepancies(
                         expectations,
                         shiftsInfo
                 );
@@ -159,7 +159,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
                 //
                 
 
-                ClientAddressDiscrepancyDTO discrepancy = new ClientAddressDiscrepancyDTO(
+                var discrepancy = new ClientAddressDiscrepancyDTO(
                         ca.getClientAddress(),
                         discrepancyText
                 );
@@ -172,9 +172,9 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
             // or none at all
             else {
 
-                String discrepancyText = "(Nessuna aspettativa di contratto)";
+                var discrepancyText = "(Nessuna aspettativa di contratto)";
                 
-                ClientAddressDiscrepancyDTO discrepancy = new ClientAddressDiscrepancyDTO(
+                var discrepancy = new ClientAddressDiscrepancyDTO(
                         ca.getClientAddress(),
                         discrepancyText
                 );
@@ -195,7 +195,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
 
         // add notification
         
-        Notification newNotification = new Notification(
+        var newNotification = new Notification(
                 admin,
                 NotificationType.DISCREPANCY_REPORT_GENERATION_SUCCESS,
                 "Report discrepanze pronto",
@@ -203,7 +203,7 @@ public class SendAdminDiscrepancies_JobExecutor extends JobExecutor<User> {
         );
 
         // add a notification so admin sees processing is done    
-        this.notificationsService.save(newNotification);
+        notificationsService.save(newNotification);
         
         // send email 
         

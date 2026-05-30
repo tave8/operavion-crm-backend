@@ -89,8 +89,7 @@ public class EmailOperatorTomorrowShift_JobExecutor extends JobExecutor<User> {
         Notification newNotification = new Notification(
                 user,
                 NotificationType.TOMORROW_SHIFT,
-                "Il tuo turno per domani: " + shiftDTO.getName(),
-                "<added by background job>"
+                "Il tuo turno per domani: " + shiftDTO.getName()
         );
         
         this.notificationsService.save(

@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
+import giuseppetavella.zero_chiamate.config.AppEnvironment;
 import giuseppetavella.zero_chiamate.config.EmailTemplate;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyEmailParams;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.params.ContractDiscrepancyReportParams;
@@ -22,6 +23,9 @@ public class ContractDiscrepancyMailer {
     
     @Autowired
     private ContractDiscrepancyReportGenerator reportGenerator;
+    
+    @Autowired
+    private AppEnvironment appEnvironment;
 
 
     /**
@@ -48,13 +52,28 @@ public class ContractDiscrepancyMailer {
         
         var subject = "Report discrepanze | Settimana " + startDate + " - " + endDate;
 
-        emailService.sendTemplate(new EmailTemplateParams(
-                EmailTemplate.CONTRACT_DISCREPANCY,
-                toTemplateVars(emailParams),
-                admin.getEmail(),
-                subject,
-                attachment
-        ));
+        if(appEnvironment.isLocal()) {
+            
+            emailService.sendTemplate(new EmailTemplateParams(
+                    EmailTemplate.CONTRACT_DISCREPANCY,
+                    toTemplateVars(emailParams),
+                    admin.getEmail(),
+                    subject + "[LOCAL ENV]",
+                    attachment
+            ));
+            
+        } else {
+            
+            emailService.sendTemplate(new EmailTemplateParams(
+                    EmailTemplate.CONTRACT_DISCREPANCY,
+                    toTemplateVars(emailParams),
+                    admin.getEmail(),
+                    subject,
+                    attachment
+            )); 
+            
+        }
+        
 
     }
 
