@@ -6,6 +6,7 @@ import giuseppetavella.zero_chiamate.domain.business.jobs.JobName;
 import giuseppetavella.zero_chiamate.infrastructure.jobs.job_library.exceptions.JobExecutionException;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,13 @@ public class JobExecutionService {
     /**
      * Add a new job execution.
      */
-    public JobExecution addNewJobExecution(@NotNull JobName jobName,
-                                           @NotNull UUID lastProcessedItemId) 
+    public JobExecution addNewJobExecution(@NonNull JobName jobName,
+                                           @NonNull UUID lastProcessedItemId) 
     {
         // instantiate a new job execution (not managed by ORM)
-        JobExecution jobExecution = new JobExecution(jobName, lastProcessedItemId);
+        var jobExecution = new JobExecution(jobName, lastProcessedItemId);
         // add job execution to DB, so when it's returned, it's managed by ORM
-        return this.jobManagerRepository.save(jobExecution);
+        return jobManagerRepository.save(jobExecution);
     }
 
     /**

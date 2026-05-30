@@ -19,7 +19,7 @@ import java.util.UUID;
 @Service
 public abstract class JobExecutor<T> {
     
-    protected final JobName jobName;
+    private final JobName jobName;
 
     /**
      * How many times should the job execution be retried,
@@ -28,7 +28,7 @@ public abstract class JobExecutor<T> {
      * left with an incomplete state, will be re-processed
      * only one time and then its state will be marked as abandoned.
      */
-    protected Integer maxRetries;
+    private final Integer maxRetries;
 
     /**
      * 
