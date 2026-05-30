@@ -67,8 +67,7 @@ public class JobScheduler {
 
     }
 
-    // @Scheduled(cron = CronSchedule.AT_8AM, zone = "Europe/Rome")
-    @Scheduled(cron = CronSchedule.EVERY_MINUTE, zone = "Europe/Rome")
+    @Scheduled(cron = CronSchedule.AT_8AM, zone = "Europe/Rome")
     public void sendQrCodeToOperatorsForStartShift() {
         
         this.jobManager.executeJob(JobName.SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT);
