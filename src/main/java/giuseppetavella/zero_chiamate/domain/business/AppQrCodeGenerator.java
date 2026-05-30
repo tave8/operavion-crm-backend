@@ -61,10 +61,10 @@ public class AppQrCodeGenerator {
         );
     }
 
-    public PrivateGeneratedQrCode generatePrivateForStartOperatorShift() {
+    public PrivateGeneratedQrCode generatePrivateForStartOperatorShift(Duration duration) {
         var randomId = UUID.randomUUID();
         
-        var token = tokenTools.generateToken(randomId.toString(), Duration.ofHours(1));
+        var token = tokenTools.generateToken(randomId.toString(), duration);
         
         var urlStartOperatorShift = frontendRoutes.startOperatorShift(token);
         
@@ -79,6 +79,10 @@ public class AppQrCodeGenerator {
                 uploadedFile.getId(),
                 uploadedFile.getOriginalFilename()
         );
+    }
+
+    public PrivateGeneratedQrCode generatePrivateForStartOperatorShift() {
+        return generatePrivateForStartOperatorShift(Duration.ofHours(1));
     }
     
 }

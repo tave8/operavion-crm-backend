@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 public class QrCodeDemoRunner implements CommandLineRunner {
 
@@ -58,22 +60,21 @@ public class QrCodeDemoRunner implements CommandLineRunner {
 
         // System.out.println(tokenTools.generateToken("hello"));
         
-        // startOperatorShift();
+        // sendQrCodestartOperatorShift();
     }
     
     
-    public void startOperatorShift() {
-        
-        var qrCode = appQrCodeGenerator.generatePrivateForStartOperatorShift();
-        
-        // qrCode.fileId();
-
-        emailService.send(new TestEmailParams(
-                        "file ID: " + qrCode.fileId(),
-                new EmailAttachment(qrCode.bytes(), qrCode.originalFilename())
-        ));
-        
-    }
+    // public void sendQrCodestartOperatorShift() {
+    //    
+    //     var qrCode = appQrCodeGenerator.generatePrivateForStartOperatorShift(Duration.ofMinutes(2));
+    //    
+    //     // qrCode.fileId();
+    //
+    //     emailService.send(new TestEmailParams(
+    //             new EmailAttachment(qrCode.bytes(), qrCode.originalFilename())
+    //     ));
+    //    
+    // }
     
     
     
