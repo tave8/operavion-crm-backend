@@ -23,7 +23,7 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // resources/extra/invoice.pdf -> bytes
-        // byte[] bytes = FileHelper.readFile("extra/linkedin.png");
+        // byte[] bytes = FileHelper.readFile("extra/cat_image_as_pdf.pdf");
         // // //
         // // // // bytes -> plain text (deterministic, no AI)
         // String text = documentTextExtractor.bytesToText(bytes, 100);

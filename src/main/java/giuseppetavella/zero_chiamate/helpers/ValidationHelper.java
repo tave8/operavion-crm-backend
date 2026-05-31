@@ -46,8 +46,19 @@ public class ValidationHelper {
             throw new InvalidDataException("File is not text nor pdf.");
         }
     }
-    
-    
+
+    public static void requireFileTextOrPdfElseThrow(byte[] bytes,
+                                                     Supplier<? extends RuntimeException> supplier)
+    {
+        try {
+            ValidationHelper.requireFileTextOrPdf(bytes);
+        } catch (InvalidDataException ex) {
+            throw supplier.get();
+        }
+    }
+
+
+
     public static void requireFilePdf(byte[] bytes)
     {
         if(!FileHelper.isPdfFile(bytes)) {

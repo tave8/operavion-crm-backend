@@ -38,7 +38,14 @@ public class DocumentTextExtractor {
     {
         
         // check that this is a text or pdf file 
-        ValidationHelper.requireFileTextOrPdf(docBytes);
+        ValidationHelper.requireFileTextOrPdfElseThrow(
+                docBytes,
+                () -> new DocumentTextExtractionException(
+                        "Document to extract is not text nor pdf. "
+                        +"Mime type is '" + FileHelper.getMimeType(docBytes) + "' instead."
+                )
+        );
+        
         
         try {
 
@@ -53,10 +60,10 @@ public class DocumentTextExtractor {
                 // if there's no result
                 if(isEmpty) {
                     throw new DocumentTextExtractionException(
-                            "Text extracted was empty. Likely causes: "
+                            "Document to extract was a text or pdf file, but text extracted was empty. Likely causes: "
                             +"1) document was an image converted to pdf "
                             +"2) document contained text but had no text. "
-                            +"Document file type was '" + FileHelper.getFileType(docBytes) + "'. " 
+                            +"Mime type is '" + FileHelper.getMimeType(docBytes) + "'. " 
                             +"Provide a valid document that contains text."
                     );
                 }
