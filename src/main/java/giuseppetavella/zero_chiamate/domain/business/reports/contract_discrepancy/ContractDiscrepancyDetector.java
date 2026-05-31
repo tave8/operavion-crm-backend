@@ -20,6 +20,9 @@ public class ContractDiscrepancyDetector {
     @Autowired
     private DocumentTextExtractor documentTextExtractor;
     
+    @Autowired
+    private ContractDiscrepancyPromptBuilder promptBuilder;
+    
     private final ObjectMapper mapper = new ObjectMapper();
 
     public record ContractClassificationDTO(
@@ -132,22 +135,10 @@ public class ContractDiscrepancyDetector {
             );
         }
         
-        String systemPrompt = """
-            You are a legal document classifier.
-            You receive the opening lines of a document and determine whether it is a legal contract.
-        
-            Respond ONLY with a valid JSON object — no markdown, no explanation, no preamble.
-        
-            Schema:
-            {
-              "isContract": boolean,
-              "whatIfNotContract": string | null
-            }
-            """;
-
-        String userPrompt = "Classify the following document opening:\n\n" + startOfContract;
-        
-        String answerJsonToBe = aiService.ask(userPrompt, systemPrompt);
+        var answerJsonToBe = aiService.ask(
+                promptBuilder.userPromptForContractClassification(startOfContract), 
+                promptBuilder.systemPromptForContractClassification()
+        );
         
         try {
             
