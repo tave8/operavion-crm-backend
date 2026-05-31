@@ -39,16 +39,25 @@ import java.util.function.Supplier;
  */
 public class ValidationHelper {
 
+
+    public static void requireFileTextOrPdf(byte[] bytes)
+    {
+        if(!FileHelper.isTextOrPdfFile(bytes)) {
+            throw new InvalidDataException("File is not text nor pdf.");
+        }
+    }
+    
+    
     public static void requireFilePdf(byte[] bytes)
     {
-        if(!FileHelper.isPdf(bytes)) {
+        if(!FileHelper.isPdfFile(bytes)) {
             throw new InvalidDataException("File is not a pdf.");
         }
     }
 
     public static void requireFilePdf(MultipartFile file)
     {
-        if(!FileHelper.isPdf(FileHelper.getBytes(file))) {
+        if(!FileHelper.isPdfFile(FileHelper.getBytes(file))) {
             throw new InvalidDataException("File is not a pdf.");
         }
     }

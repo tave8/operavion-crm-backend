@@ -1,6 +1,10 @@
 package giuseppetavella.zero_chiamate.utils;
 
+import giuseppetavella.zero_chiamate.exceptions.DocumentTextExtractionException;
 import giuseppetavella.zero_chiamate.exceptions.FileException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
+import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import org.apache.tika.Tika;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
@@ -14,11 +18,11 @@ public class DocumentTextExtractor {
 
     /**
      * 
-     * Extract plain text from a document (PDF, DOCX, XLSX, TXT...).
+     * Extract plain text from a document (PDF, DOCX, XLSX, TXT, CSV).
      * Deterministic, no AI. Reads the document's text layer via Apache Tika,
      * which selects the right parser based on the file content.
      * 
-     * Simply call <code>extractedText.isEmpty()</code> at call site,
+     * This method will either give you a non-empty, non-null extracted text, or throw.
      *
      * Note: scanned/image-only PDFs have no text layer, so this returns an
      * empty (or near-empty) string for them. Use the AI vision path for those.
@@ -27,8 +31,15 @@ public class DocumentTextExtractor {
      * @return the extracted plain text
      * @throws FileException if the text cannot be extracted
      */
-    public @NonNull String bytesToText(byte[] docBytes, int maxChars)
+    public @NonNull String bytesToText(byte[] docBytes, 
+                                       int maxChars) throws FileException, 
+                                                            InvalidDataException, 
+                                                            DocumentTextExtractionException
     {
+        
+        // check that this is a text or pdf file 
+        ValidationHelper.requireFileTextOrPdf(docBytes);
+        
         try {
 
             tika.setMaxStringLength(maxChars);
@@ -37,21 +48,27 @@ public class DocumentTextExtractor {
 
                 var result = tika.parseToString(inputStream);
 
-                // avoids having to check for null at call site
-                if(result == null) {
-                    return "";
-                }
+                var isEmpty = result == null || result.isBlank();
                 
-                // avoids having to remember difference 
-                // if string is empty or blank at call site
-                if(result.isBlank()) {
-                    return "";
+                // if there's no result
+                if(isEmpty) {
+                    throw new DocumentTextExtractionException(
+                            "Text extracted was empty. Likely causes: "
+                            +"1) document was an image converted to pdf "
+                            +"2) document contained text but had no text. "
+                            +"Document file type was '" + FileHelper.getFileType(docBytes) + "'. " 
+                            +"Provide a valid document that contains text."
+                    );
                 }
                 
                 return result;
                 
             }
 
+        } catch (DocumentTextExtractionException e) {
+            
+            throw e;
+            
         } catch (Exception ex) {
 
             throw new FileException("Error while extracting text from a document. DETAILS: " + ex.getMessage());

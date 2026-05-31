@@ -163,7 +163,7 @@ public class FileHelper {
     /**
      * Is this file a pdf?
      */
-    public static boolean isPdf(byte[] bytes) {
+    public static boolean isPdfFile(byte[] bytes) {
         var mimeType = getMimeType(bytes);
         if(mimeType == null) {
             return false;
@@ -175,11 +175,36 @@ public class FileHelper {
     /**
      * Is this file a pdf?
      */
-    public static boolean isPdf(MultipartFile file) {
-        return isPdf(FileHelper.getBytes(file));
+    public static boolean isPdfFile(MultipartFile file) {
+        return isPdfFile(FileHelper.getBytes(file));
+    }
+
+
+    /**
+     * Is this a pdf?
+     * @return
+     */
+    public static boolean isTextOrPdfFile(byte[] bytes) {
+        return isTextFile(bytes) || isPdfFile(bytes);
     }
     
 
+    /**
+     * Text files have these extensions: .docx, .csv, .txt, .xlsx
+     * @return
+     */
+    public static boolean isTextFile(byte[] bytes) {
+        var fileType = getFileType(bytes);
+        // if bytes are a csv, it will be swallowed as txt,
+        // so we don't need to take it into account
+        // if it's not csv, and it's neither of these file types,
+        // then it's not text file either
+        var isText = fileType.equals("txt");
+        var isDocx = fileType.equals("docx");
+        var isExcel = fileType.equals("xlsx");
+        return isText || isDocx || isExcel;
+    }
+    
 
     /**
      * Read a file from /resources directory.

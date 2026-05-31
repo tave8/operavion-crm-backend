@@ -100,6 +100,7 @@ public class ContractDiscrepancyDetector {
      */
     public ContractClassificationDTO classify(byte[] bytes) throws ContractExpectationException
     {
+        
         // we assume the first 300 chars say this is a contract
         var startOfContract = documentTextExtractor.bytesToText(bytes, 300);
         
