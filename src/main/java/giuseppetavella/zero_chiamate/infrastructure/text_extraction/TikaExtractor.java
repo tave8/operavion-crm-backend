@@ -1,10 +1,5 @@
 package giuseppetavella.zero_chiamate.infrastructure.text_extraction;
 
-import giuseppetavella.zero_chiamate.exceptions.FileException;
-import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
-import giuseppetavella.zero_chiamate.helpers.FileHelper;
-import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.TikaAPIException;
 import org.apache.tika.Tika;
 import org.jspecify.annotations.NonNull;

@@ -8,7 +8,7 @@ import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGeneration
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentEmptyTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.TikaAPIException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -110,7 +110,11 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 
-
+    @ExceptionHandler(DocumentEmptyTextExtractionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsToSendDTO handleDocumentTextExtractionException(DocumentEmptyTextExtractionException ex) {
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
 
     @ExceptionHandler(EmailVerificationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -431,6 +435,21 @@ public class ErrorsHandler {
     }
 
 
+    @ExceptionHandler(JSONDeserializationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleJSONDeserializationException(JSONDeserializationException ex) {
+
+        LOGGER.error("Error while deserializing JSON. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error while deserializing JSON",
+                ex.getMessage(),
+                ex
+        );
+
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
 
     @ExceptionHandler(TikaAPIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -447,11 +466,7 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO(ex.getMessage());
     }
     
-    @ExceptionHandler(DocumentTextExtractionException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorsToSendDTO handleDocumentTextExtractionException(DocumentTextExtractionException ex) {
-        return new ErrorsToSendDTO(ex.getMessage());
-    }
+
 
 
     @ExceptionHandler(Exception.class)

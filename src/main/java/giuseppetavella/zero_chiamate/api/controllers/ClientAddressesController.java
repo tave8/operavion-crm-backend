@@ -18,8 +18,6 @@ import giuseppetavella.zero_chiamate.domain.entities.client_address_checklists.C
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
-import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
 import giuseppetavella.zero_chiamate.helpers.*;
 import giuseppetavella.zero_chiamate.domain.entities.contract_expectations.dto.sent.UpdatedContractExpectationSentDTO;
 import giuseppetavella.zero_chiamate.infrastructure.workers.dto.to_send.BackgroundJobAcceptedDTO;
@@ -160,8 +158,6 @@ public class ClientAddressesController {
 
     /**
      * Extract contract expectations from a legal contract.
-     * TODO: this controller has big size on purpose. 
-     *    refactoring into a service will be done when appropriate. 
      *
      * @param contractFile
      * @return
@@ -181,42 +177,23 @@ public class ClientAddressesController {
         var company = currentUser.getCompany();
         
         // require that the client address sent must belong the the current user
-        AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
+        AuthorizationHelper.requireSameCompany(
+                company, 
+                clientAddress.getClient().getCompany()
+        );
         
         // the contract must be a pdf
         // get bytes from contract pdf
         byte[] contractBytes = FileHelper.getBytes(contractFile);
-
-        // check that contract is text or pdf, before classifying it,
-        // so user can fix immediately
-        ValidationHelper.requireFileTextOrPdf(contractBytes);
         
-        // classify the contract = check that all is good, before processing entire contract
-        try {
-            var isContract = contractDiscrepancyDetector.classify(contractBytes).isContract();
-            
-            // verify that the user has uploaded a contract
-            if(!isContract) {
-                throw new ContractExpectationException(
-                        "Document uploaded is not a contract in its content."
-                );
-            }
-            
-        } 
-        // we interpret this error as "contract thought to be valid, but still not a contract in content"
-        catch (DocumentTextExtractionException ex) {
-            
-            throw new ContractExpectationException(
-                    "Document uploaded is not a contract in its content. DETAILS: " + ex.getMessage()
-            );
-            
-        }
+        // classify the contract = check that all is good, 
+        // before processing entire contract
+        contractDiscrepancyDetector.requireActualContract(contractBytes);
         
         // create pending entry for this job
         // also checks that client address does not have already
         // a contract expectation
         contractExpectationsService.addContractExpectationIfNotExists(clientAddress);
-        
 
         // async worker
         contractAnalysisWorker.extractContractExpectations(

@@ -2,7 +2,9 @@ package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepan
 
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.dto.ContractClassificationDTO;
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
+import giuseppetavella.zero_chiamate.exceptions.JSONDeserializationException;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentEmptyTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,40 @@ public class ContractDiscrepancyDetector {
     private ContractDiscrepancyPromptBuilder promptBuilder;
     
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
+
+    /**
+     * Require:
+     * - this document has the correct/allowed file types for text or pdf
+     * - the content of this documents indicates this is an actual contract
+     * 
+     * @param docBytes
+     */
+    public void requireActualContract(byte[] docBytes) {
+        
+        ContractClassificationDTO classification;
+        
+        try {
+            
+            classification = classify(docBytes);
+            
+        } catch (DocumentEmptyTextExtractionException ex) {
+
+            throw new InvalidDataException(
+                    "Document uploaded is valid in file type but likely has no text. "
+                    +"DETAILS: " + ex.getMessage()
+            );
+
+        }
+
+        // verify that the user has uploaded an actual contract
+        if(!classification.isContract()) {
+            throw new InvalidDataException(
+                    "Document uploaded is not a contract in its content."
+            );
+        }
+        
+    }
     
     
     /**
@@ -68,7 +103,7 @@ public class ContractDiscrepancyDetector {
         }
         
         // extract the text from contract
-        var contractText = documentTextExtractor.extract(bytes);
+        var contractText = documentTextExtractor.extractAndRequireNonEmpty(bytes);
         
         return aiService.ask(
                 promptBuilder.extractContractExpectationsUserPrompt(contractText),
@@ -95,13 +130,14 @@ public class ContractDiscrepancyDetector {
     /**
      * Is this file a contract?
      * Uses document extraction and AI to determine.
+     * 
+     * @throws JSONDeserializationException
      */
-    public ContractClassificationDTO classify(byte[] bytes) throws DocumentTextExtractionException, 
-                                                                    ContractExpectationException
+    public ContractClassificationDTO classify(byte[] bytes)
     {
         
         // we assume the first 300 chars say this is a contract
-        var startOfContract = documentTextExtractor.extract(bytes, 300);
+        var startOfContract = documentTextExtractor.extractAndRequireNonEmpty(bytes, 300);
         
         // json payload as string
         var answerJsonToBe = aiService.ask(
@@ -116,9 +152,10 @@ public class ContractDiscrepancyDetector {
             
         } catch (JacksonException e) {
             
-            throw new ContractExpectationException(
+            throw new JSONDeserializationException(
                     "Error during deserialization of "
-                    +"JSON payload from AI API into class. DETAILS: " +e.getMessage()
+                    +"JSON payload from AI API into class. "
+                    +"Answer from AI: " + answerJsonToBe + ". DETAILS: " +e.getMessage()
             );
             
         }
