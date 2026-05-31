@@ -116,7 +116,7 @@ public class AIService {
             return anthropicAPIService.askWithPdf(pdfBytes, userPrompt, systemPrompt);
         }
 
-        // text layer present -> answer over the extracted text (cheaper, no vision tokens)
+        // text layer present -> answer over the extracted text
         String combinedPrompt = userPrompt + "\n\n--- DOCUMENT TEXT ---\n" + extractedText;
 
         return anthropicAPIService.ask(combinedPrompt, systemPrompt);

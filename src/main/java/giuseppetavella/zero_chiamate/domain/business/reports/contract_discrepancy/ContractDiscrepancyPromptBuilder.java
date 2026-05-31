@@ -2,16 +2,78 @@ package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepan
 
 import org.springframework.stereotype.Component;
 
+/**
+ * AI prompt builder for contract detection system.
+ * Goal: decouple prompt building from core logic.
+ * 
+ * Conventions: 
+ * <pre>
+ *     Methods are suffixed like this:
+ *     
+ *          ...UserPrompt
+ *          ...SystemPrompt
+ *     
+ *     Examples:
+ *     
+ *          contractClassificationUserPrompt
+ *          contractClassificationSystemPrompt
+ *          
+ * </pre>
+ * 
+ */
 @Component
 public class ContractDiscrepancyPromptBuilder {
 
+    
+    public String extractContractExpectationsUserPrompt() {
+        return "Here's the contract:\n";
+    }
+    
+    public String extractContractExpectationsSystemPrompt() {
+        return "You are an operational data extractor for an Italian cleaning company CRM. " +
+                "Analyze the contract text for the client/cantiere. " +
+                "Ignore all legal, financial, and safety clauses. " +
+                "\n\n" +
+                "Extract ONLY the operational schedule expectations. " +
+                "CRITICAL RULE: You must format the output as a single-line list of items, where each item represents a specific schedule requirement or operational shift condition. Items MUST be separated strictly by the pipe character ( | ).\n" +
+                "\n" +
+                "CRITICAL RULE: DO NOT include any introductory text, pleasantries, bolding (**), markdown lists (- or *), explanations, or preambles. You must output ONLY the raw, pipe-separated final string itself. If you output anything else, the system parser will crash.\n" +
+                "\n" +
+                "Follow the exact formatting shown in the examples below, returning ONLY the raw text.\n" +
+                "\n" +
+                "### EXAMPLES OF EXPECTED RAW OUTPUT FORMATS\n" +
+                "\n" +
+                "Input: \"...garantendo la presenza del proprio personale nelle giornate di Lunedì e Giovedì nella fascia oraria mattutina. Ciascun intervento dovrà prevedere la durata di 2 ore per turno...\"\n" +
+                "Output: Lunedì, 2 ore per turno | Giovedì, 2 ore per turno\n" +
+                "\n" +
+                "Input: \"...il servizio di sanificazione e pulizia degli spazi comuni verrà espletato con cadenza bisettimanale, ripartendo equamente un monte ore complessivo di 6 ore settimanali...\"\n" +
+                "Output: Turno 1: Bisettimanale, 3 ore | Turno 2: Bisettimanale, 3 ore\n" +
+                "\n" +
+                "Input: \"...interventi di igienizzazione ordinaria da eseguirsi esclusivamente nella giornata di Sabato, per un totale di 4 ore di servizio continuativo...\"\n" +
+                "Output: Sabato, 4 ore per turno\n" +
+                "\n" +
+                "Input: \"...passaggio programmato dal Lunedì al Venerdì per la svuotatura dei cestini e riordino (1 ora al giorno), con l'aggiunta di una pulizia approfondita il Mercoledì pomeriggio per 3 ore...\"\n" +
+                "Output: Dal Lunedì al Venerdì, 1 ora al giorno | Mercoledì, 3 ore al pomeriggio\n" +
+                "\n" +
+                "Input: \"...l'appaltatore si impegna a garantire un intervento di pulizia a settimana della durata di 2 ore, da concordarsi preventivamente con la direzione dello stabilimento...\"\n" +
+                "Output: 1 volta a settimana (giorno flessibile), 2 ore per turno";
+    }
+    
+    // public String userPromptForFindDiscrepancies() {
+    //    
+    // }
+    //
+    // public String systemPromptForFindDiscrepancies() {
+    //
+    // }
+    
     /**
      * Build the user prompt for contract classification.
      * 
      * @param startOfContract
      * @return
      */
-    public String userPromptForContractClassification(String startOfContract) {
+    public String contractClassificationUserPrompt(String startOfContract) {
         return "Classify the following document opening:\n\n" + startOfContract;
     }
 
@@ -20,7 +82,7 @@ public class ContractDiscrepancyPromptBuilder {
      * Build the system prompt for contract classification.
      * @return
      */
-    public String systemPromptForContractClassification() {
+    public String contractClassificationSystemPrompt() {
         return  """
             You are a legal document classifier.
             You receive the opening lines of a document and determine whether it is a legal contract.
