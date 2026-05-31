@@ -1,5 +1,7 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.TrustThisIsContract;
 import giuseppetavella.zero_chiamate.domain.entities.checklists.ChecklistsService;
 import giuseppetavella.zero_chiamate.domain.entities.checklists.dto.to_send.ChecklistToSendDTO;
 import giuseppetavella.zero_chiamate.domain.entities.client_address_checklists.ClientAddressChecklistsService;
@@ -16,6 +18,9 @@ import giuseppetavella.zero_chiamate.domain.entities.client_address_checklists.C
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.users.User;
 import giuseppetavella.zero_chiamate.domain.entities.users.dto.to_send.ProfileToSendDTO;
+import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
+import giuseppetavella.zero_chiamate.exceptions.DocumentTextExtractionException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.helpers.*;
 import giuseppetavella.zero_chiamate.domain.entities.contract_expectations.dto.sent.UpdatedContractExpectationSentDTO;
 import giuseppetavella.zero_chiamate.infrastructure.workers.dto.to_send.BackgroundJobAcceptedDTO;
@@ -52,6 +57,9 @@ public class ClientAddressesController {
     
     @Autowired
     private ContractExpectationsService contractExpectationsService;
+    
+    @Autowired
+    private ContractDiscrepancyDetector contractDiscrepancyDetector;
     
     @Autowired
     private ContractAnalysisWorker contractAnalysisWorker;
@@ -170,25 +178,53 @@ public class ClientAddressesController {
         PayloadValidationHelper.requiredPdf(contractFile);
 
         // find client address     
-        ClientAddress clientAddress = this.clientAddressesService.findById(clientAddressId);
+        var clientAddress = clientAddressesService.findById(clientAddressId);
 
-        Company company = currentUser.getCompany();
+        var company = currentUser.getCompany();
         
         // require that the client address sent must belong the the current user
         AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
         
+        // get bytes from contract pdf
+        byte[] contractBytes = FileHelper.getBytes(contractFile);
+        
+        // check that contract is text or pdf, before classifying it,
+        // so user can fix immediately
+        ValidationHelper.requireFileTextOrPdf(contractBytes);
+        
+        // classify the contract = check that all is good, before processing entire contract
+        try {
+            var isContract = contractDiscrepancyDetector.classify(contractBytes).isContract();
+            
+            // verify that the user has uploaded a contract
+            if(!isContract) {
+                throw new ContractExpectationException(
+                        "Document uploaded is not a contract in its content."
+                );
+            }
+            
+        } 
+        // we interpret this error as "contract thought to be valid, but still not a contract in content"
+        catch (DocumentTextExtractionException ex) {
+            
+            throw new ContractExpectationException(
+                    "Document uploaded is not a contract in its content. DETAILS: " + ex.getMessage()
+            );
+            
+        }
+        
         // create pending entry for this job
         // also checks that client address does not have already
         // a contract expectation
-        this.contractExpectationsService.addContractExpectationIfNotExists(clientAddress);
+        contractExpectationsService.addContractExpectationIfNotExists(clientAddress);
         
-        // get bytes from contract pdf
-        byte[] contractPdf = FileHelper.getBytes(contractFile);
 
         // async worker
-        this.contractAnalysisWorker.extractContractExpectations(
-                contractPdf, 
-                clientAddress
+        contractAnalysisWorker.extractContractExpectations(
+                contractBytes, 
+                clientAddress,
+                // we've just verified this is a contract 
+                TrustThisIsContract.YES
         );
 
         return new BackgroundJobAcceptedDTO(

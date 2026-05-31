@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.infrastructure.workers;
 
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.TrustThisIsContract;
 import giuseppetavella.zero_chiamate.domain.entities.companies.CompaniesService;
 import giuseppetavella.zero_chiamate.domain.entities.contract_expectations.ContractExpectationsService;
 import giuseppetavella.zero_chiamate.domain.entities.notifications.NotificationsService;
@@ -43,43 +44,44 @@ public class ContractAnalysisWorker {
      * @param clientAddress the client address that this contract is associated to
      */
     @Async
-    public void extractContractExpectations(byte[] contractPdf, 
-                                            ClientAddress clientAddress)  
+    public void extractContractExpectations(byte[] contractPdf,
+                                            ClientAddress clientAddress,
+                                            TrustThisIsContract trustThisIsContract)  
     {
         
         // find the admin of this client address
-        Company company = clientAddress.getClient().getCompany();
+        var company = clientAddress.getClient().getCompany();
         
-        User admin = this.usersService.getAdminByCompany(company);
+        var admin = usersService.getAdminByCompany(company);
 
         // potential error: no contract expectation was found
         // for this client address
-        ContractExpectation contractExpectation = this.contractExpectationsService.getByClientAddress(clientAddress);
+        var contractExpectation = contractExpectationsService.getByClientAddress(clientAddress);
         
         try {
 
             // process contract with AI
-            String extractedText = contractDiscrepancyDetector.extractContractExpectations(contractPdf);
+            var extractedText = contractDiscrepancyDetector.extractContractExpectations(contractPdf, trustThisIsContract);
 
             // save contract expectation as success, with extracted text 
-            this.contractExpectationsService.success(
+            contractExpectationsService.success(
                     contractExpectation, 
                     extractedText
             );
 
             // note: this could throw error, but for simplicity,
             // i handle it in one try-block
-            this.notifySuccess(admin, clientAddress);
+            notifySuccess(admin, clientAddress);
             
         }
         catch(Exception ex) {
             
             // set contract expectation associated 
             // to the client address as failed
-            this.contractExpectationsService.failed(contractExpectation);
+            contractExpectationsService.failed(contractExpectation);
             
             //  notify admin: processing failed, you can retry
-            this.notifyFailure(admin, clientAddress); 
+            notifyFailure(admin, clientAddress); 
             
         }
         

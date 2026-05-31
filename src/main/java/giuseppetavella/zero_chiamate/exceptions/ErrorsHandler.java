@@ -428,6 +428,22 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO("There was an error in the server while working with a template.");
     }
 
+    @ExceptionHandler(DocumentTextExtractionException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleDocumentTextExtractionException(DocumentTextExtractionException ex) {
+
+        LOGGER.error("Error while extracting text from document. DETAILS: {}", ex.getMessage());
+
+        problemsEmailService.alertDevIfNonLocal(
+                "Error while extracting text from document",
+                ex.getMessage(),
+                ex
+        );
+        
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleGenericException(Exception ex) {

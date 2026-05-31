@@ -23,16 +23,14 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // resources/extra/invoice.pdf -> bytes
-        // byte[] bytes = FileHelper.readFile("extra/cat_image_as_pdf.pdf");
-        // // //
-        // // // // bytes -> plain text (deterministic, no AI)
+        // byte[] bytes = FileHelper.readFile("extra/cleaning_contract.docx");
+        
         // String text = documentTextExtractor.bytesToText(bytes, 100);
 
         // System.out.println(text);
         
-        //
         // var contractExpectations =  contractDiscrepancyDetector.extractContractExpectations(bytes);
-        //
+        // //
         // System.out.println(contractExpectations);
         
         // var classification = contractDiscrepancyDetector.classify(bytes);
