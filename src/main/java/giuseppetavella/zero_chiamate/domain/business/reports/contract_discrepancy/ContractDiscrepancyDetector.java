@@ -70,8 +70,10 @@ public class ContractDiscrepancyDetector {
     public String extractContractExpectations(byte[] contractPdf)
     {
 
+        // TODO: check that this is a contract first
+        
         String prompt = "You are an operational data extractor for an Italian cleaning company CRM. \n" +
-                "Analyze the attached contract text for the client/cantiere. \n" +
+                "Analyze the contract text for the client/cantiere. \n" +
                 "Ignore all legal, financial, and safety clauses. \n" +
                 "\n" +
                 "Extract ONLY the operational schedule expectations. \n" +
@@ -96,12 +98,9 @@ public class ContractDiscrepancyDetector {
                 "Output: Dal Lunedì al Venerdì, 1 ora al giorno | Mercoledì, 3 ore al pomeriggio\n" +
                 "\n" +
                 "Input: \"...l'appaltatore si impegna a garantire un intervento di pulizia a settimana della durata di 2 ore, da concordarsi preventivamente con la direzione dello stabilimento...\"\n" +
-                "Output: 1 volta a settimana (giorno flessibile), 2 ore per turno\n" +
-                "\n" +
-                "### CONTRACT TEXT TO ANALYZE\n" +
-                "[see contract in attachment]";
+                "Output: 1 volta a settimana (giorno flessibile), 2 ore per turno\n";
 
-        String contractExpectationsFromAI = aiService.askWithPdf(contractPdf, prompt);
+        String contractExpectationsFromAI = aiService.askWithPdfPreferText(contractPdf, prompt);
 
         return contractExpectationsFromAI;
     }
