@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 public class ContractDiscrepancyPromptBuilder {
 
     
-    public String extractContractExpectationsUserPrompt() {
-        return "Here's the contract:\n";
+    public String extractContractExpectationsUserPrompt(String contractText) {
+        return "Here's the contract:\n" + contractText;
     }
     
     public String extractContractExpectationsSystemPrompt() {

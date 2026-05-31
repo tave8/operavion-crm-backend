@@ -1,6 +1,7 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.dto.ContractClassificationDTO;
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
@@ -24,11 +25,7 @@ public class ContractDiscrepancyDetector {
     private ContractDiscrepancyPromptBuilder promptBuilder;
     
     private final ObjectMapper mapper = new ObjectMapper();
-
-    public record ContractClassificationDTO(
-            @JsonProperty("isContract") boolean isContract,
-            @JsonProperty("whatIfNotContract") String whatIfNotContract
-    ) {}
+    
     
     
     /**
@@ -65,13 +62,18 @@ public class ContractDiscrepancyDetector {
 
             // this is not a contract
             if(!classification.isContract()) {
-                throw new ContractExpectationException("This is not a contract (AI detection).");
+                throw new ContractExpectationException(
+                        "This is not a contract (AI detection). "
+                            +"The document is about '"+classification.whatIfNotContract()+"' instead."
+                );
             }
         }
         
-        return aiService.askWithPdfPreferText(
-                bytes,
-                promptBuilder.extractContractExpectationsUserPrompt(),
+        // extract the text from contract
+        var contractText = documentTextExtractor.bytesToText(bytes);
+        
+        return aiService.ask(
+                promptBuilder.extractContractExpectationsUserPrompt(contractText),
                 promptBuilder.extractContractExpectationsSystemPrompt()
         );
 
@@ -89,15 +91,7 @@ public class ContractDiscrepancyDetector {
         return extractContractExpectations(bytes, TrustThisIsContract.NO);
     }
     
-
-
-
-    public String extractContractExpectations(MultipartFile contractPdf)
-    {
-        byte[] bytes = FileHelper.getBytes(contractPdf);
-
-        return extractContractExpectations(bytes);
-    }
+    
 
     
     /**
@@ -125,6 +119,7 @@ public class ContractDiscrepancyDetector {
         
         try {
             
+            // deserialize json payload
             return mapper.readValue(answerJsonToBe, ContractClassificationDTO.class);
             
         } catch (JacksonException e) {

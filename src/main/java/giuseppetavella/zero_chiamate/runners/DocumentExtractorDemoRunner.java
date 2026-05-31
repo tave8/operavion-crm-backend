@@ -8,10 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 /**
- * Demo: deterministic, AI-free text extraction from a PDF.
- *
- * Reads extra/invoice.pdf from resources, extracts its text layer with
- * DocumentTextExtractor (Apache Tika, no AI), and prints the result.
  */
 @Component
 public class DocumentExtractorDemoRunner implements CommandLineRunner {
@@ -27,11 +23,20 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // resources/extra/invoice.pdf -> bytes
-        // byte[] invoiceBytes = FileHelper.readFile("extra/cleaning_contract.pdf");
+        // byte[] bytes = FileHelper.readFile("extra/cleaning_contract.docx");
+        // //
+        // // // bytes -> plain text (deterministic, no AI)
+        // // String text = documentTextExtractor.bytesToText(invoiceBytes, 100);
         //
-        // // bytes -> plain text (deterministic, no AI)
-        // String text = documentTextExtractor.bytesToText(invoiceBytes, 100);
+        // var contractExpectations =  contractDiscrepancyDetector.extractContractExpectations(bytes);
         //
+        // System.out.println(contractExpectations);
+        
+        // var classification = contractDiscrepancyDetector.classify(bytes);
+        //
+        // System.out.println(classification.isContract());
+        // System.out.println(classification.whatIfNotContract());
+        
         // System.out.println("file is empty? " + (text.isEmpty()));
         // System.out.println("=== extracted text ===");
         // System.out.println(text);
