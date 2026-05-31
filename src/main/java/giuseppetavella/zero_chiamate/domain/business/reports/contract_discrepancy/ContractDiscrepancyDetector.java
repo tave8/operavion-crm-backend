@@ -50,17 +50,23 @@ public class ContractDiscrepancyDetector {
 
     /**
      * Extract expectations from legal contract.
-     * A check is made prior to contract expectation,
-     * to check whether this is an actual contract.
+     * Choose whether to make an extra check if this is a contract,
+     * by setting <code>trust</code> to NO.
+     * 
      */
-    public String extractContractExpectations(byte[] bytes)
+    public String extractContractExpectations(byte[] bytes, 
+                                              TrustThisIsContract trust)
     {
+    
+        // if we don't trust this is a contract, 
+        // we check if it's a contract
+        if(trust.no()) {
+            var classification = classify(bytes);
 
-        var classification = classify(bytes);
-
-        // this is not a contract
-        if(!classification.isContract()) {
-            throw new ContractExpectationException("This is not a contract (AI detection).");
+            // this is not a contract
+            if(!classification.isContract()) {
+                throw new ContractExpectationException("This is not a contract (AI detection).");
+            }
         }
         
         return aiService.askWithPdfPreferText(
@@ -70,6 +76,19 @@ public class ContractDiscrepancyDetector {
         );
 
     }
+
+    
+    /**
+     * By default, we don't trust this is a contract.
+     * 
+     * @param bytes
+     * @return
+     */
+    public String extractContractExpectations(byte[] bytes) 
+    {
+        return extractContractExpectations(bytes, TrustThisIsContract.NO);
+    }
+    
 
 
 
