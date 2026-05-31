@@ -161,6 +161,8 @@ public class ClientAddressesController {
 
     /**
      * Extract contract expectations from a legal contract.
+     * TODO: this controller has big size on purpose. 
+     *    refactoring into a service will be done when appropriate. 
      *
      * @param contractFile
      * @return
@@ -173,9 +175,6 @@ public class ClientAddressesController {
                                                                 @PathVariable UUID clientAddressId,
                                                                 @RequestParam("file") MultipartFile contractFile)
     {
-        
-        // the contract must be a pdf
-        PayloadValidationHelper.requiredPdf(contractFile);
 
         // find client address     
         var clientAddress = clientAddressesService.findById(clientAddressId);
@@ -185,9 +184,10 @@ public class ClientAddressesController {
         // require that the client address sent must belong the the current user
         AuthorizationHelper.requireSameCompany(company, clientAddress.getClient().getCompany());
         
+        // the contract must be a pdf
         // get bytes from contract pdf
         byte[] contractBytes = FileHelper.getBytes(contractFile);
-        
+
         // check that contract is text or pdf, before classifying it,
         // so user can fix immediately
         ValidationHelper.requireFileTextOrPdf(contractBytes);
