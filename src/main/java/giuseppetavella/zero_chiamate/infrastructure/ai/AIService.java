@@ -3,7 +3,7 @@ package giuseppetavella.zero_chiamate.infrastructure.ai;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.anthropic.AnthropicAPIService;
-import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -109,7 +109,7 @@ public class AIService {
 
         ValidationHelper.requireFilePdf(pdfBytes);
 
-        String extractedText = documentTextExtractor.bytesToText(pdfBytes);
+        String extractedText = documentTextExtractor.extract(pdfBytes);
 
         // no text layer (scanned/image PDF) -> fall back to AI vision/OCR
         if (extractedText.isEmpty()) {
@@ -129,7 +129,7 @@ public class AIService {
 
         ValidationHelper.requireFilePdf(pdfBytes);
 
-        String extractedText = documentTextExtractor.bytesToText(pdfBytes);
+        String extractedText = documentTextExtractor.extract(pdfBytes);
 
         if (extractedText.isEmpty()) {
             return anthropicAPIService.askWithPdf(pdfBytes, userPrompt);

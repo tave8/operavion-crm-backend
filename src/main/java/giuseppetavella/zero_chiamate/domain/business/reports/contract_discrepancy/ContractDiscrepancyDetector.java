@@ -1,15 +1,12 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.dto.ContractClassificationDTO;
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
-import giuseppetavella.zero_chiamate.exceptions.DocumentTextExtractionException;
-import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
-import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -71,7 +68,7 @@ public class ContractDiscrepancyDetector {
         }
         
         // extract the text from contract
-        var contractText = documentTextExtractor.bytesToText(bytes);
+        var contractText = documentTextExtractor.extract(bytes);
         
         return aiService.ask(
                 promptBuilder.extractContractExpectationsUserPrompt(contractText),
@@ -104,7 +101,7 @@ public class ContractDiscrepancyDetector {
     {
         
         // we assume the first 300 chars say this is a contract
-        var startOfContract = documentTextExtractor.bytesToText(bytes, 300);
+        var startOfContract = documentTextExtractor.extract(bytes, 300);
         
         // json payload as string
         var answerJsonToBe = aiService.ask(

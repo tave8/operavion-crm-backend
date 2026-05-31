@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.exceptions;
+package giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions;
 
 public class DocumentTextExtractionException extends RuntimeException {
     public DocumentTextExtractionException(String message) {

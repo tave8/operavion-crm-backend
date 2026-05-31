@@ -8,6 +8,8 @@ import giuseppetavella.zero_chiamate.infrastructure.pdf.exceptions.PdfGeneration
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.FileUploadException;
 import giuseppetavella.zero_chiamate.infrastructure.storage.exceptions.InvalidFileUploadedException;
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentTextExtractionException;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.TikaAPIException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -428,18 +430,26 @@ public class ErrorsHandler {
         return new ErrorsToSendDTO("There was an error in the server while working with a template.");
     }
 
-    @ExceptionHandler(DocumentTextExtractionException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorsToSendDTO handleDocumentTextExtractionException(DocumentTextExtractionException ex) {
 
-        LOGGER.error("Error while extracting text from document. DETAILS: {}", ex.getMessage());
+
+    @ExceptionHandler(TikaAPIException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorsToSendDTO handleTikaAPIException(TikaAPIException ex) {
+
+        LOGGER.error("Error while using Tika API. DETAILS: {}", ex.getMessage());
 
         problemsEmailService.alertDevIfNonLocal(
-                "Error while extracting text from document",
+                "Error while using Tika API",
                 ex.getMessage(),
                 ex
         );
-        
+
+        return new ErrorsToSendDTO(ex.getMessage());
+    }
+    
+    @ExceptionHandler(DocumentTextExtractionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsToSendDTO handleDocumentTextExtractionException(DocumentTextExtractionException ex) {
         return new ErrorsToSendDTO(ex.getMessage());
     }
 

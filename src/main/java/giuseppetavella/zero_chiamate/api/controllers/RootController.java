@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.api.controllers;
 
-import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
