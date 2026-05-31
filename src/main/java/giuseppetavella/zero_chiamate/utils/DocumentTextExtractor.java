@@ -27,12 +27,11 @@ public class DocumentTextExtractor {
      * @return the extracted plain text
      * @throws FileException if the text cannot be extracted
      */
-    public @NonNull String bytesToText(byte[] docBytes)
+    public @NonNull String bytesToText(byte[] docBytes, int maxChars)
     {
         try {
 
-            // -1 = no length limit; parseToString otherwise truncates at 100k chars
-            tika.setMaxStringLength(-1);
+            tika.setMaxStringLength(maxChars);
 
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(docBytes)) {
 
@@ -60,5 +59,14 @@ public class DocumentTextExtractor {
         }
 
     }
+
+
+    /*
+    * Read the whole file.
+    * */
+    public @NonNull String bytesToText(byte[] docBytes) {
+        return bytesToText(docBytes, -1);
+    }
+    
 
 }
