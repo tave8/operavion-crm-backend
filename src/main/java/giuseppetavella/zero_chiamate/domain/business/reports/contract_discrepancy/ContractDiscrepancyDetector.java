@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepan
 import com.fasterxml.jackson.annotation.JsonProperty;
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.dto.ContractClassificationDTO;
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
+import giuseppetavella.zero_chiamate.exceptions.DocumentTextExtractionException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
 import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
@@ -98,19 +99,12 @@ public class ContractDiscrepancyDetector {
      * Is this file a contract?
      * Uses document extraction and AI to determine.
      */
-    public ContractClassificationDTO classify(byte[] bytes) throws ContractExpectationException
+    public ContractClassificationDTO classify(byte[] bytes) throws DocumentTextExtractionException, 
+                                                                    ContractExpectationException
     {
         
         // we assume the first 300 chars say this is a contract
         var startOfContract = documentTextExtractor.bytesToText(bytes, 300);
-        
-        //  if parser could not extract text
-        if(startOfContract.isEmpty()) {
-            throw new ContractExpectationException(
-                    "While extracting the start of the contract, "
-                    +"the result was empty. Does this file contain normal text?"
-            );
-        }
         
         // json payload as string
         var answerJsonToBe = aiService.ask(
