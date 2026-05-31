@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.runners;
 
+import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,10 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
 
     @Autowired
     private DocumentTextExtractor documentTextExtractor;
+    
+    @Autowired
+    private ContractDiscrepancyDetector contractDiscrepancyDetector;
+    
 
     @Override
     public void run(String... args) throws Exception {
@@ -31,6 +36,12 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
         // System.out.println("=== extracted text ===");
         // System.out.println(text);
         // System.out.println("=== end ===");
+        
+        
+        // var classification = contractDiscrepancyDetector.classify(invoiceBytes);
+        //
+        // System.out.println("IS CONTRACT: " + classification.isContract());
+        // System.out.println("WHAT IF NOT CONTRACT: " + classification.whatIfNotContract());
 
     }
 

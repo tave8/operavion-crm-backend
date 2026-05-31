@@ -112,7 +112,7 @@ public class AIService {
         String extractedText = documentTextExtractor.bytesToText(pdfBytes);
 
         // no text layer (scanned/image PDF) -> fall back to AI vision/OCR
-        if (extractedText == null || extractedText.isBlank()) {
+        if (extractedText.isEmpty()) {
             return anthropicAPIService.askWithPdf(pdfBytes, userPrompt, systemPrompt);
         }
 
@@ -131,7 +131,7 @@ public class AIService {
 
         String extractedText = documentTextExtractor.bytesToText(pdfBytes);
 
-        if (extractedText == null || extractedText.isBlank()) {
+        if (extractedText.isEmpty()) {
             return anthropicAPIService.askWithPdf(pdfBytes, userPrompt);
         }
 

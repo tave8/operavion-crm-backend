@@ -1,10 +1,15 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
+import giuseppetavella.zero_chiamate.utils.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class ContractDiscrepancyDetector {
@@ -12,8 +17,17 @@ public class ContractDiscrepancyDetector {
     @Autowired
     private AIService aiService;
 
+    @Autowired
+    private DocumentTextExtractor documentTextExtractor;
     
+    private final ObjectMapper mapper = new ObjectMapper();
 
+    public record ContractClassificationDTO(
+            @JsonProperty("isContract") boolean isContract,
+            @JsonProperty("whatIfNotContract") String whatIfNotContract
+    ) {}
+    
+    
     /**
      * Find discrepancies between a legal contract 
      * and the actual data of the admin's account.
@@ -99,6 +113,57 @@ public class ContractDiscrepancyDetector {
         byte[] bytes = FileHelper.getBytes(contractPdf);
 
         return this.extractContractExpectations(bytes);
+    }
+
+    
+    /**
+     * Is this file a contract?
+     * Uses document extraction and AI to determine.
+     */
+    public ContractClassificationDTO classify(byte[] bytes) throws ContractExpectationException
+    {
+        // we assume the first 300 chars say this is a contract
+        var startOfContract = documentTextExtractor.bytesToText(bytes, 300);
+        
+        //  if parser could not extract text
+        if(startOfContract.isEmpty()) {
+            throw new ContractExpectationException(
+                    "While extracting the start of the contract, "
+                    +"the result was empty. Does this file contain normal text?"
+            );
+        }
+        
+        String systemPrompt = """
+            You are a legal document classifier.
+            You receive the opening lines of a document and determine whether it is a legal contract.
+        
+            Respond ONLY with a valid JSON object — no markdown, no explanation, no preamble.
+        
+            Schema:
+            {
+              "isContract": boolean,
+              "whatIfNotContract": string | null
+            }
+            """;
+
+        String userPrompt = "Classify the following document opening:\n\n" + startOfContract;
+        
+        String answerJsonToBe = aiService.ask(userPrompt, systemPrompt);
+        
+        try {
+            
+            return mapper.readValue(answerJsonToBe, ContractClassificationDTO.class);
+            
+        } catch (JacksonException e) {
+            
+            throw new ContractExpectationException(
+                    "Error during deserialization of "
+                    +"JSON payload from AI API into class. DETAILS: " +e.getMessage()
+            );
+            
+        }
+        
+        
     }
     
 
