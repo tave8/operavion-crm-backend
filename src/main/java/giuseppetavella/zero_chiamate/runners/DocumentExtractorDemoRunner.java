@@ -1,6 +1,8 @@
 package giuseppetavella.zero_chiamate.runners;
 
 import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.ContractDiscrepancyDetector;
+import giuseppetavella.zero_chiamate.helpers.FileHelper;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentClassifier;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,12 +19,22 @@ public class DocumentExtractorDemoRunner implements CommandLineRunner {
     @Autowired
     private ContractDiscrepancyDetector contractDiscrepancyDetector;
     
+    @Autowired
+    private DocumentClassifier documentClassifier;
+    
 
     @Override
     public void run(String... args) throws Exception {
 
         // resources/extra/invoice.pdf -> bytes
         // byte[] bytes = FileHelper.readFile("extra/cleaning_contract.docx");
+        //
+        // var classification = contractDiscrepancyDetector.classify(bytes);
+        //
+        // // var classification = documentClassifier.classifyFromFirstLines(bytes, "a");
+        //
+        // System.out.println("IS EXPECTED TOPIC? " + classification.isExpectedTopic());
+        // System.out.println("IF NOT EXPECTED TOPIC, IT'S ABOUT: " + classification.whatIfNotExpectedTopic());
         
         // String text = documentTextExtractor.bytesToText(bytes, 100);
 

@@ -186,8 +186,7 @@ public class ClientAddressesController {
         // get bytes from contract pdf
         byte[] contractBytes = FileHelper.getBytes(contractFile);
         
-        // classify the contract = check that all is good, 
-        // before processing entire contract
+        // is this a valid contract? 
         contractDiscrepancyDetector.requireActualContract(contractBytes);
         
         // create pending entry for this job

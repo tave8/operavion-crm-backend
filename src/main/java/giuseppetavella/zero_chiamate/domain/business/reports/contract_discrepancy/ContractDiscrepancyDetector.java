@@ -1,9 +1,10 @@
 package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy;
 
-import giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepancy.dto.ContractClassificationDTO;
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.JSONDeserializationException;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentClassificationDTO;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentClassifier;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentEmptyTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
@@ -24,6 +25,9 @@ public class ContractDiscrepancyDetector {
     @Autowired
     private ContractDiscrepancyPromptBuilder promptBuilder;
     
+    @Autowired
+    private DocumentClassifier documentClassifier;
+    
     private final ObjectMapper mapper = new ObjectMapper();
 
 
@@ -35,8 +39,8 @@ public class ContractDiscrepancyDetector {
      * @param docBytes
      */
     public void requireActualContract(byte[] docBytes) {
-        
-        ContractClassificationDTO classification;
+
+        DocumentClassificationDTO classification;
         
         try {
             
@@ -51,8 +55,8 @@ public class ContractDiscrepancyDetector {
 
         }
 
-        // verify that the user has uploaded an actual contract
-        if(!classification.isContract()) {
+        // document is not a contract
+        if(!classification.isExpectedTopic()) {
             throw new InvalidDataException(
                     "Document uploaded is not a contract in its content."
             );
@@ -94,10 +98,10 @@ public class ContractDiscrepancyDetector {
             var classification = classify(bytes);
 
             // this is not a contract
-            if(!classification.isContract()) {
+            if(!classification.isExpectedTopic()) {
                 throw new ContractExpectationException(
                         "This is not a contract (AI detection). "
-                            +"The document is about '"+classification.whatIfNotContract()+"' instead."
+                            +"The document is about '"+classification.whatIfNotExpectedTopic()+"' instead."
                 );
             }
         }
@@ -133,32 +137,15 @@ public class ContractDiscrepancyDetector {
      * 
      * @throws JSONDeserializationException
      */
-    public ContractClassificationDTO classify(byte[] bytes)
+    public DocumentClassificationDTO classify(byte[] bytes)
     {
         
-        // we assume the first 300 chars say this is a contract
-        var startOfContract = documentTextExtractor.extractAndRequireNonEmpty(bytes, 300);
+        var expectedTopic = "a legal contract";
         
-        // json payload as string
-        var answerJsonToBe = aiService.ask(
-                promptBuilder.contractClassificationUserPrompt(startOfContract), 
-                promptBuilder.contractClassificationSystemPrompt()
+        return documentClassifier.classifyFromFirstLines(
+                bytes,
+                expectedTopic
         );
-        
-        try {
-            
-            // deserialize json payload
-            return mapper.readValue(answerJsonToBe, ContractClassificationDTO.class);
-            
-        } catch (JacksonException e) {
-            
-            throw new JSONDeserializationException(
-                    "Error during deserialization of "
-                    +"JSON payload from AI API into class. "
-                    +"Answer from AI: " + answerJsonToBe + ". DETAILS: " +e.getMessage()
-            );
-            
-        }
         
         
     }
