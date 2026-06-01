@@ -1,8 +1,7 @@
-package giuseppetavella.zero_chiamate.unit;
+package giuseppetavella.zero_chiamate.unit.files.empty_file;
 
 import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

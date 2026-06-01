@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit;
+package giuseppetavella.zero_chiamate.unit.files.empty_file;
 
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
