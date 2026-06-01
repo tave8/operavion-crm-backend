@@ -11,7 +11,7 @@ import java.util.Map;
 
 
 @Configuration
-@PropertySource("application.properties")
+@PropertySource("classpath:application.properties")
 public class CloudinaryAPIConfig {
 
 

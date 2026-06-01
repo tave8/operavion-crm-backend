@@ -1,0 +1,32 @@
+JWT
+
+1) non modificabilità del payload (integrità dei dati)
+2) header e payload sono creati dall'hashing della signature. la signature è (o viene creata?) creata dal segreto del nostro backend. quindi il segreto è l'input dell'algoritmo di hashing. questo algoritmo da in output
+
+
+INPUT: segreto
+
+PROCESSO: algoritmo di hashing
+
+OUTPUT: signature
+
+
+hashing: integrità dei dati, one-way function
+
+cifratura: rendere illegibili dati che dovranno di nuovo essere letti
+
+codifica: passare da un formato a un altro
+
+
+
+----------------------
+
+
+gli hash, siccome sono veloci e deterministici, sono usati per l'integrità dei dati.
+ad esempio si utilizzano per I file (), la signature dei token,
+
+la password non ha senso cifrarla, perché non mi serve/non voglio avere una chiave. quando l'utente mi da la password, faccio l'hash e la comparo con l'hash in database.
+
+il determinismo è un problema. il salted hash è un algoritmo di hash non deterministico. quindi 2 utenti con la stessa password non avranno lo stesso hash finale in DB.
+
+per l'integrità dei dati, non si usa il salted hash, ma l'hash normale, perché in questo caso vogliamo il determinismo
