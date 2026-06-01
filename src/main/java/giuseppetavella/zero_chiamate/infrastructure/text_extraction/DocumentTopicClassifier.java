@@ -9,7 +9,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
-public class DocumentClassifier {
+public class DocumentTopicClassifier {
     
     @Autowired
     private DocumentTextExtractor documentTextExtractor;
@@ -31,7 +31,7 @@ public class DocumentClassifier {
      * @param expectedTopic
      * @return
      */
-    public DocumentClassificationDTO classifyFromFirstLines(byte[] bytes, String expectedTopic) {
+    public DocumentTopicClassificationDTO classifyFromFirstLines(byte[] bytes, String expectedTopic) {
         
         int failedAttemptsCount = 0;
         
@@ -59,7 +59,7 @@ public class DocumentClassifier {
             try {
                 
                 // deserialize json payload
-                return mapper.readValue(answerJsonToBe, DocumentClassificationDTO.class);
+                return mapper.readValue(answerJsonToBe, DocumentTopicClassificationDTO.class);
     
             } catch (JacksonException e) {
                 

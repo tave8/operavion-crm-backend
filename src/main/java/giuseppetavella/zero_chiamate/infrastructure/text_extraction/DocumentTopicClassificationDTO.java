@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
 
  */
-public record DocumentClassificationDTO(
+public record DocumentTopicClassificationDTO(
             @JsonProperty("isExpectedTopic") boolean isExpectedTopic,
             
             @JsonProperty("whatIfNotExpectedTopic") String whatIfNotExpectedTopic

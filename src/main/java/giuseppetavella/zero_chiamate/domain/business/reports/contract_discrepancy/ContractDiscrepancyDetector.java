@@ -3,14 +3,13 @@ package giuseppetavella.zero_chiamate.domain.business.reports.contract_discrepan
 import giuseppetavella.zero_chiamate.exceptions.ContractExpectationException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.JSONDeserializationException;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentClassificationDTO;
-import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentClassifier;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTopicClassificationDTO;
+import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTopicClassifier;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentEmptyTextExtractionException;
 import giuseppetavella.zero_chiamate.infrastructure.ai.AIService;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
@@ -26,7 +25,7 @@ public class ContractDiscrepancyDetector {
     private ContractDiscrepancyPromptBuilder promptBuilder;
     
     @Autowired
-    private DocumentClassifier documentClassifier;
+    private DocumentTopicClassifier documentTopicClassifier;
     
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -40,7 +39,7 @@ public class ContractDiscrepancyDetector {
      */
     public void requireActualContract(byte[] docBytes) {
 
-        DocumentClassificationDTO classification;
+        DocumentTopicClassificationDTO classification;
         
         try {
             
@@ -137,12 +136,12 @@ public class ContractDiscrepancyDetector {
      * 
      * @throws JSONDeserializationException
      */
-    public DocumentClassificationDTO classify(byte[] bytes)
+    public DocumentTopicClassificationDTO classify(byte[] bytes)
     {
         
         var expectedTopic = "a legal contract";
         
-        return documentClassifier.classifyFromFirstLines(
+        return documentTopicClassifier.classifyFromFirstLines(
                 bytes,
                 expectedTopic
         );
