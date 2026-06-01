@@ -277,5 +277,196 @@ public class StateTransitionTest {
         });
 
     }
+
+
+
+    /**
+     * <pre>
+     *   Current state: B
+     *   Desired state: C
+     *   Valid: yes
+     * </pre>
+     *
+     * <pre>
+     *   CURRENT            NEXT
+     *   ----------------------------
+     *      A     ->         B
+     *      B     ->         C
+     * </pre>
+     *
+     *
+     */
+    @Test
+    public void validDesiredStateAfterFirst() {
+
+        String currentState = "B";
+        String desiredState = "C";
+
+        List<String> firstStates = List.of(
+                "A"
+        );
+
+        Map<String, List<String>> stateMap = Map.of(
+                "A", List.of(
+                        "B"
+                ),
+                "B", List.of(
+                        "C"
+                )
+        );
+
+        var isValid = StateTransitionHelper.isValidStateTransition(
+                    currentState,
+                    desiredState,
+                    firstStates,
+                    stateMap,
+                    currentState == null
+        );
+        
+        assertTrue(isValid);
+
+    }
+
+
+    /**
+     * <pre>
+     *   Current state: B
+     *   Desired state: D
+     *   Valid: yes
+     * </pre>
+     *
+     * <pre>
+     *   CURRENT            NEXT
+     *   ----------------------------
+     *      A     ->         B
+     *      B     ->         C, D, E
+     * </pre>
+     *
+     *
+     */
+    @Test
+    public void validDesiredStateAfterFirstWithOption() {
+
+        String currentState = "B";
+        String desiredState = "D";
+
+        List<String> firstStates = List.of(
+                "A"
+        );
+
+        Map<String, List<String>> stateMap = Map.of(
+                "A", List.of(
+                        "B"
+                ),
+                "B", List.of(
+                        "C", "D", "E"
+                )
+        );
+
+        var isValid = StateTransitionHelper.isValidStateTransition(
+                currentState,
+                desiredState,
+                firstStates,
+                stateMap,
+                currentState == null
+        );
+
+        assertTrue(isValid);
+
+    }
+
+
+    /**
+     * <pre>
+     *   Current state: A
+     *   Desired state: X
+     *   Valid: no
+     * </pre>
+     *
+     * <pre>
+     *   CURRENT            NEXT
+     *   ----------------------------
+     *      A     ->         B
+     * </pre>
+     *
+     *
+     */
+    @Test
+    public void desiredStateNotIncluded() {
+
+        String currentState = "A";
+        String desiredState = "X";
+
+        List<String> firstStates = List.of(
+                "A"
+        );
+
+        Map<String, List<String>> stateMap = Map.of(
+                "A", List.of(
+                        "B"
+                )
+        );
+        
+        
+        var isValid = StateTransitionHelper.isValidStateTransition(
+                    currentState,
+                    desiredState,
+                    firstStates,
+                    stateMap,
+                    currentState == null
+        );
+        
+        assertFalse(isValid);
+        
+    }
+
+
+
+    /**
+     * <pre>
+     *   Current state: X
+     *   Desired state: B
+     *   Valid: no
+     * </pre>
+     *
+     * <pre>
+     *   CURRENT            NEXT
+     *   ----------------------------
+     *      A     ->         B
+     * </pre>
+     *
+     *
+     */
+    @Test
+    public void currentStateNotExists() {
+
+        String currentState = "X";
+        String desiredState = "B";
+
+        List<String> firstStates = List.of(
+                "A"
+        );
+
+        Map<String, List<String>> stateMap = Map.of(
+                "A", List.of(
+                        "B"
+                )
+        );
+
+
+        assertThrows(IllegalStateTransitionException.class, () -> {
+            StateTransitionHelper.isValidStateTransition(
+                    currentState,
+                    desiredState,
+                    firstStates,
+                    stateMap,
+                    currentState == null
+            );
+        });
+
+    }
+
+    
+    
     
 }
