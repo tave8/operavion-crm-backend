@@ -1,8 +1,6 @@
 package giuseppetavella.zero_chiamate.unit;
 
-import giuseppetavella.zero_chiamate.exceptions.UnknownFileTypeException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * - xlsx
  * - docx
  */
-public class GetFileTypeTest {
+public class IsFileTypeMatchTest {
     
     @Test
     public void pdfIsPdf() {

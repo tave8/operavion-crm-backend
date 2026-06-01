@@ -1,8 +1,6 @@
-package giuseppetavella.zero_chiamate.unit.filesystem_read_file;
+package giuseppetavella.zero_chiamate.unit;
 
-import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
-import giuseppetavella.zero_chiamate.exceptions.InvalidDataFormatException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.exceptions.DocumentEmptyTextExtractionException;
@@ -12,27 +10,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * Test whether the document provided is a text or pdf document.
+ * Prerequisites:
+ * - read file from filesystem
+ * - get file type
+ *
+ *
+ * Test:
+ * - is document a pdf file
+ * - is document a text file
+ * - is document a pdf or text file 
+ */
 @SpringBootTest
-public class FilesystemReadFileTest {
+public class IsFileATextFileTest {
     
     @Autowired
     private DocumentTextExtractor documentTextExtractor;
     
-    @Test
-    public void fileExists() {
-        assertDoesNotThrow(() -> {
-            FileHelper.readFile("extra/cat_image_as_pdf.pdf");
-        });
-    }
-    
-    @Test
-    public void fileNotExists() {
-        assertThrows(FileException.class, () -> {
-            FileHelper.readFile("extra/cat_image_as_pdf1.pdf");
-        });
-    }
-
-
     @Test
     public void excelIsText() {
         byte[] bytes = FileHelper.readFile("extra/report.xlsx");
@@ -65,6 +61,7 @@ public class FilesystemReadFileTest {
         assertDoesNotThrow(() -> {
             documentTextExtractor.extractAndRequireNonEmpty(bytes);
         });
+        
 
     }
 
