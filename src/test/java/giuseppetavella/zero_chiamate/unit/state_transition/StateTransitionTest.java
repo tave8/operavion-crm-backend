@@ -1,5 +1,7 @@
 package giuseppetavella.zero_chiamate.unit.state_transition;
 
+import giuseppetavella.zero_chiamate.exceptions.IllegalStateTransitionException;
+import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.helpers.StateTransitionHelper;
 import giuseppetavella.zero_chiamate.helpers.ValidationHelper;
 import giuseppetavella.zero_chiamate.integrations.stripe.StripeAPISubscriptionStatus;
@@ -8,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StateTransitionTest {
 
@@ -204,7 +205,7 @@ public class StateTransitionTest {
      *
      */
     @Test
-    public void hasDesiredStateNotValid() {
+    public void hasInvalidDesiredState() {
 
         String currentState = "A";
         String desiredState = "C";
@@ -228,6 +229,52 @@ public class StateTransitionTest {
         );
 
         assertFalse(isValidTransition);
+
+    }
+
+
+
+
+    /**
+     * <pre>
+     *   Current state: A
+     *   Desired state: null
+     *   Valid: no
+     * </pre>
+     *
+     * <pre>
+     *   CURRENT            NEXT
+     *   ----------------------------
+     *      A     ->         B
+     * </pre>
+     *
+     *
+     */
+    @Test
+    public void desiredStateCannotBeNull() {
+
+        String currentState = "A";
+        String desiredState = null;
+
+        List<String> firstStates = List.of(
+                "A"
+        );
+
+        Map<String, List<String>> stateMap = Map.of(
+                "A", List.of(
+                        "B"
+                )
+        );
+        
+        assertThrows(IllegalStateTransitionException.class, () -> {
+            StateTransitionHelper.isValidStateTransition(
+                    currentState,
+                    desiredState,
+                    firstStates,
+                    stateMap,
+                    currentState == null
+            );
+        });
 
     }
     

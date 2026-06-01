@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
-public class InvalidStateTransitionException extends InvalidDataException {
+public class InvalidStateTransitionException extends StateTransitionException {
     
     public InvalidStateTransitionException(String msg)
     {

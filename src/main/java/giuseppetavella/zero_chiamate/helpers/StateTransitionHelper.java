@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.helpers;
 
+import giuseppetavella.zero_chiamate.exceptions.IllegalStateTransitionException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 
 import java.util.List;
@@ -16,19 +17,19 @@ public class StateTransitionHelper {
                                                  String desiredState,
                                                  List<String> firstStates,
                                                  Map<String, List<String>> stateMap,
-                                                 boolean noStateYet)
+                                                 boolean noStateYet) throws IllegalStateTransitionException
     {
 
         // desired state cannot be null, regardless
         if(desiredState == null) {
-            throw new InvalidStateTransitionException(
+            throw new IllegalStateTransitionException(
                 "desiredState can never be null."
             );
         }
 
         // current state cannot be null and existing  
         if(currentState == null && !noStateYet) {
-            throw new InvalidStateTransitionException(
+            throw new IllegalStateTransitionException(
                 "currentState cannot be null (actual) and at the same time existing (declared)."
             );
         }
@@ -43,7 +44,7 @@ public class StateTransitionHelper {
         
         // the current state passed does not exist  in the valid next states
         if (validNextStates == null) {
-            throw new InvalidStateTransitionException(
+            throw new IllegalStateTransitionException(
                     "Unknown state: " + currentState
             );
         }
