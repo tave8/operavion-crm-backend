@@ -1,0 +1,5 @@
+Why Your CPU Is Always Guessing
+Modern processors don't wait to know what to do next — they guess. Before an if statement even finishes evaluating, the CPU has already started executing what it thinks comes after it. This is called branch prediction.
+When the guess is right, you get a performance boost for free. When it's wrong, the CPU has to discard the speculative work and start over — a branch misprediction penalty of 10–20 clock cycles depending on the architecture.
+This is why a sorted array can be significantly faster to iterate over than an unsorted one: the branch predictor learns the pattern. It's also why the Spectre vulnerability was so devastating — it exploited speculative execution to read memory that should have been off-limits.
+Writing branch-predictor-friendly code means: prefer predictable conditions, avoid deeply nested conditionals in hot loops, and when in doubt, profile before optimizing.
