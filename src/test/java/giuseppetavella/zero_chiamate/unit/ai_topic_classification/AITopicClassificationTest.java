@@ -14,6 +14,27 @@ public class AITopicClassificationTest {
 
     @Autowired
     private DocumentTopicClassifier documentTopicClassifier;
+    
+
+    @Test
+    public void itsAboutLegalContract() {
+        byte[] bytes = FileHelper.readFile("extra/cleaning_contract.pdf");
+
+        var classification = documentTopicClassifier.classifyFromFirstLines(bytes, "a legal contract");
+
+        assertTrue(classification.isExpectedTopic());
+    }
+
+
+    @Test
+    public void itsNotAboutLegalContract() {
+        byte[] bytes = FileHelper.readFile("extra/invoice.pdf");
+
+        var classification = documentTopicClassifier.classifyFromFirstLines(bytes, "a legal contract");
+
+        assertFalse(classification.isExpectedTopic());
+    }
+
 
     @Test
     public void itsAboutInvoice() {
@@ -27,7 +48,7 @@ public class AITopicClassificationTest {
     
     @Test
     public void itsNotAboutInvoice() {
-        byte[] bytes = FileHelper.readFile("extra/cleaning_contract.docx");
+        byte[] bytes = FileHelper.readFile("extra/cleaning_contract.pdf");
         
         var classification = documentTopicClassifier.classifyFromFirstLines(bytes, "an invoice");
         
