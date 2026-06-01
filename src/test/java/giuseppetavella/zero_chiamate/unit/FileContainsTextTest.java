@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * - is document a pdf or text file 
  */
 @SpringBootTest
-public class IsFileATextFileTest {
+public class FileContainsTextTest {
     
     @Autowired
     private DocumentTextExtractor documentTextExtractor;

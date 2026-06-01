@@ -1,5 +1,6 @@
 package giuseppetavella.zero_chiamate.helpers;
 
+import giuseppetavella.zero_chiamate.exceptions.EmptyFileException;
 import giuseppetavella.zero_chiamate.exceptions.FileDownloadException;
 import giuseppetavella.zero_chiamate.exceptions.FileException;
 import giuseppetavella.zero_chiamate.exceptions.UnknownFileTypeException;
@@ -57,7 +58,7 @@ public class FileHelper {
      */
     public static String getMimeType(byte[] bytes) {
         if (bytes.length == 0) {
-            throw new UnknownFileTypeException("File is empty, cannot determine MIME type.");
+            throw new EmptyFileException("Cannot determine MIME type because byte array has length 0.");
         }
         return TIKA.detect(bytes);
     }

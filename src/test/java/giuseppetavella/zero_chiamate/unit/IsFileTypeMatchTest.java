@@ -3,8 +3,7 @@ package giuseppetavella.zero_chiamate.unit;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test the file type/extension, such as pdf, img, csv etc.
@@ -21,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * - docx
  */
 public class IsFileTypeMatchTest {
+
     
     @Test
     public void pdfIsPdf() {

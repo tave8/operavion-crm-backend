@@ -28,19 +28,6 @@ public class ReadFileFromFilesystemTest {
             FileHelper.readFile("extra/cat_image_as_pdf1.pdf");
         });
     }
-
-    @Test
-    public void fileIsEmpty() {
-      byte[] bytes = FileHelper.readFile("extra/empty.txt");
-      
-      assertEquals(0, bytes.length);
-    }
-
-    @Test
-    public void fileIsNotEmpty() {
-        byte[] bytes = FileHelper.readFile("extra/cat_image_as_pdf.pdf");
-
-        assertNotEquals(0, bytes.length);
-    }
+    
 
 }

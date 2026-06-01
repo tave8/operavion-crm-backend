@@ -1,6 +1,6 @@
 package giuseppetavella.zero_chiamate.exceptions;
 
-public class UnknownFileTypeException extends RuntimeException {
+public class UnknownFileTypeException extends FileException {
     public UnknownFileTypeException(String mimeType) {
         super("Unsupported or unrecognized MIME type: '" + mimeType + "'. The system does not recognize this file extension."
                 +"This can happen if the input file's extension is internally recognized, and therefore invalid. "
