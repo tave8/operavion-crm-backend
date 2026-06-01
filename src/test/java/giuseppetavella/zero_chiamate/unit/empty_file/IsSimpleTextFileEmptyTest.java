@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit;
+package giuseppetavella.zero_chiamate.unit.empty_file;
 
 import giuseppetavella.zero_chiamate.exceptions.EmptyFileException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test the emptiness of file.
+ * Test:
+ * - with number of bytes
+ * - when get file type
  */
-public class IsFileEmptyTest {
+public class IsSimpleTextFileEmptyTest {
 
     @Test
     public void txtIsEmptyWithBytes() {
@@ -24,6 +27,7 @@ public class IsFileEmptyTest {
 
         assertNotEquals(0, bytes.length);
     }
+    
     
     @Test
     public void txtFileIsEmptyWhenGetFileType() {
@@ -43,7 +47,7 @@ public class IsFileEmptyTest {
             FileHelper.getFileType(bytes);
         });
     }
-
-
+    
+    
     
 }
