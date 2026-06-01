@@ -22,6 +22,7 @@ public class DocumentClassifier {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final int MAX_AI_ATTEMPTS = 2;
 
     /**
      * Extract text or pdf documents only.
@@ -31,6 +32,8 @@ public class DocumentClassifier {
      * @return
      */
     public DocumentClassificationDTO classifyFromFirstLines(byte[] bytes, String expectedTopic) {
+        
+        int failedAttemptsCount = 0;
         
         var jsonSchema = """
         
@@ -49,21 +52,35 @@ public class DocumentClassifier {
                 promptBuilder.classifyUserPrompt(startOfContract),
                 promptBuilder.classifySystemPrompt(expectedTopic, jsonSchema)
         );
-
-        try {
-
-            // deserialize json payload
-            return mapper.readValue(answerJsonToBe, DocumentClassificationDTO.class);
-
-        } catch (JacksonException e) {
-
-            throw new JSONDeserializationException(
-                    "Error during deserialization of "
-                            +"JSON payload from AI API into class. "
+        
+        // keep re-trying until AI gets it right
+        while (true) {
+            
+            try {
+                
+                // deserialize json payload
+                return mapper.readValue(answerJsonToBe, DocumentClassificationDTO.class);
+    
+            } catch (JacksonException e) {
+                
+                failedAttemptsCount += 1;
+                
+                if(failedAttemptsCount > MAX_AI_ATTEMPTS) {
+                    
+                    throw new JSONDeserializationException(
+                            "Error during deserialization of "
+                            +"JSON payload from AI API "
+                            +"(after attempt #" + failedAttemptsCount +"). "
                             +"Answer from AI: " + answerJsonToBe + ". DETAILS: " +e.getMessage()
-            );
-
+                    );
+                    
+                }
+    
+    
+            }
+            
         }
+
         
     }
 
