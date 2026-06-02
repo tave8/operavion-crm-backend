@@ -3,6 +3,7 @@ package giuseppetavella.zero_chiamate.helpers;
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidUrlException;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,39 @@ import java.util.function.Supplier;
 public class ValidationHelper {
 
 
+    /**
+     * Require that an input string is in a list of pre-defined strings. 
+     * 
+     * @param needle
+     * @param haystack
+     * @param varName
+     * @throws InvalidDataException
+     */
+    public static void requireInValues(@NonNull String needle,
+                                       @NonNull List<String> haystack,
+                                       @NonNull String varName) throws InvalidDataException
+    {
+
+        if(needle == null) {
+            throw new InvalidDataException("Input string cannot be null.");
+        }
+        
+        for(String match : haystack) {
+            if(needle.equals(match)) {
+                return;
+            }
+        }
+
+        throw new InvalidDataException(
+                "While validating if a string's value matches "
+                +"any of potential values for variable '" + varName + "', "
+                +"no matching string was found. "
+                + "Input value '" + needle + "'. Possible matches: " + String.join(",", haystack)
+        );
+    }
+
+    
+    
     public static void requireFileTextOrPdf(byte[] bytes)
     {
         if(!FileHelper.isTextOrPdfFile(bytes)) {
