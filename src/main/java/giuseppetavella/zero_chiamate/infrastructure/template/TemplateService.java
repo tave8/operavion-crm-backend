@@ -26,8 +26,7 @@ public class TemplateService {
      * 
      * @throws TemplateException if input template is not valid / does not exist
      */
-    public String fillTemplate(Template template,
-                               Map<String, ? extends Object> vars)
+    public String fillTemplate(Template template, Map<String, ? extends Object> vars)
     {
 
         if (vars == null) {
