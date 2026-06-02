@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.files.empty_file;
+package giuseppetavella.zero_chiamate.unit.infrastructure.files.empty_file;
 
 import giuseppetavella.zero_chiamate.exceptions.EmptyFileException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;

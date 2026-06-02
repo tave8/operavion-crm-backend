@@ -1,7 +1,5 @@
-package giuseppetavella.zero_chiamate.unit;
+package giuseppetavella.zero_chiamate.unit.infrastructure.template;
 
-import giuseppetavella.zero_chiamate.config.ReportTemplate;
-import giuseppetavella.zero_chiamate.config.Template;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.pdf.FlyingSaucerAPIPdfService;
 import giuseppetavella.zero_chiamate.infrastructure.template.ThymeleafAPIService;

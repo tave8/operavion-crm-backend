@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.state_transition;
+package giuseppetavella.zero_chiamate.unit.helpers.state_transition;
 
 import giuseppetavella.zero_chiamate.exceptions.IllegalStateTransitionException;
 import giuseppetavella.zero_chiamate.exceptions.InvalidStateTransitionException;

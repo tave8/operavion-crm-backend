@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.files.empty_file;
+package giuseppetavella.zero_chiamate.integration;
 
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import giuseppetavella.zero_chiamate.infrastructure.text_extraction.DocumentTextExtractor;

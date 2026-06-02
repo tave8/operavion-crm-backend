@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.files.image;
+package giuseppetavella.zero_chiamate.unit.infrastructure.files.image;
 
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
 import org.junit.jupiter.api.AfterEach;

@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.time;
+package giuseppetavella.zero_chiamate.unit.helpers.time;
 
 import giuseppetavella.zero_chiamate.helpers.TimeHelper;
 import org.junit.jupiter.api.Test;
