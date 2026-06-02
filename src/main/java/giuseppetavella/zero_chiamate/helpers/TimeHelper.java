@@ -18,38 +18,50 @@ public class TimeHelper {
         TimeHelper.requireNotNull(inputTime);
         OffsetDateTime now = OffsetDateTime.now();
         return inputTime.plusMinutes(minutes).isBefore(now);
-    }    
-    
-    /**
-     * Returns true if the input time is older than {@code minutes} minutes ago.
-     */
-    public static boolean isExpiredWithin(OffsetDateTime inputTime, long minutes) throws InvalidDataException 
-    {
-        TimeHelper.requireNotNull(inputTime);
-        return !TimeHelper.isValidWithin(inputTime, minutes);
     }
 
     /**
-     * Returns true if the input time is within the last {@code minutes} minutes.
+     * Returns true if the input time is older than {@code minutes} minutes ago (i.e. expired).
      */
-    public static boolean isValidWithin(OffsetDateTime inputTime, long minutes) throws InvalidDataException
+    public static boolean isExpiredWithin(OffsetDateTime inputTime, long minutes)
     {
         TimeHelper.requireNotNull(inputTime);
         OffsetDateTime now = OffsetDateTime.now();
-        return inputTime.plusMinutes(minutes).isAfter(now); 
-    }
-    
-    
-    public static boolean isValid(OffsetDateTime inputTime) {
-        TimeHelper.requireNotNull(inputTime);
-        return OffsetDateTime.now().isAfter(inputTime);
+        return inputTime.plusMinutes(minutes).isBefore(now);
     }
 
-    
-    public static boolean isExpired(OffsetDateTime inputTime) throws InvalidDataException
+    /**
+     * Returns true if the input time is within the last {@code minutes} minutes (i.e. not expired).
+     */
+    public static boolean isNotExpiredWithin(OffsetDateTime inputTime, long minutes)
     {
+        return !TimeHelper.isExpiredWithin(inputTime, minutes);
+    }
+    
+
+    /**
+     * Is the given input in the past?
+     * 
+     * @param inputTime
+     * @return
+     */
+    public static boolean isPast(OffsetDateTime inputTime) {
         TimeHelper.requireNotNull(inputTime);
-        return !TimeHelper.isValid(inputTime);
+        return inputTime.isBefore(OffsetDateTime.now());
+    }
+
+    public static boolean isFuture(OffsetDateTime inputTime) {
+        TimeHelper.requireNotNull(inputTime);
+        return inputTime.isAfter(OffsetDateTime.now());
+    }
+    
+    public static boolean isExpired(OffsetDateTime inputTime) {
+        return isPast(inputTime);
+    }
+    
+    public static boolean isNotExpired(OffsetDateTime inputTime)
+    {
+        return isFuture(inputTime);
     }
     
     
@@ -59,24 +71,7 @@ public class TimeHelper {
             throw new InvalidDataException("Input time cannot be null.");
         }
     }
-
-    /**
-     * Is the input timestamp now or in the future?
-     * 
-     * @param inputTime
-     * @return
-     */
-    public static boolean isNowOrFuture(OffsetDateTime inputTime) {
-
-        TimeHelper.requireNotNull(inputTime);
-        
-        OffsetDateTime now = OffsetDateTime.now();
-
-        boolean isNow = inputTime.equals(now);
-        boolean isFuture = inputTime.isAfter(now);
-        
-        return isNow || isFuture;
-    }
+    
 
 
     public static boolean isValidRange(LocalDate start, LocalDate end) {
