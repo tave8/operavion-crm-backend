@@ -54,7 +54,7 @@ public class FileHelper {
      * Detect the MIME type of a file from its bytes.
      * For example: "image/png", "application/pdf".
      *
-     * @throws UnknownFileTypeException if the file is empty
+     * @throws EmptyFileException if the file is empty
      */
     public static String getMimeType(byte[] bytes) {
         if (bytes.length == 0) {
