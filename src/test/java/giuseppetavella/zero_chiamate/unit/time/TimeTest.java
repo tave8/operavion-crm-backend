@@ -117,4 +117,33 @@ class TimeTest {
         assertFalse(result);
     }
 
+    @Test
+    void sinceHavePassedAtLeast() {
+        // given
+        var minutes = 1;
+        var time = OffsetDateTime.now().minusSeconds(61);
+
+        // when
+        var result = TimeHelper.sinceHavePassedAtLeast(time, minutes);
+
+        // then     
+        assertTrue(result);
+    }
+
+
+    @Test
+    void sinceNotHavePassedAtLeast() {
+        // given
+        var minutes = 1;
+        var time = OffsetDateTime.now().minusSeconds(59);
+
+        // when
+        var result = TimeHelper.sinceHavePassedAtLeast(time, minutes);
+
+        // then     
+        assertFalse(result);
+    }
+
+
+
 }

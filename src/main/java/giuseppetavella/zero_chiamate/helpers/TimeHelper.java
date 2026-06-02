@@ -13,7 +13,7 @@ public class TimeHelper {
     /**
      * Since {@code input time } have passed at least {@code minutes}
      */
-    public static boolean sinceHavePassedAtLeast(OffsetDateTime inputTime, long minutes) throws InvalidDataException
+    public static boolean sinceHavePassedAtLeast(OffsetDateTime inputTime, long minutes) 
     {
         TimeHelper.requireNotNull(inputTime);
         OffsetDateTime now = OffsetDateTime.now();
@@ -25,9 +25,7 @@ public class TimeHelper {
      */
     public static boolean isExpiredWithin(OffsetDateTime inputTime, long minutes)
     {
-        TimeHelper.requireNotNull(inputTime);
-        OffsetDateTime now = OffsetDateTime.now();
-        return inputTime.plusMinutes(minutes).isBefore(now);
+        return sinceHavePassedAtLeast(inputTime, minutes);
     }
 
     /**
@@ -35,7 +33,7 @@ public class TimeHelper {
      */
     public static boolean isNotExpiredWithin(OffsetDateTime inputTime, long minutes)
     {
-        return !TimeHelper.isExpiredWithin(inputTime, minutes);
+        return !isExpiredWithin(inputTime, minutes);
     }
     
 
@@ -91,22 +89,21 @@ public class TimeHelper {
 
 
 
-    /**
-     * Returns the Monday of last week.
-     */
-    public static LocalDate lastMonday() {
-        // 1. Get the Monday of THIS week (May 18)
-        LocalDate thisMonday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-        // 2. Go back exactly 7 days to get LAST week's Monday (May 11)
-        return thisMonday.minusDays(7);
+    public static LocalDate thisMonday() {
+        return LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     }
 
-    /**
-     * Returns the Friday of last week.
-     */
+    public static LocalDate lastMonday() {
+        return thisMonday().minusDays(7);
+    }
+
+    public static LocalDate thisFriday() {
+        return thisMonday().with(DayOfWeek.FRIDAY);
+    }
+
     public static LocalDate lastFriday() {
-        // Aligns perfectly with the Monday calculated above (May 15)
         return lastMonday().with(DayOfWeek.FRIDAY);
     }
+    
+    
 }
