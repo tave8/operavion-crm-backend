@@ -1,10 +1,11 @@
 package giuseppetavella.zero_chiamate.infrastructure.template;
 
 import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.TemplateException;
-import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.ThymeleafException;
+import giuseppetavella.zero_chiamate.infrastructure.template.exceptions.ThymeleafAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -21,13 +22,13 @@ import java.util.Map;
  * Use TemplateService instead.
  */
 @Service
-class ThymeleafService {
+public class ThymeleafAPIService {
 
     @Autowired
     private TemplateEngine templateEngine;
 
     // logger
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThymeleafService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThymeleafAPIService.class);
     
     
     /**
@@ -37,8 +38,7 @@ class ThymeleafService {
      *
      * @throws TemplateException if input template is not valid / does not exist
      */
-    String fillTemplate(String template, 
-                               Map<String, ? extends Object> vars)
+    public String fillTemplate(String templatePath, Map<String, ? extends Object> vars)
     {
 
         // *****************
@@ -62,13 +62,13 @@ class ThymeleafService {
         try {
 
             // fill the template
-            return templateEngine.process(template, context);
+            return templateEngine.process(templatePath, context);
 
         } catch (TemplateInputException ex) {
 
-            throw new ThymeleafException(
+            throw new ThymeleafAPIException(
                     "Template input error. " +
-                            "Template: '" + template + "'. " +
+                            "Template: '" + templatePath + "'. " +
                             "Keys passed to method: " + vars.keySet() + ". " +
                             "Keys registered in template context (actual): " + context.getVariableNames() + ". " +
                             "DETAILS: " + ex.getMessage()
@@ -76,9 +76,9 @@ class ThymeleafService {
 
         } catch (TemplateEngineException ex) {
 
-            throw new ThymeleafException(
+            throw new ThymeleafAPIException(
                     "Template engine error. " +
-                            "Template: '" + template + "'. " +
+                            "Template: '" + templatePath + "'. " +
                             "Keys passed to method: " + vars.keySet() + ". " +
                             "Keys registered in template context (actual): " + context.getVariableNames() + ". " +
                             "DETAILS: " + ex.getMessage()
@@ -86,9 +86,9 @@ class ThymeleafService {
 
         } catch (Exception ex) {
 
-            throw new ThymeleafException(
+            throw new ThymeleafAPIException(
                     "Unknown error while processing template. " +
-                            "Template: '" + template + "'. " +
+                            "Template: '" + templatePath + "'. " +
                             "Keys passed to method: " + vars.keySet() + ". " +
                             "Keys registered in template context (actual): " + context.getVariableNames() + ". " +
                             "DETAILS: " + ex.getMessage()

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <title>Verifica Email</title>
+</head>
+<body>
+
+<p>
+    Ciao <span th:text="${firstname}"></span>,
+</p>
+
+<p>
+    Verifica il tuo indirizzo email per completare la registrazione.
+</p>
+
+<p>
+    <a th:href="${verificationUrl}">
+        Verifica la tua email
+    </a>
+</p>
+
+<p>
+    Se il link non funziona, copia e incolla questo URL nel tuo browser:
+</p>
+
+<p>
+    <span th:text="${verificationUrl}"></span>
+</p>
+
+<p>
+    Questo link scadrà a breve.
+</p>
+
+<p>
+    Se non hai creato questo account, puoi ignorare questa email.
+</p>
+
+</body>
+</html>

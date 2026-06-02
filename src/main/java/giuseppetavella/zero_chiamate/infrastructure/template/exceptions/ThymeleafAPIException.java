@@ -1,7 +1,7 @@
 package giuseppetavella.zero_chiamate.infrastructure.template.exceptions;
 
-public class ThymeleafException extends TemplateException {
-    public ThymeleafException(String message) {
+public class ThymeleafAPIException extends TemplateException {
+    public ThymeleafAPIException(String message) {
         super("Error while working with Thymeleaf template library. DETAILS: " + message);
     }
 }

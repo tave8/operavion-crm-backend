@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 32px;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 720px;
+            margin: auto;
+            border-left: 6px solid #e53e3e;
+        }
+        h1 {
+            color: #e53e3e;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .field {
+            margin-bottom: 20px;
+        }
+        .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 15px;
+            color: #333;
+        }
+        .stacktrace {
+            background-color: #1a1a1a;
+            color: #f8f8f2;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 16px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>⚠ Error Alert</h1>
+    <div class="subtitle" th:text="'Occurred at: ' + ${timestamp}"></div>
+
+    <div class="field">
+        <div class="label">Error Message</div>
+        <div class="value" th:text="${message}"></div>
+    </div>
+
+    <div class="field" th:if="${details != null}">
+        <div class="label">Details</div>
+        <div class="value" th:text="${details}"></div>
+    </div>
+
+    <div class="field" th:if="${environment != null}">
+        <div class="label">Environment</div>
+        <div class="value" th:text="'Error occurred in environment: ' + ${environment}"></div>
+    </div>
+    
+    <div class="field" th:if="${stackTrace != null}">
+        <div class="label">Stack Trace</div>
+        <div class="stacktrace" th:text="${stackTrace}"></div>
+    </div>
+
+</div>
+</body>
+</html>
