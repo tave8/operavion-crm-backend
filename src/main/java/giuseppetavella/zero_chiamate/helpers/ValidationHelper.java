@@ -124,7 +124,7 @@ public class ValidationHelper {
      */
     public static void requireTemplateExists(String templatePathWithoutExt)
     {
-        if(!FileSystemHelper.templateExists(templatePathWithoutExt)) {
+        if(!FileHelper.templateExists(templatePathWithoutExt)) {
             throw new InvalidDataException("Template '" +  templatePathWithoutExt + "' does not exist.");
         }
     }

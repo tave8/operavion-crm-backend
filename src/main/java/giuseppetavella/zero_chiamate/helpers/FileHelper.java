@@ -211,21 +211,56 @@ public class FileHelper {
      * Read a file from /resources directory.
      * 
      * Use forward slashes, something like:  extra/invoice.pdf;
+     * 
+     * Use .readResource() instead. 
      */
-    public static byte[] readFile(String filepath) {
-        
+    @Deprecated
+    public static byte[] readFile(String filepathFromResources) {
+        return readResource(filepathFromResources);
+    }
+    
+    
+    public static byte[] readResource(String filepathFromResources) {
         try {
-            ClassPathResource resource = new ClassPathResource(filepath);
+            ClassPathResource resource = new ClassPathResource(filepathFromResources);
             try (InputStream is = resource.getInputStream()) {
                 return is.readAllBytes();
             }
         } catch (IOException ex) {
-            throw new FileException("File not found or unreadable: " + filepath + ". DETAILS: " + ex.getMessage());
+            throw new FileException("File not found or unreadable: " + filepathFromResources + ". DETAILS: " + ex.getMessage());
         }
-            
-        
     }
 
+
+    /**
+     * The resource exists?
+     *  By resources we mean those in <code>src/main/resources</code>
+     *  or <code>src/test/resources</code>.
+     *      
+     * @param filepathFromResources
+     * @return
+     */
+    public static boolean resourceExists(String filepathFromResources) {
+        return new ClassPathResource(filepathFromResources).exists();
+    }
+
+    
+    /**
+     * Html template exists?
+     * - Must be in templates directory, inside resources
+     * - Must exclude file extensione, so without .html
+     *
+     * @param templatePathWithoutExt the template path, starting from /templates/, 
+     *   without slash and without extension. Example: <code>emails/my_custom_email</code>, 
+     *   <code>reports/my_custom_report</code> 
+     *                               
+     * @return
+     */
+    public static boolean templateExists(String templatePathWithoutExt)
+    {
+        return resourceExists("templates/" + templatePathWithoutExt + ".html");
+    }
+    
 
     /**
      * byte array -> base64 
