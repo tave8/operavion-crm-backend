@@ -346,7 +346,7 @@ public class ForgotPasswordService {
     private void requireNotExpiredCode(ForgotPasswordCode code, long minutes) throws ForgotPasswordVerificationException
     {
         
-        if(TimeHelper.isValidWithin(code.getCreatedAt(), minutes)) {
+        if(TimeHelper.isNotExpiredWithin(code.getCreatedAt(), minutes)) {
             return;
         }
 

@@ -121,7 +121,7 @@ public class Notification {
         
         // the expiry date must be >= now (so in the future)
         
-        if(!TimeHelper.isNowOrFuture(expiresAt)) {
+        if(!TimeHelper.isFuture(expiresAt)) {
             throw new NotificationException(
                     this,
                     "The expiresAt attribute of the notification must be now or in the future, "
