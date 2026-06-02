@@ -17,14 +17,17 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CompaniesRepositoryTest {
 
+    
     @Autowired
     private CompaniesRepository underTest;
+    
 
     @AfterEach
     void tearDown() {
         underTest.deleteAll();
     }
 
+    
     @Test
     void existsByEmail() {
         // given
