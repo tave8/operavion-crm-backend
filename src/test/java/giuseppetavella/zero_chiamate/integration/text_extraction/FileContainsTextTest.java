@@ -1,4 +1,4 @@
-package giuseppetavella.zero_chiamate.unit.files;
+package giuseppetavella.zero_chiamate.integration.text_extraction;
 
 import giuseppetavella.zero_chiamate.exceptions.InvalidDataException;
 import giuseppetavella.zero_chiamate.helpers.FileHelper;
