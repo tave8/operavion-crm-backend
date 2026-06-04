@@ -104,11 +104,11 @@ public class AuthEmailVerificationService {
      * associated to the given user.
      */
     public String generateNewEmailVerificationUrl(User user) {
-        String code = this.addEmailVerificationCode(user).toString();
+        String code = addEmailVerificationCode(user).toString();
         // which domain should be in the verification url?
         // the domain from which the email was sent?
         // so the domain on which domain this server is running?
-        return this.buildEmailVerificationUrl(code);
+        return buildEmailVerificationUrl(code);
     }
 
 
@@ -117,7 +117,7 @@ public class AuthEmailVerificationService {
      */
     private UUID addEmailVerificationCode(User user) {
         EmailVerificationCode code = new EmailVerificationCode(user);
-        EmailVerificationCode codeFromDB = this.emailVerificationRepository.save(code);
+        EmailVerificationCode codeFromDB = emailVerificationRepository.save(code);
         return codeFromDB.getCode();
     }
 

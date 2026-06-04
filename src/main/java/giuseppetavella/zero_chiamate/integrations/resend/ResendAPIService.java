@@ -58,6 +58,9 @@ public class ResendAPIService {
             return data.getId();
 
         } catch (ResendException e) {
+            
+            // TODO: check if Resend API status code is not 429 (too many requests)
+            //  so that we don't send a new email to dev
         
             throw new ResendAPIException(e.getMessage());
         

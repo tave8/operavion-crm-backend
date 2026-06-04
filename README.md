@@ -1,3 +1,52 @@
+
+
+# Configuration
+
+Run/Edit configuration. Spring must be in "local" profile when in local environment?
+
+
+
+# Forgot password
+
+Here I discuss the Forgot Password mechanism.
+
+1. To set a new password, the user needs to provide their email.
+
+2. After they receive an email, they click the link in the email
+
+3. This link will be verified, and if valid, the user will be able to set a new password
+
+```
+
+```
+
+
+# Cron Job System
+
+The Cron Job System, for now, only supports 1 replica.
+
+With more replicas, the cron jobs would be fired at the same time.
+
+Therefore, in this version, these are the assumptions:
+
+- 1 replica only (1 server)
+-
+
+
+
+
+# Stripe API local configuration
+
+Note: If Stripe doesn't seem to work locally, it's likely because you haven't set up
+the local listener. Set up the local listener with the Stripe CLI.
+This way, Stripe will forward the test events to my localhost, through the CLI.
+
+`stripe listen --forward-to localhost:3001/webhooks/stripe`
+
+`stripe trigger payment_intent.succeeded`
+
+
+
 # Railway CLI
 
 `railway login` (then login)
@@ -650,58 +699,5 @@ ClientAddress
 
 ```
 
-
-# Shift conflicts
-
-INPUT: startDate, endDate, startTime, endTime, days
-
-conflict exists if:
-
-
-
-
-
-
-# Forgot password
-
-Here I discuss the Forgot Password mechanism.
-
-1. To set a new password, the user needs to provide their email.
-
-2. After they receive an email, they click the link in the email 
-
-3. This link will be verified, and if valid, the user will be able to set a new password
-
-```
-
-```
-
-
-# Cron Job System
-
-The Cron Job System, for now, only supports 1 replica.
-
-With more replicas, the cron jobs would be fired at the same time.
-
-Therefore, in this version, these are the assumptions:
-
-- 1 replica only (1 server)
-- 
-
-
-# Configuration
-
-Run/Edit configuration. Spring must be in "local" profile when in local environment?
-
-
-# Stripe API local configuration
-
-Note: If Stripe doesn't seem to work locally, it's likely because you haven't set up 
-the local listener. Set up the local listener with the Stripe CLI.
-This way, Stripe will forward the test events to my localhost, through the CLI.
-
-`stripe listen --forward-to localhost:3001/webhooks/stripe`
-
-`stripe trigger payment_intent.succeeded`
 
 
