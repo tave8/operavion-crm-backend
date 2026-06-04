@@ -1,3 +1,76 @@
+# Launching
+
+**The problem: Flyway took over. Hibernate is not managing DB.**
+
+Before launching the project, the [DB schema dump](db_schema_dump_on_project_end.sql) should be run against your existing, empty DB.
+
+This is because at first, Hibernate ORM was managing entities & DB.
+
+Then, Flyway (migration library) took over. In fact you can see the migration scripts.
+
+But those migration scripts do **not** capture the DB's schema before Flyway took over; 
+
+I forgot to take a DB schema dump of the DB's schema *before* Flyway took over.
+
+This means, you probably need to manually run the schema dump against your existing, empty DB.
+
+If you don't do that, you should get errors saying that some tables don't exist, because Flyway, on startup, 
+
+will be executing the migration scripts, not knowing anything about the project's history and assuming your DB already has the correct schema
+
+as it did when it first took over in my project.
+
+Try either of these solutions (either one or the other).
+
+## Solution A
+
+So, before your run the server:
+
+1. Manually create the DB.
+2. Run the DB schema dump against your empty DB (execute script). This will create the DB as it is now that I've finished the project.
+3. Run the server.
+
+Not guaranteed but this should fix it. If it doesn't work, it's probably because some part of the migration script is trying to 
+
+create a table that already exists (or something like that) and will fail.
+
+
+## Solution B
+
+Temporarily re-activate Hibernate.  
+
+In [application.properties](src/main/resources/application.properties) there's a line that says:
+
+```
+# Hibernate must not touch the schema, Flyway owns it.
+
+spring.jpa.hibernate.ddl-auto=none
+```
+
+You should temporarily re-activate Hibernate, so it creates the first schema directly from the entities.
+
+```
+spring.jpa.hibernate.ddl-auto=update
+```
+
+Check DB and make sure the schema is created. Then disable Hibernate again.
+
+Now run the server.
+
+Flyway will now be executing all migration scripts one by one. 
+
+If any issues comes up, it's likely due to some part of the migration script assuming some DB object that doesn't exist or that already exists.
+
+If that migration script was **not** executed, only then can you modify it directly to fix the issue. 
+
+
+## Conclusion
+
+
+Note: I have **not** tried these solutions. This is a reference to my future self. 
+
+If this project will be continued, you won't even see this message and this configuration impasse will have been fixed.
+
 
 
 # Configuration
