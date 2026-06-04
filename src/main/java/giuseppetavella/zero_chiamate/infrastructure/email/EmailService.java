@@ -10,6 +10,9 @@ import giuseppetavella.zero_chiamate.infrastructure.email_attachment.EmailAttach
 import giuseppetavella.zero_chiamate.exceptions.EmailSendingException;
 import giuseppetavella.zero_chiamate.infrastructure.template.TemplateService;
 import giuseppetavella.zero_chiamate.integrations.resend.ResendAPIService;
+import giuseppetavella.zero_chiamate.integrations.resend.exceptions.ResendAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +33,13 @@ public class EmailService {
     private TemplateService templateService;
     
 
+    // logger
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
+    
+
     /**
      * Send an email.
-     * Many attachments.
+     * The only send email method; all email sending logic brings us here.
      * 
      * @throws EmailSendingException if any problem occurred during email sending
      */
@@ -60,8 +67,14 @@ public class EmailService {
                 params.htmlBody(), 
                 () -> new EmailSendingException("Html body cannot be empty")
         );
+
+            
+        // send email with API
         
-       return resendAPIService.sendEmail(params); 
+        // if this fails, we cannot send an alert because the 
+        // email alerting service depends on this email service
+        return resendAPIService.sendEmail(params); 
+        
        
     }
 

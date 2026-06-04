@@ -220,6 +220,11 @@ public class ErrorsHandler {
     @ExceptionHandler(EmailSendingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorsToSendDTO handleEmailSendingException(EmailSendingException ex) {
+
+        LOGGER.error("Error sending email. DETAILS: {}", ex.getMessage());
+        
+        // TODO: we should send  another alert maybe?
+        
         return new ErrorsToSendDTO(ex.getMessage());
     }
     

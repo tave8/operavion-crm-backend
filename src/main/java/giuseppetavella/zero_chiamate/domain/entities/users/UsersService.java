@@ -2,6 +2,7 @@ package giuseppetavella.zero_chiamate.domain.entities.users;
 
 import giuseppetavella.zero_chiamate.domain.business.AppImageUploadService;
 import giuseppetavella.zero_chiamate.domain.business.auth.AuthEmailVerificationService;
+import giuseppetavella.zero_chiamate.domain.business.auth.VerifyEmailMailer;
 import giuseppetavella.zero_chiamate.domain.entities.companies.Company;
 import giuseppetavella.zero_chiamate.domain.entities.companies.dto.to_send.CompanyToSendDTO;
 import giuseppetavella.zero_chiamate.exceptions.*;
@@ -47,6 +48,9 @@ public class UsersService {
     
     @Autowired
     private AppImageUploadService appImageUploadService;
+    
+    @Autowired
+    private VerifyEmailMailer verifyEmailMailer;
    
 
     /**
@@ -211,18 +215,18 @@ public class UsersService {
                                            Company company, 
                                            String tempPassword) 
     {
-        // you can add only non-admin users
-        if(role.equals(UserRole.ADMIN)) {
+        // you can add only non-admin users 
+        if(role.isAdmin()) {
             throw new IncorrectInternalAPIUsage("Cannot add an admin user in a method that "
                                               +"specifically adds non-admin users.");
         }
         
-        String hashedTempPassword = this.bcrypt.encode(tempPassword);
+        String hashedTempPassword = bcrypt.encode(tempPassword);
 
-        String uniqueUsername = this.generateUniqueUsernameFrom(body.firstname(), body.lastname());
+        String uniqueUsername = generateUniqueUsernameFrom(body.firstname(), body.lastname());
         
         // if role is coordinator:
-        if(role.equals(UserRole.COORDINATOR)) {
+        if(role.isCoordinator()) {
             
             User newUser = new User(
                     company,
@@ -234,7 +238,7 @@ public class UsersService {
                     uniqueUsername
             );
             
-            User userFromDB = this.addAnyUser(newUser);
+            User userFromDB = addAnyUser(newUser);
             
             // ******************
             // SEND EMAIL VERIFICATION
@@ -242,7 +246,7 @@ public class UsersService {
 
             String verificationUrl = authEmailVerificationService.generateNewEmailVerificationUrl(userFromDB);
 
-            forgotPasswordAuthorizationMailer.send(userFromDB, verificationUrl);
+            verifyEmailMailer.send(userFromDB, verificationUrl);
             
             
             return userFromDB;
