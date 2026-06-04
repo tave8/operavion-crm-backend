@@ -64,6 +64,25 @@ If any issues comes up, it's likely due to some part of the migration script ass
 If that migration script was **not** executed, only then can you modify it directly to fix the issue. 
 
 
+## Claude - AI
+
+This was my prompt that instructed Claude to generate the project's overview.
+
+```
+analyze this project. explain conventions, how it works, naming & architecture patterns, 
+features, project's scope & topic, developer skill level & mentality. 
+this shall be a reference to hiring managers evaluating whether to hire me, and to developers looking at the code. 
+assess your reasoning against my following  initial goal for the project: building the "reusable core" of a CRM software, 
+solve the most common problems and take inspiration of solved problems for future projects. 
+take into account that what I've left incomplete are probably things i'm improving at (for example, mocking in testing) or 
+that I feel like it's not the right time to refactor or build on top of, so it's okay as it depicts what to improve next. 
+include some stats like: number of commits, project's time span, number of files, number of features & APIs and what you think is relevant. 
+include some stats about the developer. state the most important things first, less important things last. 
+be objective and keep in mind the target audience.
+```
+
+
+
 ## Conclusion
 
 
