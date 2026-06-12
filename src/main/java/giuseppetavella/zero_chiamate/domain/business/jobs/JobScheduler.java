@@ -35,7 +35,7 @@ public class JobScheduler {
     @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void emailOperatorTomorrowShift() {
         
-        this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT);
+        // this.jobManager.executeJob(JobName.EMAIL_OPERATOR_TOMORROW_SHIFT);
         
     }
 
@@ -43,7 +43,7 @@ public class JobScheduler {
     @Scheduled(cron = CronSchedule.EVERY_HOUR, zone = "Europe/Rome")
     public void notifyAdminBecauseOperatorHasNoShift() {
 
-        this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
+        // this.jobManager.executeJob(JobName.NOTIFY_ADMIN_BECAUSE_OPERATOR_HAS_NO_SHIFT);
 
     }
 
@@ -62,7 +62,7 @@ public class JobScheduler {
 
         // System.out.println("JOB SEND ADMIN DISCREPANCIES WAS CALLED");
         
-        this.jobManager.executeJob(JobName.SEND_ADMIN_DISCREPANCIES);
+        // this.jobManager.executeJob(JobName.SEND_ADMIN_DISCREPANCIES);
 
 
     }
@@ -71,7 +71,7 @@ public class JobScheduler {
     // @Scheduled(cron = CronSchedule.EVERY_SECOND, zone = "Europe/Rome")
     public void sendQrCodeToOperatorsForStartShift() {
         
-        this.jobManager.executeJob(JobName.SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT);
+        // this.jobManager.executeJob(JobName.SEND_QRCODE_TO_OPERATORS_FOR_START_SHIFT);
         
     }
 
