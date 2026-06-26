@@ -2,7 +2,7 @@
 #   GENERIC = considerations about an image, internal workings etc.
 #   LOCAL = my local config only, it might not apply to your local config
 
-# ********** SUMMARY OF SERVICES ********************
+# ********** SUMMARY OF SERVICES AT THIS HOST ********************
 # ------------------------------------------------
 #      SERVICE              |       ADDRESS
 # ----------------------------------------------

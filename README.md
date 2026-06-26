@@ -1,5 +1,7 @@
 # Run the app 
 
+See [Local execution model](local_execution_model.png) to understand how this app works when you run it on your local machine, as well as how the [docker-compose](docker-compose.yml) works.
+
 You can run this app with and without Docker. 
 
 This has implications on where the data is stored.
@@ -11,6 +13,9 @@ Other considerations:
 - When you run the app without Docker, you need to have a postgres process running.
 - There can be two postgres databases on your machine: One as a postgres container, the other as pure postgres. 
   Depending on how you run the app, your app (i.e. the java server) will connect to one or the other. 
+- With Docker Compose, an internal network for the app is automatically created, which is why we can use service names as host names. 
+  For example, the service name `postgres` resolves to the internal IP address whose name resolution is managed by Docker. We don't need to create a custom network.
+
 
 ## With Docker 
 
@@ -100,6 +105,9 @@ You do this by specifying the `--build` flag with Compose.
 Here's the full command: `docker compose up --build`.
 
 Initially I forgot that Docker caches image layers.
+
+
+Postgres does create a volume for you.
 
 ### Database first migration
 
