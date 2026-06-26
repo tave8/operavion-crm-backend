@@ -1,67 +1,115 @@
-# Launching
+# Run the app 
 
-**The problem: Flyway took over. Hibernate is not managing DB.**
+You can run this app with and without Docker. 
 
-Before launching the project, the [DB schema dump](db_schema_dump_on_project_end.sql) should be run against your existing, empty DB.
+This has implications on where the data is stored.
 
-This is because at first, Hibernate ORM was managing entities & DB.
+The current behavior is that when you run the app with Docker, the postgres docker container will be used (i.e. the volume on your machine).
 
-Then, Flyway (migration library) took over. In fact you can see the migration scripts.
+Other considerations: 
+- When you run the app with Docker, you shouldn't do anything else, because the images (JDK, postgres) will be pulled automatically and then run.
+- When you run the app without Docker, you need to have a postgres process running.
+- There can be two postgres databases on your machine: One as a postgres container, the other as pure postgres. 
+  Depending on how you run the app, your app (i.e. the java server) will connect to one or the other. 
 
-But those migration scripts do **not** capture the DB's schema before Flyway took over; 
+## With Docker 
 
-I forgot to take a DB schema dump of the DB's schema *before* Flyway took over.
+Here's how to run this java server with Docker.
 
-This means, you probably need to manually run the schema dump against your existing, empty DB.
+All you need to do is build the JAR and then run Docker Compose.
 
-If you don't do that, you should get errors saying that some tables don't exist, because Flyway, on startup, 
-
-will be executing the migration scripts, not knowing anything about the project's history and assuming your DB already has the correct schema
-
-as it did when it first took over in my project.
-
-Try either of these solutions (either one or the other).
-
-## Solution A
-
-So, before your run the server:
-
-1. Manually create the DB.
-2. Run the DB schema dump against your empty DB (execute script). This will create the DB as it is now that I've finished the project.
-3. Run the server.
-
-Not guaranteed but this should fix it. If it doesn't work, it's probably because some part of the migration script is trying to 
-
-create a table that already exists (or something like that) and will fail.
-
-
-## Solution B
-
-Temporarily re-activate Hibernate.  
-
-In [application.properties](src/main/resources/application.properties) there's a line that says:
+Run these commands:
 
 ```
-# Hibernate must not touch the schema, Flyway owns it.
+./mvnw clean package -DskipTests
 
-spring.jpa.hibernate.ddl-auto=none
+docker compose up --build
 ```
 
-You should temporarily re-activate Hibernate, so it creates the first schema directly from the entities.
+The only likely issues you might encounter is port mapping, specifically: A host port specified in Docker Compose is alread busy on your host.
+
+For that you need to manually change the ***host port only*** in your local Docker Compose file.
+
+## Without Docker
+
+You can also run this app without Docker. Depending on your needs, you might need to:
+- Tinker with the host ports so that you find one that is free on your host, for the java server and/or postgres.
+- If you had a volume on your host, this volume might need to be exported to your local postgres.
+
+
+
+# Troubleshooting - Containerization
+
+Here are issues I encountered and solved, while containerizing the app with Docker.
+
+### Postgres creates an anonymous volume
+
+If you don't specify one, Postgres will create an anonymous volume for you.
+
+Thus, the expected behavior "on container restart, data is lost" is incorrect.
+
+Postgres does create a volume for you. 
+
+### Postgres volume without /data
+
+The container directory to be mapped to the volume directory, is `/var/lib/postgresql`.
+
+When specifying the volume you will thus have: `postgres-data:/var/lib/postgresql`
+
+And of course create the volume: 
 
 ```
-spring.jpa.hibernate.ddl-auto=update
+volumes:
+  postgres-data:
 ```
 
-Check DB and make sure the schema is created. Then disable Hibernate again.
+### Conflicting host ports for database 
 
-Now run the server.
+Previously, Postgres was at `localhost:5432`.
 
-Flyway will now be executing all migration scripts one by one. 
+This was the postgres process, without Docker.
 
-If any issues comes up, it's likely due to some part of the migration script assuming some DB object that doesn't exist or that already exists.
+Then postgres was containerized, and I had to assign a new host port to this new postgres container.
 
-If that migration script was **not** executed, only then can you modify it directly to fix the issue. 
+Which is why you find the new postgres docker container at `localhost:5433`.
+
+In short:
+
+- At `localhost:5432` you find the pure postgres process (the initial database)
+- At `localhost:5433` you find the postgres docker container
+
+You can thus run this app (java server) by connecting to one or the other database.
+
+Of course, you can now access the postgres docker container with a database client like DBeaver, pgAdmin etc.
+
+### Manually build JAR with Maven
+
+Every time you make a change to the project, before running the containers, you must manually run `./mvnw clean package -DskipTests`.
+
+Initially I forgot that there's no automatic build process to automatically build the project into a JAR.
+
+
+### Rebuild images for each Docker Compose
+
+When you make any change to the docker files, it might not pick up that change.
+
+So you must rebuild the docker files every time.
+
+You do this by specifying the `--build` flag with Compose.
+
+Here's the full command: `docker compose up --build`.
+
+Initially I forgot that Docker caches image layers.
+
+### Database first migration
+
+Previously, the app could not be started properly, because the first database migration was missing.
+
+This problem has been fixed, so you should have no database migration-related problem.
+
+I fixed this by restarting the postgres container and deleting the volume every time, until tinkered until I found the right "first migration" schema that did not cause conflicts.
+
+[See old problem description](#launching-old-problem-reference-only).
 
 
 ## Claude - AI
@@ -791,5 +839,74 @@ ClientAddress
 
 ```
 
+
+
+
+
+
+# Launching (old problem, reference only)
+
+**The problem: Flyway took over. Hibernate is not managing DB.**
+
+Before launching the project, the [DB schema dump](db_schema_dump_on_project_end.sql) should be run against your existing, empty DB.
+
+This is because at first, Hibernate ORM was managing entities & DB.
+
+Then, Flyway (migration library) took over. In fact you can see the migration scripts.
+
+But those migration scripts do **not** capture the DB's schema before Flyway took over;
+
+I forgot to take a DB schema dump of the DB's schema *before* Flyway took over.
+
+This means, you probably need to manually run the schema dump against your existing, empty DB.
+
+If you don't do that, you should get errors saying that some tables don't exist, because Flyway, on startup,
+
+will be executing the migration scripts, not knowing anything about the project's history and assuming your DB already has the correct schema
+
+as it did when it first took over in my project.
+
+Try either of these solutions (either one or the other).
+
+## Solution A
+
+So, before your run the server:
+
+1. Manually create the DB.
+2. Run the DB schema dump against your empty DB (execute script). This will create the DB as it is now that I've finished the project.
+3. Run the server.
+
+Not guaranteed but this should fix it. If it doesn't work, it's probably because some part of the migration script is trying to
+
+create a table that already exists (or something like that) and will fail.
+
+
+## Solution B
+
+Temporarily re-activate Hibernate.
+
+In [application.properties](src/main/resources/application.properties) there's a line that says:
+
+```
+# Hibernate must not touch the schema, Flyway owns it.
+
+spring.jpa.hibernate.ddl-auto=none
+```
+
+You should temporarily re-activate Hibernate, so it creates the first schema directly from the entities.
+
+```
+spring.jpa.hibernate.ddl-auto=update
+```
+
+Check DB and make sure the schema is created. Then disable Hibernate again.
+
+Now run the server.
+
+Flyway will now be executing all migration scripts one by one.
+
+If any issues comes up, it's likely due to some part of the migration script assuming some DB object that doesn't exist or that already exists.
+
+If that migration script was **not** executed, only then can you modify it directly to fix the issue. 
 
 

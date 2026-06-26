@@ -1,4 +1,17 @@
+# Note: the context of the comments is specified. 
+#   GENERIC = considerations about an image, internal workings etc.
+#   LOCAL = my local config only, it might not apply to your local config
+
+# ********** SUMMARY OF SERVICES ********************
+# ------------------------------------------------
+#      SERVICE              |       ADDRESS
+# ----------------------------------------------
+#    localhost:3001               web server (java)
+#    localhost:5433               database (postgres)
+
+
 services:
+  # server  
   server:
     build: .
     ports:
@@ -6,8 +19,13 @@ services:
     depends_on:
       - postgres
     environment:
+      # I have an application-local.properties (LOCAL)      
       SPRING_PROFILES_ACTIVE: local
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/operavion-crm
+      # when run with Docker, override the database url (GENERIC)
+      #   the host "postgres" will be resolved by the internal Docker DNS,
+      #   which is why the port must be the container port, not the host port      
+      JDBC_DATABASE_URL: jdbc:postgresql://postgres:5432/operavion-crm
+  # database      
   postgres:
     image: "postgres:18-alpine"
     environment:
@@ -16,9 +34,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: operavion-crm
     ports:
-      - "5432:5432"
+      # changed host port because at port 5432 is pure postgres (LOCAL)      
+      - "5433:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
 
 volumes:
+  # if you don't specify a volumne, postgres will create one for you. (GENERIC)
   postgres-data: 
